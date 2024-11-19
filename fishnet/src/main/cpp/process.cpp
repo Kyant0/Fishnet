@@ -25,14 +25,10 @@ std::string get_process_name(pid_t pid) {
 
 long get_uptime() {
     FILE *file = fopen("/proc/uptime", "r");
-    if (!file) {
-        perror("Failed to open /proc/uptime");
-        return -1;
-    }
+    if (!file) return -1;
 
     double uptime_seconds;
     if (fscanf(file, "%lf", &uptime_seconds) != 1) {
-        perror("Failed to read /proc/uptime");
         fclose(file);
         return -1;
     }
@@ -44,10 +40,7 @@ long get_process_start_time(pid_t pid) {
     char path[64];
     snprintf(path, sizeof(path), "/proc/%d/stat", pid);
     FILE *file = fopen(path, "r");
-    if (!file) {
-        perror("Failed to open process stat file");
-        return -1;
-    }
+    if (!file) return -1;
 
     long start_time = 0;
     char buffer[1024];

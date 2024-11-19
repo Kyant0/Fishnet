@@ -91,7 +91,7 @@ ssize_t dump_memory(void *out, size_t len, uint8_t *tags, size_t tags_len, uint6
         }
     }
 
-    return bytes;
+    return (ssize_t) bytes;
 }
 
 // dump_tags_around_fault_addr
@@ -199,9 +199,10 @@ void print_thread_memory_dump(unwindstack::AndroidUnwinder *unwinder, int word_s
 
         bool has_tags = false;
 #if defined(__aarch64__)
-        for (size_t i = 0; i < kNumTagsAroundRegister; ++i) {
-            if (tags[i] != 0) {
+        for (unsigned char tag : tags) {
+            if (tag != 0) {
                 has_tags = true;
+                break;
             }
         }
 #endif  // defined(__aarch64__)

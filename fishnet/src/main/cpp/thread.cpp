@@ -79,7 +79,7 @@ void print_main_thread(pid_t pid, pid_t tid, uid_t uid, siginfo_t *si, int word_
                        unwindstack::ArchEnum arch, unwindstack::AndroidUnwinder *unwinder,
                        unwindstack::AndroidUnwinderData *data, unwindstack::Regs *regs,
                        bool dump_memory) {
-    uint64_t fault_addr = (uintptr_t) si->si_addr;
+    auto fault_addr = (uintptr_t) si->si_addr;
     print_thread_header(pid, tid, uid);
 
     std::string sender_desc;
