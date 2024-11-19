@@ -30,8 +30,12 @@ void signal_handler(int s, struct siginfo *si, void *uc) {
     unwinder->Unwind(uc, data);
     unwindstack::Regs *regs = unwindstack::Regs::CreateFromUcontext(arch, uc);
 
-    dump_logcat();
-    try_read_libc_abort_logs();
+    // Do not attempt to dump logs of the logd process because the gathering
+    // of logs can hang until a timeout occurs.
+    if (get_thread_name(tid) != "logd") {
+        dump_logcat();
+        try_read_libc_abort_logs();
+    }
 
     dump_thread_backtrace(data.frames);
 
@@ -53,9 +57,9 @@ void signal_handler(int s, struct siginfo *si, void *uc) {
 
     print_main_thread(pid, tid, uid, si, word_size, arch, unwinder, &data, regs, false);
 
-    print_logs();
-
     dump_open_fds(pid);
+
+    print_logs();
 
     write_log();
 

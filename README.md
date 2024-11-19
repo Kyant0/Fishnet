@@ -101,21 +101,6 @@ memory map (2220 entries): (fault address prefixed with --->)
     0000007f'ce124000-0000007f'ce922fff rw-         0    7ff000  [stack]
 --->Fault address falls at 00002945'00005bb4 after any mapped regions
 
---------- log system
-...
-11-19 18:12:56.920 22575 22591 W AdrenoUtils: <ReadGpuID:221>: Failed to read chip ID from gpu_model. Fallback to use the GSL path
-11-19 18:12:56.964 22575 22591 W Parcel  : Expecting binder but got null!
-11-19 18:13:29.466 22575 22582 I nt.fishnet.demo: Background concurrent copying GC freed 2774KB AllocSpace bytes, 7(164KB) LOS objects, 89% free, 2907KB/26MB, paused 279us,140us total 111.835ms
-11-19 18:13:31.209 22575 22588 I OpenGLRenderer: Davey! duration=10022ms; Flags=0, FrameTimelineVsyncId=16439050, IntendedVsync=133005930754777, Vsync=133015930754677, InputEventId=0, HandleInputStart=133015933859342, AnimationStart=133015933884290, PerformTraversalsStart=133015935786426, DrawStart=133015936235280, FrameDeadline=133005962379799, FrameInterval=133015932864551, FrameStartTime=11125022, SyncQueued=133015938177312, SyncStart=133015938399603, IssueDrawCommandsStart=133015939532312, SwapBuffers=133015945022573, FrameCompleted=133015953151740, DequeueBufferDuration=89583, QueueBufferDuration=924583, GpuCompleted=133015953151740, SwapBuffersCompleted=133015947115958, DisplayPresentTime=133011647126572, CommandSubmissionCompleted=133015945022573, 
-
---------- tail end of log system
---------- log main
-...
-11-19 18:13:31.176 22575 22575 I Choreographer: Skipped 900 frames!  The application may be doing too much work on its main thread.
-11-19 18:13:36.210 22575 22575 F libc    : FORTIFY: memcpy: prevented 10-byte write into 8-byte buffer
-
---------- tail end of log main
-
 open files:
     fd 0: /dev/null (unowned)
     fd 1: /dev/null (unowned)
@@ -129,6 +114,16 @@ open files:
     fd 9: /apex/com.android.art/javalib/core-libart.jar (owned by RandomAccessFile 0x9d3a324)
     fd 10: /apex/com.android.art/javalib/okhttp.jar (owned by RandomAccessFile 0xca99e8d)
     ...
+
+--------- log main
+...
+11-19 18:12:56.920 22575 22591 W AdrenoUtils: <ReadGpuID:221>: Failed to read chip ID from gpu_model. Fallback to use the GSL path
+11-19 18:12:56.964 22575 22591 W Parcel  : Expecting binder but got null!
+11-19 18:13:29.466 22575 22582 I nt.fishnet.demo: Background concurrent copying GC freed 2774KB AllocSpace bytes, 7(164KB) LOS objects, 89% free, 2907KB/26MB, paused 279us,140us total 111.835ms
+11-19 18:13:31.176 22575 22575 I Choreographer: Skipped 900 frames!  The application may be doing too much work on its main thread.
+11-19 18:13:31.209 22575 22588 I OpenGLRenderer: Davey! duration=10022ms; Flags=0, FrameTimelineVsyncId=16439050, IntendedVsync=133005930754777, Vsync=133015930754677, InputEventId=0, HandleInputStart=133015933859342, AnimationStart=133015933884290, PerformTraversalsStart=133015935786426, DrawStart=133015936235280, FrameDeadline=133005962379799, FrameInterval=133015932864551, FrameStartTime=11125022, SyncQueued=133015938177312, SyncStart=133015938399603, IssueDrawCommandsStart=133015939532312, SwapBuffers=133015945022573, FrameCompleted=133015953151740, DequeueBufferDuration=89583, QueueBufferDuration=924583, GpuCompleted=133015953151740, SwapBuffersCompleted=133015947115958, DisplayPresentTime=133011647126572, CommandSubmissionCompleted=133015945022573, 
+11-19 18:13:36.210 22575 22575 F libc    : FORTIFY: memcpy: prevented 10-byte write into 8-byte buffer
+
 ```
 
 ### ANR
