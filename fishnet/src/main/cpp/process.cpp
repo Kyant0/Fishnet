@@ -2,6 +2,7 @@
 
 #include <bits/sysconf.h>
 #include <cstdlib>
+#include <dirent.h>
 #include <sys/sysinfo.h>
 
 std::string get_process_name(pid_t pid) {
@@ -78,4 +79,19 @@ uint64_t get_process_uptime(pid_t pid) {
     if (start_time == -1) return -1;
 
     return uptime - (start_time / clock_ticks);
+}
+
+void get_process_tids(pid_t pid, std::vector<pid_t> &tids) {
+    char path[22];
+    snprintf(path, sizeof(path), "/proc/%d/task", pid);
+    DIR *dir = opendir(path);
+    if (!dir) return;
+
+    struct dirent *entry;
+    while ((entry = readdir(dir))) {
+        if (entry->d_name[0] == '.') continue;
+        tids.emplace_back(atoi(entry->d_name));
+    }
+
+    closedir(dir);
 }

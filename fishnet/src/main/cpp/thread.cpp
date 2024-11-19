@@ -2,7 +2,9 @@
 
 #include <cinttypes>
 #include <numeric>
+#include <sys/ptrace.h>
 
+#include "abi.h"
 #include "human_readable.h"
 #include "log.h"
 #include "cause.h"
@@ -62,15 +64,6 @@ void print_thread_header(pid_t pid, pid_t tid, uid_t uid) {
     std::string process_name = get_process_name(pid);
     LOG_FISHNET("pid: %d, tid: %d, name: %s  >>> %s <<<", pid, tid, thread_name.c_str(), process_name.c_str());
     LOG_FISHNET("uid: %d", uid);
-}
-
-void print_thread(pid_t pid, pid_t tid, uid_t uid, int word_size, unwindstack::ArchEnum arch,
-                  unwindstack::AndroidUnwinder *unwinder, unwindstack::AndroidUnwinderData *data,
-                  unwindstack::Regs *regs) {
-    print_thread_header(pid, tid, uid);
-    print_thread_registers(arch, word_size, regs);
-    print_thread_backtrace(arch, data->frames);
-    print_thread_memory_dump(unwinder, word_size, regs);
 }
 
 void print_main_thread(pid_t pid, pid_t tid, uid_t uid, siginfo_t *si, int word_size,
@@ -134,5 +127,59 @@ void print_main_thread(pid_t pid, pid_t tid, uid_t uid, siginfo_t *si, int word_
         } else {
             LOG_FISHNET("No memory maps found");
         }
+    }
+}
+
+void print_thread(pid_t pid, pid_t tid, uid_t uid, unwindstack::AndroidUnwinder *unwinder, bool dump_memory) {
+    if (ptrace(PTRACE_SEIZE, tid, 0, 0) != 0) {
+        LOG_FISHNET("Failed to attach to thread %d: %s", tid, strerror(errno));
+        return;
+    }
+
+    unwindstack::ArchEnum arch = unwindstack::Regs::RemoteGetArch(tid);
+    int word_size = pointer_width(arch);
+    unwindstack::Regs *regs = unwindstack::Regs::RemoteGet(tid);
+    if (!regs) {
+        LOG_FISHNET("Failed to get registers for tid: %d", tid);
+        return;
+    }
+    unwindstack::AndroidUnwinderData data{};
+    unwinder->Unwind(tid, data);
+
+    print_thread_header(pid, tid, uid);
+    print_thread_registers(arch, word_size, regs);
+    print_thread_backtrace(arch, data.frames);
+    if (dump_memory) {
+        print_thread_memory_dump(unwinder, word_size, regs);
+    }
+}
+
+void print_guest_thread(pid_t tid, unwindstack::AndroidUnwinder *unwinder, bool dump_memory) {
+    if (ptrace(PTRACE_SEIZE, tid, 0, 0) != 0) {
+        LOG_FISHNET("Failed to attach to thread %d: %s", tid, strerror(errno));
+        return;
+    }
+
+    unwindstack::ArchEnum arch = unwindstack::Regs::RemoteGetArch(tid);
+    int word_size = pointer_width(arch);
+    unwindstack::Regs *regs = unwindstack::Regs::RemoteGet(tid);
+    if (!regs) {
+        LOG_FISHNET("Failed to get registers for tid: %d", tid);
+        return;
+    }
+    unwindstack::AndroidUnwinderData data{};
+    unwinder->Unwind(tid, data);
+
+    LOG_FISHNET("--- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---");
+    LOG_FISHNET("Guest thread information for tid: %d", tid);
+    print_thread_registers(arch, word_size, regs);
+
+    LOG_FISHNET("");
+    LOG_FISHNET("%zu total frames", data.frames.size());
+    LOG_FISHNET("backtrace:");
+    print_backtrace(arch, data.frames);
+
+    if (dump_memory) {
+        print_thread_memory_dump(unwinder, word_size, regs);
     }
 }

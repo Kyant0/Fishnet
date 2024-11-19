@@ -20,15 +20,15 @@ void signal_handler(int s, struct siginfo *si, void *uc) {
     pid_t pid = getpid();
     pid_t tid = gettid();
     uid_t uid = getuid();
-    unwindstack::ArchEnum arch = unwindstack::Regs::CurrentArch();
-    int word_size = pointer_width(arch);
 
     unwindstack::AndroidUnwinder *unwinder = unwindstack::AndroidUnwinder::Create(pid);
     unwindstack::ErrorData error_data{};
     unwinder->Initialize(error_data);
+    unwindstack::ArchEnum arch = unwindstack::Regs::CurrentArch();
+    int word_size = pointer_width(arch);
+    unwindstack::Regs *regs = unwindstack::Regs::CreateFromUcontext(arch, uc);
     unwindstack::AndroidUnwinderData data{};
     unwinder->Unwind(uc, data);
-    unwindstack::Regs *regs = unwindstack::Regs::CreateFromUcontext(arch, uc);
 
     // Do not attempt to dump logs of the logd process because the gathering
     // of logs can hang until a timeout occurs.
@@ -56,6 +56,15 @@ void signal_handler(int s, struct siginfo *si, void *uc) {
     }
 
     print_main_thread(pid, tid, uid, si, word_size, arch, unwinder, &data, regs, false);
+
+    std::vector<pid_t> tids;
+    get_process_tids(pid, tids);
+    for (pid_t thread_id: tids) {
+        if (thread_id == tid) continue;
+        LOG_FISHNET("--- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---");
+        print_thread(pid, thread_id, uid, unwinder, false);
+        print_guest_thread(thread_id, unwinder, false);
+    }
 
     dump_open_fds(pid);
 
