@@ -1,11 +1,10 @@
 #include "property.h"
 
 #include <bits/sysconf.h>
-#include <cstring>
 #include <sys/system_properties.h>
 
 std::string get_property(const char *key, const char *default_value) {
-    static char value[PROP_VALUE_MAX];
+    char value[PROP_VALUE_MAX];
     if (__system_property_get(key, value) > 0) {
         return value;
     }

@@ -1,9 +1,7 @@
 #include "memory.h"
 
-#include <asm-generic/mman.h>
 #include <cinttypes>
-
-#include "android/log_macros.h"
+#include <sys/mman.h>
 
 #include "abi.h"
 #include "log.h"
@@ -43,7 +41,7 @@ ssize_t dump_memory(void *out, size_t len, uint8_t *tags, size_t tags_len, uint6
     size_t bytes = memory->Read(*addr, reinterpret_cast<uint8_t *>(out), len);
     if (bytes % sizeof(uintptr_t) != 0) {
         // This should never happen, but just in case.
-        ALOGE("Bytes read %zu, is not a multiple of %zu", bytes, sizeof(uintptr_t));
+        // ALOGE("Bytes read %zu, is not a multiple of %zu", bytes, sizeof(uintptr_t));
         bytes &= ~(sizeof(uintptr_t) - 1);
     }
 
@@ -71,7 +69,7 @@ ssize_t dump_memory(void *out, size_t len, uint8_t *tags, size_t tags_len, uint6
         bytes += bytes2;
         if (bytes2 > 0 && bytes % sizeof(uintptr_t) != 0) {
             // This should never happen, but we'll try and continue any way.
-            ALOGE("Bytes after second read %zu, is not a multiple of %zu", bytes, sizeof(uintptr_t));
+            // ALOGE("Bytes after second read %zu, is not a multiple of %zu", bytes, sizeof(uintptr_t));
             bytes &= ~(sizeof(uintptr_t) - 1);
         }
     }
@@ -87,7 +85,7 @@ ssize_t dump_memory(void *out, size_t len, uint8_t *tags, size_t tags_len, uint6
         if (tag_granule < tags_len) {
             tags[tag_granule] = tag >= 0 ? tag : 0;
         } else {
-            ALOGE("Insufficient space for tags");
+            // ALOGE("Insufficient space for tags");
         }
     }
 
@@ -199,7 +197,7 @@ void print_thread_memory_dump(unwindstack::AndroidUnwinder *unwinder, int word_s
 
         bool has_tags = false;
 #if defined(__aarch64__)
-        for (unsigned char tag : tags) {
+        for (unsigned char tag: tags) {
             if (tag != 0) {
                 has_tags = true;
                 break;

@@ -2,7 +2,6 @@
 #define FISHNET_PROCESS_H
 
 #include <string>
-#include <sys/types.h>
 
 std::string get_process_name(pid_t pid);
 

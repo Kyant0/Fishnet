@@ -2,7 +2,6 @@
 #define FISHNET_THREAD_H
 
 #include <string>
-#include <sys/types.h>
 
 #include "unwindstack/AndroidUnwinder.h"
 

@@ -3,11 +3,9 @@
 #include <cinttypes>
 #include <numeric>
 
-#include "abi.h"
 #include "human_readable.h"
 #include "log.h"
 #include "cause.h"
-#include "clock.h"
 #include "abort_message.h"
 #include "command_line.h"
 #include "process.h"

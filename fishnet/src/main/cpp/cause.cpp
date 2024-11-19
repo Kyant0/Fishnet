@@ -1,7 +1,7 @@
 #include "cause.h"
 
-#include <asm-generic/mman.h>
 #include <dlfcn.h>
+#include <sys/mman.h>
 
 #include "abi.h"
 #include "log.h"

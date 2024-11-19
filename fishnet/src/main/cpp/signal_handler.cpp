@@ -1,19 +1,12 @@
 #include "signal_handler.h"
 
-#include <cinttypes>
-#include <jni.h>
 #include <sys/mman.h>
-#include <sys/sysinfo.h>
-#include <sys/system_properties.h>
-
-#include "unwindstack/AndroidUnwinder.h"
 
 #include "abi.h"
 #include "log.h"
 #include "clock.h"
 #include "abort_message.h"
 #include "logcat.h"
-#include "command_line.h"
 #include "process.h"
 #include "thread.h"
 #include "property.h"

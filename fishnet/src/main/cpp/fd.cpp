@@ -1,14 +1,12 @@
 #include "fd.h"
 
+#include <android/fdsan.h>
 #include <cinttypes>
 #include <dirent.h>
-#include <optional>
-#include <string>
 #include <vector>
 #include <unistd.h>
 
 #include "log.h"
-#include <android/fdsan.h>
 
 struct FD {
     int32_t fd;

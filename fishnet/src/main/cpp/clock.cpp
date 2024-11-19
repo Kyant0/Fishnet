@@ -1,8 +1,5 @@
 #include "clock.h"
 
-#include <cstdio>
-#include <ctime>
-
 std::string get_timestamp() {
     timespec ts{};
     clock_gettime(CLOCK_REALTIME, &ts);
