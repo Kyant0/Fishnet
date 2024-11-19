@@ -40,7 +40,7 @@ void signal_handler(int s, struct siginfo *si, void *uc) {
     LOG_FISHNET("Revision: '%s'", get_property("ro.revision", "unknown").c_str());
     LOG_FISHNET("ABI: '%s'", abi_string(arch));
     LOG_FISHNET("Timestamp: %s", get_timestamp().c_str());
-    LOG_FISHNET("Process uptime: %lds", get_process_uptime(pid));
+    LOG_FISHNET("Process uptime: %lus", get_process_uptime(pid));
 
     // only print this info if the page size is not 4k or has been in 16k mode
     size_t page_size = get_page_size();

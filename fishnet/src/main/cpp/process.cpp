@@ -2,6 +2,7 @@
 
 #include <bits/sysconf.h>
 #include <cstdlib>
+#include <sys/sysinfo.h>
 
 std::string get_process_name(pid_t pid) {
     char process_name[256];
@@ -23,51 +24,58 @@ std::string get_process_name(pid_t pid) {
     return process_name;
 }
 
-long get_uptime() {
-    FILE *file = fopen("/proc/uptime", "r");
-    if (!file) return -1;
-
-    double uptime_seconds;
-    if (fscanf(file, "%lf", &uptime_seconds) != 1) {
-        fclose(file);
-        return -1;
-    }
-    fclose(file);
-    return (long) uptime_seconds;
-}
-
-long get_process_start_time(pid_t pid) {
-    char path[64];
+uint64_t get_process_start_time(pid_t pid) {
+    char path[19];
     snprintf(path, sizeof(path), "/proc/%d/stat", pid);
     FILE *file = fopen(path, "r");
     if (!file) return -1;
 
-    long start_time = 0;
-    char buffer[1024];
-    if (fgets(buffer, sizeof(buffer), file)) {
-        // Split the stat file contents to find the 22nd field
-        char *token = strtok(buffer, " ");
-        for (int i = 1; i <= 22; i++) {
-            if (!token) break;
-            if (i == 22) {
-                start_time = atol(token);
-            }
-            token = strtok(nullptr, " ");
-        }
+    static constexpr const char *pattern =
+            "%c "    // state
+            "%d "    // ppid
+            "%*d "   // pgrp
+            "%*d "   // session
+            "%*d "   // tty_nr
+            "%*d "   // tpgid
+            "%*u "   // flags
+            "%*lu "  // minflt
+            "%*lu "  // cminflt
+            "%*lu "  // majflt
+            "%*lu "  // cmajflt
+            "%*lu "  // utime
+            "%*lu "  // stime
+            "%*ld "  // cutime
+            "%*ld "  // cstime
+            "%*ld "  // priority
+            "%*ld "  // nice
+            "%*ld "  // num_threads
+            "%*ld "  // itrealvalue
+            "%llu "  // starttime
+    ;
+
+    char stat[512];
+    if (!fgets(stat, sizeof(stat), file)) {
+        fclose(file);
+        return -1;
     }
-    fclose(file);
-    return start_time;
+
+    char state = '\0';
+    int ppid = 0;
+    unsigned long long start_time = 0;
+    const char *end_of_comm = strrchr(stat, ')');
+    int rc = sscanf(end_of_comm + 2, pattern, &state, &ppid, &start_time);
+    return rc == 3 ? start_time : -1;
 }
 
-long get_process_uptime(pid_t pid) {
-    long uptime = get_uptime();
+uint64_t get_process_uptime(pid_t pid) {
+    struct sysinfo si{};
+    sysinfo(&si);
+    long uptime = si.uptime;
     if (uptime == -1) return -1;
 
     long clock_ticks = sysconf(_SC_CLK_TCK);
-    long start_time = get_process_start_time(pid);
+    uint64_t start_time = get_process_start_time(pid);
     if (start_time == -1) return -1;
 
-    // Convert start time to seconds and calculate uptime
-    long process_uptime = uptime - (start_time / clock_ticks);
-    return process_uptime;
+    return uptime - (start_time / clock_ticks);
 }
