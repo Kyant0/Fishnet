@@ -1,0 +1,110 @@
+// Copyright 2015 The Android Open Source Project
+
+package {
+    default_applicable_licenses: ["external_lzma_license"],
+}
+
+license {
+    name: "external_lzma_license",
+    visibility: [":__subpackages__"],
+    license_kinds: [
+        "legacy_unencumbered",
+    ],
+    license_text: [
+        "NOTICE",
+    ],
+}
+
+cc_library {
+    name: "liblzma",
+    host_supported: true,
+    vendor_available: true,
+    product_available: true,
+    ramdisk_available: true,
+    recovery_available: true,
+    vendor_ramdisk_available: true,
+    native_bridge_supported: true,
+    double_loadable: true,
+    sdk_version: "9",
+    stl: "none",
+
+    cflags: [
+        "-DZ7_ST",
+        "-Wall",
+        "-Werror",
+        "-Wno-empty-body",
+        "-Wno-enum-conversion",
+        "-Wno-logical-op-parentheses",
+        "-Wno-self-assign",
+    ],
+
+    export_include_dirs: ["C"],
+
+    srcs: [
+        "C/7zAlloc.c",
+        "C/7zArcIn.c",
+        "C/7zBuf2.c",
+        "C/7zBuf.c",
+        "C/7zCrc.c",
+        "C/7zCrcOpt.c",
+        "C/7zDec.c",
+        "C/7zFile.c",
+        "C/7zStream.c",
+        "C/Aes.c",
+        "C/AesOpt.c",
+        "C/Alloc.c",
+        "C/Bcj2.c",
+        "C/Bra86.c",
+        "C/Bra.c",
+        "C/BraIA64.c",
+        "C/CpuArch.c",
+        "C/Delta.c",
+        "C/LzFind.c",
+        "C/Lzma2Dec.c",
+        "C/Lzma2Enc.c",
+        "C/Lzma86Dec.c",
+        "C/Lzma86Enc.c",
+        "C/LzmaDec.c",
+        "C/LzmaEnc.c",
+        "C/LzmaLib.c",
+        "C/Ppmd7.c",
+        "C/Ppmd7Dec.c",
+        "C/Ppmd7Enc.c",
+        "C/Sha256.c",
+        "C/Sha256Opt.c",
+        "C/Sort.c",
+        "C/Xz.c",
+        "C/XzCrc64.c",
+        "C/XzCrc64Opt.c",
+        "C/XzDec.c",
+        "C/XzEnc.c",
+        "C/XzIn.c",
+    ],
+
+    target: {
+        linux_bionic: {
+            enabled: true,
+        },
+        windows: {
+            enabled: true,
+            srcs: [
+                "C/Bcj2Enc.c",
+                "C/DllSecur.c",
+                "C/LzFindMt.c",
+                "C/LzFindOpt.c",
+                "C/Lzma2DecMt.c",
+                "C/MtCoder.c",
+                "C/MtDec.c",
+                "C/Threads.c",
+            ],
+        },
+    },
+
+    apex_available: [
+        "//apex_available:platform",
+        "com.android.art", // from libartbase
+        "com.android.art.debug",
+        "com.android.runtime",
+    ],
+    min_sdk_version: "apex_inherit",
+}

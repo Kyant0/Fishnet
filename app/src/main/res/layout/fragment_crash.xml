@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:text="Java crashes"
+            android:textColor="?android:textColorPrimary"
+            android:textSize="30sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/btn_test_java_crash"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Test Java crash"
+                android:textAllCaps="false" />
+
+            <Button
+                android:id="@+id/btn_test_anr"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Test ANR"
+                android:textAllCaps="false" />
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:text="Native crashes"
+            android:textColor="?android:textColorPrimary"
+            android:textSize="30sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/btn_test_native_crash"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Test Native crash"
+                android:textAllCaps="false" />
+
+            <Button
+                android:id="@+id/btn_test_jni_abort"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Test JNI abort"
+                android:textAllCaps="false" />
+
+            <Button
+                android:id="@+id/btn_test_fdsan_crash"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Test fdsan crash"
+                android:textAllCaps="false" />
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:text="Signals"
+            android:textColor="?android:textColorPrimary"
+            android:textSize="30sp"
+            android:textStyle="bold" />
+
+        <RadioGroup
+            android:id="@+id/radio_group__signals"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp" />
+
+    </LinearLayout>
+
+</ScrollView>
