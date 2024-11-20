@@ -14,8 +14,8 @@ void print_main_thread(pid_t pid, pid_t tid, uid_t uid, siginfo_t *si, int word_
                        unwindstack::AndroidUnwinderData *data, unwindstack::Regs *regs,
                        bool dump_memory);
 
-void print_thread(pid_t pid, pid_t tid, uid_t uid, unwindstack::AndroidUnwinder *unwinder, bool dump_memory);
+void print_thread(pid_t pid, pid_t tid, uid_t uid, unwindstack::ThreadUnwinder *unwinder, bool dump_memory);
 
-void print_guest_thread(pid_t tid, unwindstack::AndroidUnwinder *unwinder, bool dump_memory);
+void print_guest_thread(pid_t tid, unwindstack::ThreadUnwinder *unwinder, bool dump_memory);
 
 #endif //FISHNET_THREAD_H

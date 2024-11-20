@@ -26,9 +26,9 @@ void signal_handler(int s, struct siginfo *si, void *uc) {
     unwinder->Initialize(error_data);
     unwindstack::ArchEnum arch = unwindstack::Regs::CurrentArch();
     int word_size = pointer_width(arch);
-    unwindstack::Regs *regs = unwindstack::Regs::CreateFromUcontext(arch, uc);
+    std::unique_ptr<unwindstack::Regs> regs(unwindstack::Regs::CreateFromUcontext(arch, uc));
     unwindstack::AndroidUnwinderData data{};
-    unwinder->Unwind(uc, data);
+    unwinder->Unwind(regs.get(), data);
 
     // Do not attempt to dump logs of the logd process because the gathering
     // of logs can hang until a timeout occurs.
@@ -55,15 +55,18 @@ void signal_handler(int s, struct siginfo *si, void *uc) {
         LOG_FISHNET("Has been in 16kb mode: yes");
     }
 
-    print_main_thread(pid, tid, uid, si, word_size, arch, unwinder, &data, regs, false);
+    print_main_thread(pid, tid, uid, si, word_size, arch, unwinder, &data, regs.get(), false);
+
+    unwindstack::ThreadUnwinder thread_unwinder(128);
+    thread_unwinder.Init();
 
     std::vector<pid_t> tids;
     get_process_tids(pid, tids);
     for (pid_t thread_id: tids) {
         if (thread_id == tid) continue;
         LOG_FISHNET("--- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---");
-        print_thread(pid, thread_id, uid, unwinder, false);
-        // print_guest_thread(thread_id, unwinder, false);
+        print_thread(pid, thread_id, uid, &thread_unwinder, false);
+        // print_guest_thread(thread_id, &thread_unwinder, false);
     }
 
     dump_open_fds(pid);
