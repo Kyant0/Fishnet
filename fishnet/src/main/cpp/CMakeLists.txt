@@ -27,7 +27,7 @@ set(DEXFILE_SRC "${EXTERNAL_SRC}/libdexfile")
 set(LOG_SRC "${EXTERNAL_SRC}/liblog")
 set(LZMA_SRC "${EXTERNAL_SRC}/lzma")
 set(PROCINFO_SRC "${EXTERNAL_SRC}/libprocinfo")
-set(RUST_DEMANGLE_SRC "${EXTERNAL_SRC}/rustc_demangle")
+set(LIBIBERTY_SRC "${EXTERNAL_SRC}/libiberty")
 set(UNWINDSTACK_SRC "${EXTERNAL_SRC}/libunwindstack")
 set(ZIPARCHIVE_SRC "${EXTERNAL_SRC}/libziparchive")
 set(ZSTD_SRC "${EXTERNAL_SRC}/zstd")
@@ -294,15 +294,15 @@ add_library(unwindstack STATIC
 
         "${UNWINDSTACK_ARCH_SRC}"
 
-        "${RUST_DEMANGLE_SRC}/rust-demangle.c"
-        "${RUST_DEMANGLE_SRC}/safe-ctype.c"
+        "${LIBIBERTY_SRC}/rust-demangle.c"
+        "${LIBIBERTY_SRC}/safe-ctype.c"
 )
 
 target_include_directories(unwindstack BEFORE
         PUBLIC "${UNWINDSTACK_SRC}/include"
         PRIVATE "platform"
         PRIVATE "${ZSTD_SRC}"
-        PRIVATE "${RUST_DEMANGLE_SRC}")
+        PRIVATE "${LIBIBERTY_SRC}")
 
 target_compile_options(unwindstack PRIVATE -Wno-c99-designator -Wno-deprecated-declarations)
 # for clang
