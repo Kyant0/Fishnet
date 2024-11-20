@@ -134,19 +134,18 @@ void print_main_thread(pid_t pid, pid_t tid, uid_t uid, siginfo_t *si, int word_
 
 void print_thread(pid_t pid, pid_t tid, uid_t uid, unwindstack::AndroidUnwinder *unwinder, bool dump_memory) {
     unwindstack::ArchEnum arch = unwindstack::Regs::CurrentArch();
-    int word_size = pointer_width(arch);
-    unwindstack::Regs *regs = unwindstack::Regs::CreateFromLocal();
+    // int word_size = pointer_width(arch);
     unwindstack::AndroidUnwinderData data{};
     unwinder->Unwind(tid, data);
 
     print_thread_header(pid, tid, uid);
-    print_thread_registers(arch, word_size, regs);
+    // print_thread_registers(arch, word_size, regs);
     print_thread_backtrace(arch, data.frames);
-    if (dump_memory) {
+    /*if (dump_memory) {
         unwindstack::Maps *maps = unwinder->GetMaps();
         unwindstack::Memory *memory = unwinder->GetProcessMemory().get();
         print_thread_memory_dump(word_size, regs, maps, memory);
-    }
+    }*/
 }
 
 void print_guest_thread(pid_t tid, unwindstack::AndroidUnwinder *unwinder, bool dump_memory) {
