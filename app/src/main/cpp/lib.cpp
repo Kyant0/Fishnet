@@ -1,6 +1,7 @@
 #include <jni.h>
-#include <stdlib.h>
-#include <string.h>
+
+#include <cstdlib>
+#include <cstring>
 #include <unistd.h>
 
 #include "fishnet/fishnet.h"
@@ -62,35 +63,25 @@ Java_com_kyant_fishnet_demo_CrashFragment_signal(JNIEnv *env, jobject, jint sign
 JNIEXPORT void JNICALL
 Java_com_kyant_fishnet_demo_CrashFragment_nativeCrash(JNIEnv *env, jobject, jstring type) {
     const char *type_str = env->GetStringUTFChars(type, nullptr);
-    if (false) { // SIGSEGV
-        char *ptr = (char *) 0x114514;
-        *ptr = 0;
-    } else if (false) { // ANR
-        for (int i = 0; i < 100000; ++i) {
-            dup(STDOUT_FILENO);
+    std::thread crash_thread([&type_str] {
+        if (strcmp(type_str, "SIGSEGV") == 0) {
+            char *ptr = (char *) 0x114514;
+            *ptr = 0;
+        } else if (strcmp(type_str, "ANR") == 0) {
+            for (int i = 0; i < 100000; ++i) {
+                dup(STDOUT_FILENO);
+            }
+        } else if (strcmp(type_str, "buffer overflow") == 0) {
+            char buffer[8]; // Small buffer of 8 bytes
+
+            // Copy more data than the buffer can hold (intentional overflow)
+            const char *input = "Overflow!"; // This is 9 bytes, including the null terminator
+            strcpy(buffer, input); // Compiler won't catch this as an overflow at compile time
+
+            printf("Buffer contains: %s\n", buffer);
         }
-    } else if (true) { // buffer overflow
-        char buffer[8]; // Small buffer of 8 bytes
-
-        // Copy more data than the buffer can hold (intentional overflow)
-        const char *input = "Overflow!"; // This is 9 bytes, including the null terminator
-        strcpy(buffer, input); // Compiler won't catch this as an overflow at compile time
-
-        printf("Buffer contains: %s\n", buffer);
-    } else if (false) { // SIGFPE
-        int a = 1 / 0;
-    } else if (false) { // SIGABRT
-        abort();
-    } else if (false) { // SIGBUS
-        char *ptr = (char *) 0x114514;
-        *ptr = 0;
-    } else if (false) { // SIGILL
-        __builtin_trap();
-    } else if (false) { // SIGTRAP
-        __builtin_trap();
-    } else if (false) { // SIGSYS
-        syscall(0);
-    }
+    });
+    crash_thread.join();
 }
 
 JNIEXPORT void JNICALL

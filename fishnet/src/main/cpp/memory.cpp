@@ -172,12 +172,10 @@ void print_tag_dump(uint64_t fault_addr, unwindstack::ArchEnum arch,
     }
 }
 
-void print_thread_memory_dump(unwindstack::AndroidUnwinder *unwinder, int word_size, unwindstack::Regs *regs) {
+void print_thread_memory_dump(int word_size, unwindstack::Regs *regs, unwindstack::Maps *maps,
+                              unwindstack::Memory *memory) {
     static constexpr size_t bytes_per_line = 16;
     static_assert(bytes_per_line == kTagGranuleSize);
-
-    unwindstack::Maps *maps = unwinder->GetMaps();
-    unwindstack::Memory *memory = unwinder->GetProcessMemory().get();
 
     regs->IterateRegisters([&word_size, maps, memory](const char *name, uint64_t value) {
         std::shared_ptr<unwindstack::MapInfo> map_info = maps->Find(untag_address(value));
@@ -246,8 +244,8 @@ void print_thread_memory_dump(unwindstack::AndroidUnwinder *unwinder, int word_s
     });
 }
 
-void print_memory_maps(uint64_t fault_addr, unwindstack::Maps *maps,
-                       std::shared_ptr<unwindstack::Memory> &process_memory, int word_size) {
+void print_memory_maps(uint64_t fault_addr, int word_size, unwindstack::Maps *maps,
+                       std::shared_ptr<unwindstack::Memory> &process_memory) {
     const auto format_pointer = [word_size](uint64_t ptr) -> std::string {
         if (word_size == 8) {
             uint64_t top = ptr >> 32;

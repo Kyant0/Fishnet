@@ -63,7 +63,7 @@ void signal_handler(int s, struct siginfo *si, void *uc) {
         if (thread_id == tid) continue;
         LOG_FISHNET("--- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---");
         print_thread(pid, thread_id, uid, unwinder, false);
-        print_guest_thread(thread_id, unwinder, false);
+        // print_guest_thread(thread_id, unwinder, false);
     }
 
     dump_open_fds(pid);
