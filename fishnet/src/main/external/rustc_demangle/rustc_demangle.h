@@ -19,11 +19,13 @@
 
 #include <cstddef>
 
+#include "demangle.h"
+
 // This is just an empty stub for the rustc-demangle-capi rust crate.
 // It is used to build libunwindstack in the perfetto standalone build.
 
-static inline char* rustc_demangle(const char*, char*, size_t*, int*) {
-  return nullptr;
+static inline char* rustc_demangle(const char *mangled, char*, size_t*, int*) {
+    return rust_demangle(mangled, 0);
 }
 
 #endif  // RUSTC_DEMANGLE_H_

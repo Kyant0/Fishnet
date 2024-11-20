@@ -19,7 +19,6 @@ set(BIONIC_SRC "${EXTERNAL_SRC}/bionic")
 set(LIBC_SRC "${BIONIC_SRC}/libc")
 include_directories("${LIBC_SRC}")
 include_directories("${LIBC_SRC}/platform")
-include_directories("${EXTERNAL_SRC}/rustc_demangle")
 set(ARTBASE_SRC "${EXTERNAL_SRC}/libartbase")
 set(ARTPALETTE_SRC "${EXTERNAL_SRC}/libartpalette")
 set(ASYNCSAFE_SRC "${LIBC_SRC}/async_safe")
@@ -28,6 +27,7 @@ set(DEXFILE_SRC "${EXTERNAL_SRC}/libdexfile")
 set(LOG_SRC "${EXTERNAL_SRC}/liblog")
 set(LZMA_SRC "${EXTERNAL_SRC}/lzma")
 set(PROCINFO_SRC "${EXTERNAL_SRC}/libprocinfo")
+set(RUST_DEMANGLE_SRC "${EXTERNAL_SRC}/rustc_demangle")
 set(UNWINDSTACK_SRC "${EXTERNAL_SRC}/libunwindstack")
 set(ZIPARCHIVE_SRC "${EXTERNAL_SRC}/libziparchive")
 set(ZSTD_SRC "${EXTERNAL_SRC}/zstd")
@@ -293,12 +293,16 @@ add_library(unwindstack STATIC
         "${UNWINDSTACK_SRC}/LogAndroid.cpp"
 
         "${UNWINDSTACK_ARCH_SRC}"
+
+        "${RUST_DEMANGLE_SRC}/rust-demangle.c"
+        "${RUST_DEMANGLE_SRC}/safe-ctype.c"
 )
 
 target_include_directories(unwindstack BEFORE
         PUBLIC "${UNWINDSTACK_SRC}/include"
         PRIVATE "platform"
-        PRIVATE "${ZSTD_SRC}")
+        PRIVATE "${ZSTD_SRC}"
+        PRIVATE "${RUST_DEMANGLE_SRC}")
 
 target_compile_options(unwindstack PRIVATE -Wno-c99-designator -Wno-deprecated-declarations)
 # for clang
