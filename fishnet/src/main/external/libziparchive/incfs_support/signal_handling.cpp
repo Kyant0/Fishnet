@@ -38,8 +38,8 @@ SignalHandler& SignalHandler::instance() {
 
 SignalHandler::SignalHandler() {
   const struct sigaction action = {
-      .sa_sigaction = &handler,
       .sa_flags = SA_SIGINFO,
+      .sa_sigaction = &handler,
   };
   if (sigaction(SIGBUS, &action, &mOldSigaction)) {
     LOG_ALWAYS_FATAL("sigaction(SIGBUS) failed: %d", errno);
