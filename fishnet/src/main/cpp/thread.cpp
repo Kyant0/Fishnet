@@ -142,7 +142,7 @@ void print_thread(pid_t pid, pid_t tid, uid_t uid, unwindstack::ThreadUnwinder *
 
     print_thread_header(pid, tid, uid);
     print_thread_registers(arch, word_size, regs.get());
-    print_thread_backtrace(arch, unwinder->frames());
+    print_thread_backtrace(arch, unwinder->ConsumeFrames());
     if (dump_memory) {
         unwindstack::Maps *maps = unwinder->GetMaps();
         unwindstack::Memory *memory = unwinder->GetProcessMemory().get();
@@ -163,7 +163,7 @@ void print_guest_thread(pid_t tid, unwindstack::ThreadUnwinder *unwinder, bool d
     LOG_FISHNET("");
     LOG_FISHNET("%zu total frames", unwinder->frames().size());
     LOG_FISHNET("backtrace:");
-    print_backtrace(arch, unwinder->frames());
+    print_backtrace(arch, unwinder->ConsumeFrames());
 
     if (dump_memory) {
         unwindstack::Maps *maps = unwinder->GetMaps();
