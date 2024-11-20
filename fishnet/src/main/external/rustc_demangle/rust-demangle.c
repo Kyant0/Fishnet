@@ -39,7 +39,6 @@ extern int strncmp(const char *s1, const char *s2, size_t n);
 extern void *memset(void *s, int c, size_t n);
 #endif
 #include <demangle.h>
-#include "libiberty.h"
 struct rust_demangler
 {
   const char *sym;
