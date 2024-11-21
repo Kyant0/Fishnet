@@ -8,6 +8,7 @@
 #include <err.h>
 #include <signal.h>
 #include <fishnet/fishnet.h>
+#include <dlfcn.h>
 
 void victim() {
     usleep(300000); // 300ms
@@ -92,10 +93,18 @@ Java_com_kyant_fishnet_demo_CrashFragment_nativeCrash(JNIEnv *env, jobject obj, 
     (*env)->ReleaseStringUTFChars(env, type, type_str);
 }
 
-JNIEXPORT void JNICALL
+JNIEXPORT jstring JNICALL
 Java_com_kyant_fishnet_demo_CrashFragment_jniAbort(JNIEnv *env, jobject obj) {
-    char invalid_utf8[] = {(char) 0xC3, (char) 0x28, (char) 0x00}; // 0xC3 followed by 0x28 is not valid UTF-8
-    (*env)->NewStringUTF(env, invalid_utf8);
+    if (false) {
+        char invalid_utf8[] = {(char) 0xC3, (char) 0x28, (char) 0x00}; // 0xC3 followed by 0x28 is not valid UTF-8
+        return (*env)->NewStringUTF(env, invalid_utf8);
+    } else { // Scudo ERROR
+        jbyteArray array = (*env)->NewByteArray(env, 10);
+        jbyte *elements = (*env)->GetByteArrayElements(env, array, NULL);
+        elements[20] = 42; // Access out of bounds; will likely crash
+        (*env)->ReleaseByteArrayElements(env, array, elements, 0);
+        return (*env)->NewStringUTF(env, elements);
+    }
 }
 
 JNIEXPORT void JNICALL

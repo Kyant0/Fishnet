@@ -19,6 +19,25 @@
 
 #define BIONIC_SIGNAL_BACKTRACE (__SIGRTMIN + 1)
 
+static bool signal_has_si_addr(const siginfo_t *si) {
+    // Manually sent signals won't have si_addr.
+    if (si->si_code == SI_USER || si->si_code == SI_QUEUE || si->si_code == SI_TKILL) {
+        return false;
+    }
+
+    switch (si->si_signo) {
+        case SIGBUS:
+        case SIGFPE:
+        case SIGILL:
+        case SIGTRAP:
+            return true;
+        case SIGSEGV:
+            return si->si_code != SEGV_MTEAERR;
+        default:
+            return false;
+    }
+}
+
 static bool signal_has_sender(const siginfo_t *si, pid_t caller_pid) {
     return SI_FROMUSER(si) && (si->si_pid != 0) && (si->si_pid != caller_pid);
 }
@@ -71,7 +90,8 @@ void print_thread_header(pid_t pid, pid_t tid, uid_t uid) {
 void print_main_thread(pid_t pid, pid_t tid, uid_t uid, siginfo_t *si, int word_size,
                        unwindstack::ArchEnum arch, unwindstack::AndroidUnwinder *unwinder,
                        unwindstack::AndroidUnwinderData *data, unwindstack::Regs *regs,
-                       bool dump_memory) {
+                       bool dump_memory, bool dump_memory_maps) {
+    const bool has_fault_addr = signal_has_si_addr(si);
     auto fault_addr = (uintptr_t) si->si_addr;
     print_thread_header(pid, tid, uid);
 
@@ -83,7 +103,7 @@ void print_main_thread(pid_t pid, pid_t tid, uid_t uid, siginfo_t *si, int word_
     bool is_async_mte_crash = false;
     bool is_mte_crash = false;
     std::string fault_addr_desc;
-    if (fault_addr) {
+    if (has_fault_addr) {
         fault_addr_desc = StringPrintf("0x%0*" PRIx64, 2 * word_size, fault_addr);
     } else {
         fault_addr_desc = "--------";
@@ -110,7 +130,9 @@ void print_main_thread(pid_t pid, pid_t tid, uid_t uid, siginfo_t *si, int word_
     }
     print_thread_backtrace(arch, data->frames);
 
-    print_tag_dump(fault_addr, arch, unwinder->GetProcessMemory());
+    if (has_fault_addr) {
+        print_tag_dump(fault_addr, arch, unwinder->GetProcessMemory());
+    }
 
     if (is_mte_crash) {
         LOG_FISHNET("");
@@ -124,7 +146,9 @@ void print_main_thread(pid_t pid, pid_t tid, uid_t uid, siginfo_t *si, int word_
         print_thread_memory_dump(word_size, regs, maps, memory);
 
         LOG_FISHNET("");
+    }
 
+    if (dump_memory_maps) {
         // No memory maps to print.
         if (unwinder->GetMaps()->Total() > 0) {
             print_memory_maps(fault_addr, word_size, unwinder->GetMaps(), unwinder->GetProcessMemory());
@@ -141,12 +165,16 @@ void print_thread(pid_t pid, pid_t tid, uid_t uid, unwindstack::ThreadUnwinder *
     int word_size = pointer_width(arch);
 
     print_thread_header(pid, tid, uid);
-    print_thread_registers(arch, word_size, regs.get());
+    if (regs) {
+        print_thread_registers(arch, word_size, regs.get());
+    }
     print_thread_backtrace(arch, unwinder->ConsumeFrames());
     if (dump_memory) {
         unwindstack::Maps *maps = unwinder->GetMaps();
         unwindstack::Memory *memory = unwinder->GetProcessMemory().get();
-        print_thread_memory_dump(word_size, regs.get(), maps, memory);
+        if (regs) {
+            print_thread_memory_dump(word_size, regs.get(), maps, memory);
+        }
     }
 }
 

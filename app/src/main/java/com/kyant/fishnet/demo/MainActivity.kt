@@ -24,12 +24,12 @@ class MainActivity : Activity() {
         val crashTab = findViewById<TextView>(R.id.tab_crash)
         val logTab = findViewById<TextView>(R.id.tab_log)
 
-        val unselectedDrawable = ColorDrawable(getColor(android.R.color.system_control_activated_dark))
+        val unselectedDrawable = resources.getDrawable(android.R.color.white)
         val selectedDrawable =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
-                ColorDrawable(getColor(android.R.color.system_accent1_100))
+                resources.getDrawable(android.R.color.system_accent1_100)
             else
-                ColorDrawable(getColor(android.R.color.darker_gray))
+                resources.getDrawable(android.R.color.darker_gray)
 
         val cornerRadiusPx = 12f * resources.displayMetrics.density
         tabLayout.outlineProvider = object : ViewOutlineProvider() {

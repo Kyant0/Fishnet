@@ -12,7 +12,7 @@ void print_thread_header(pid_t pid, pid_t tid, uid_t uid);
 void print_main_thread(pid_t pid, pid_t tid, uid_t uid, siginfo_t *si, int word_size,
                        unwindstack::ArchEnum arch, unwindstack::AndroidUnwinder *unwinder,
                        unwindstack::AndroidUnwinderData *data, unwindstack::Regs *regs,
-                       bool dump_memory);
+                       bool dump_memory, bool dump_memory_maps);
 
 void print_thread(pid_t pid, pid_t tid, uid_t uid, unwindstack::ThreadUnwinder *unwinder, bool dump_memory);
 

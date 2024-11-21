@@ -92,12 +92,13 @@ ssize_t dump_memory(void *out, size_t len, uint8_t *tags, size_t tags_len, uint6
     return (ssize_t) bytes;
 }
 
-// dump_tags_around_fault_addr
 void print_tag_dump(uint64_t fault_addr, unwindstack::ArchEnum arch,
                     std::shared_ptr<unwindstack::Memory> &process_memory) {
-    if (!fault_addr || arch != unwindstack::ARCH_ARM64) {
+    if (arch != unwindstack::ARCH_ARM64) {
         return;
     }
+
+    /// FUNCTION_START: dump_tags_around_fault_addr
 
     fault_addr = untag_address(fault_addr);
     constexpr size_t kNumGranules = kNumTagRows * kNumTagColumns;
@@ -134,6 +135,8 @@ void print_tag_dump(uint64_t fault_addr, unwindstack::ArchEnum arch,
     if (mte_tags.empty()) {
         return;
     }
+
+    /// FUNCTION_END: dump_tags_around_fault_addr
 
     const std::string &tags = mte_tags;
 

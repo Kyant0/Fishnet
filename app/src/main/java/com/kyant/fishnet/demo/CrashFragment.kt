@@ -31,7 +31,7 @@ class CrashFragment : Fragment() {
             nativeCrash("SIGSEGV")
         }
         view.findViewById<Button>(R.id.btn_test_jni_abort).setOnClickListener {
-            jniAbort()
+            println(jniAbort())
         }
         view.findViewById<Button>(R.id.btn_test_fdsan_crash).setOnClickListener {
             nativeFdsanCrash()
@@ -59,7 +59,7 @@ class CrashFragment : Fragment() {
 
     private external fun signal(signal: Int)
 
-    private external fun jniAbort()
+    private external fun jniAbort(): String
 
     private external fun nativeFdsanCrash()
 
