@@ -47,7 +47,7 @@ void signal_handler(int s, struct siginfo *si, void *uc) {
     LOG_FISHNET("Process uptime: %lus", get_process_uptime(pid));
 
     // only print this info if the page size is not 4k or has been in 16k mode
-    size_t page_size = get_page_size();
+    size_t page_size = getpagesize();
     bool has_been_16kb_mode = get_bool_property("ro.misctrl.16kb_before", false);
     if (page_size != 4096) {
         LOG_FISHNET("Page size: %zu bytes", page_size);
