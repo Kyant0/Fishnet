@@ -58,11 +58,12 @@ Java_com_kyant_fishnet_demo_CrashFragment_signal(JNIEnv *env, jobject obj, jint 
     kill(getpid(), signal);
 }
 
+__attribute__((optnone))
 void *crash_thread_function(void *arg) {
     const char *type_str = (const char *) arg;
 
     if (strcmp(type_str, "SIGSEGV") == 0) {
-        char *ptr = (char *) 0x114514;
+        char *ptr = (char *) 0;
         *ptr = 0;
     } else if (strcmp(type_str, "ANR") == 0) {
         for (int i = 0; i < 100000; ++i) {
