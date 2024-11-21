@@ -294,6 +294,9 @@ add_library(unwindstack STATIC
 
         "${UNWINDSTACK_ARCH_SRC}"
 
+        "${LIBIBERTY_SRC}/cp-demangle.c"
+        "${LIBIBERTY_SRC}/cplus-dem.c"
+        "${LIBIBERTY_SRC}/d-demangle.c"
         "${LIBIBERTY_SRC}/rust-demangle.c"
         "${LIBIBERTY_SRC}/safe-ctype.c"
 )

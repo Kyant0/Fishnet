@@ -25,7 +25,7 @@
 // It is used to build libunwindstack in the perfetto standalone build.
 
 static inline char* rustc_demangle(const char *mangled, char*, size_t*, int*) {
-    return rust_demangle(mangled, 0);
+    return rust_demangle(mangled, DMGL_PARAMS);
 }
 
 #endif  // RUSTC_DEMANGLE_H_
