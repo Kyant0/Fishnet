@@ -14,6 +14,9 @@ void dump_logcat(pid_t pid) {
     if (fp) {
         // 11-19 22:37:54.578 10167 10167 D Com...
         while (fgets(line, sizeof(line), fp) != nullptr) {
+            // Remove the line:
+            // --------- beginning of main
+            if (line[0] < '0' || line[0] > '9') continue;
             logs.emplace_back(line);
         }
         pclose(fp);

@@ -18,7 +18,7 @@ void try_read_abort_message_from_logcat() {
     if (fp == nullptr) return;
 
     char buffer[1024];
-    const char *divider = ": ";
+    constexpr char divider[] = ": ";
 
     while (fgets(buffer, sizeof(buffer), fp) != nullptr) {
         // remove line break
@@ -44,7 +44,7 @@ void get_scudo_message_if_needed(const unwindstack::ArchEnum &arch, const std::u
 
     if (frames.size() < 2) return;
 
-    static const char *scudo_die = "_ZN5scudo3dieEv";
+    constexpr char scudo_die[] = "_ZN5scudo3dieEv";
     if (frames[1].function_name != scudo_die) return;
 
     uint64_t fp;
@@ -68,13 +68,22 @@ void get_scudo_message_if_needed(const unwindstack::ArchEnum &arch, const std::u
             return;
     }
 
-    const char *scudo_message = (const char *) fp + 0x68;
-    if (scudo_message[0] != '\0') {
-        abort_message = strdup(scudo_message);
-        size_t len = strlen(abort_message);
-        if (len > 0 && abort_message[len - 1] == '\n') {
-            abort_message[len - 1] = '\0';
+    const char *scudo_block = (const char *) fp;
+    size_t offset = 0x68;
+    constexpr size_t max_offset = 0x100;
+    constexpr char scudo_error[] = "Scudo ERROR";
+
+    // Scudo ERROR: corrupted chunk header at address 0x73485fd60910
+    while (offset <= max_offset) {
+        if (memcmp(&scudo_block[offset], scudo_error, 11) == 0) {
+            abort_message = strdup(&scudo_block[offset]);
+            const size_t len = strlen(abort_message);
+            if (len > 0 && abort_message[len - 1] == '\n') {
+                abort_message[len - 1] = '\0';
+            }
+            break;
         }
+        offset++;
     }
 }
 
