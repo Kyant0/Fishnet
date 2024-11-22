@@ -29,7 +29,7 @@ class LogFragment : Fragment() {
 
     private fun getLog(): String {
         return try {
-            val logFile = File("/data/data/com.kyant.fishnet.demo/files/fishnet.log")
+            val logFile = File(context.filesDir, "fishnet.log")
             logFile.readText()
         } catch (e: Exception) {
             e.printStackTrace()

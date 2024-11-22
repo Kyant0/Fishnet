@@ -9,16 +9,12 @@ class FishnetApp : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        val filesDir = File("/data/data/com.kyant.fishnet.demo/files")
-        if (!filesDir.exists()) {
-            filesDir.mkdirs()
-        }
         val logFile = File(filesDir, "fishnet.log")
         if (!logFile.exists()) {
             logFile.createNewFile()
         }
 
-        contentResolver.openFile(Uri.fromFile(logFile), "rw", null)?.use { pfd ->
+        contentResolver.openFileDescriptor(Uri.fromFile(logFile), "rw", null)?.use { pfd ->
             if (!Fishnet.init(pfd.detachFd())) {
                 throw RuntimeException("Failed to initialize Fishnet")
             }
