@@ -68,13 +68,13 @@ void signal_handler(int s, struct siginfo *si, void *uc) {
         LOG_FISHNET("Has been in 16kb mode: yes");
     }
 
-    print_main_thread(pid, tid, uid, si, word_size, arch, &unwinder, &data, regs,
+    print_main_thread(pid, tid, uid, si, word_size, arch, &unwinder, regs, data.frames,
                       true, false);
 
     for (const pid_t &thread_id: tids) {
         if (thread_id == tid) continue;
         LOG_FISHNET("--- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---");
-        print_thread(pid, thread_id, uid, &thread_unwinder, false);
+        print_thread(pid, thread_id, uid, word_size, arch, &thread_unwinder, false);
     }
 
     dump_open_fds(pid);

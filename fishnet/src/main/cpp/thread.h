@@ -10,10 +10,12 @@ std::string get_thread_name(pid_t tid);
 void print_thread_header(pid_t pid, pid_t tid, uid_t uid);
 
 void print_main_thread(pid_t pid, pid_t tid, uid_t uid, siginfo_t *si, int word_size,
-                       unwindstack::ArchEnum arch, unwindstack::AndroidUnwinder *unwinder,
-                       unwindstack::AndroidUnwinderData *data, const std::unique_ptr<unwindstack::Regs> &regs,
+                       const unwindstack::ArchEnum &arch, unwindstack::AndroidUnwinder *unwinder,
+                       const std::unique_ptr<unwindstack::Regs> &regs,
+                       const std::vector<unwindstack::FrameData> &frames,
                        bool dump_memory, bool dump_memory_maps);
 
-void print_thread(pid_t pid, pid_t tid, uid_t uid, unwindstack::ThreadUnwinder *unwinder, bool dump_memory);
+void print_thread(pid_t pid, pid_t tid, uid_t uid, int word_size, const unwindstack::ArchEnum &arch,
+                  unwindstack::ThreadUnwinder *unwinder, bool dump_memory);
 
 #endif //FISHNET_THREAD_H

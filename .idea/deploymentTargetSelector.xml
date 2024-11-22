@@ -4,10 +4,10 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2024-11-21T16:51:35.697968300Z">
+        <DropdownSelection timestamp="2024-11-22T11:52:24.245950300Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="Default" identifier="serial=192.168.5.6:37869;connection=62f2e0dd" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\Kyant\.android\avd\Nexus_6P.avd" />
             </handle>
           </Target>
         </DropdownSelection>

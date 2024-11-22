@@ -73,7 +73,7 @@ std::string get_thread_name(pid_t tid) {
     value &= ~flag;         \
   }
 
-static std::string describe_end(long value, std::string& desc) {
+static std::string describe_end(long value, std::string &desc) {
     if (value) {
         desc += StringPrintf(", unknown 0x%lx", value);
     }
@@ -138,8 +138,9 @@ void print_thread_header(pid_t pid, pid_t tid, uid_t uid) {
 }
 
 void print_main_thread(pid_t pid, pid_t tid, uid_t uid, siginfo_t *si, int word_size,
-                       unwindstack::ArchEnum arch, unwindstack::AndroidUnwinder *unwinder,
-                       unwindstack::AndroidUnwinderData *data, const std::unique_ptr<unwindstack::Regs> &regs,
+                       const unwindstack::ArchEnum &arch, unwindstack::AndroidUnwinder *unwinder,
+                       const std::unique_ptr<unwindstack::Regs> &regs,
+                       const std::vector<unwindstack::FrameData> &frames,
                        bool dump_memory, bool dump_memory_maps) {
     const bool has_fault_addr = signal_has_si_addr(si);
     const auto fault_addr = (uintptr_t) si->si_addr;
@@ -178,7 +179,7 @@ void print_main_thread(pid_t pid, pid_t tid, uid_t uid, siginfo_t *si, int word_
         LOG_FISHNET("      in this process. The stack trace below is the first system call or context");
         LOG_FISHNET("      switch that was executed after the memory corruption happened.");
     }
-    print_thread_backtrace(arch, data->frames);
+    print_thread_backtrace(arch, frames);
 
     if (has_fault_addr) {
         print_tag_dump(fault_addr, arch, unwinder->GetProcessMemory());
@@ -208,12 +209,10 @@ void print_main_thread(pid_t pid, pid_t tid, uid_t uid, siginfo_t *si, int word_
     }
 }
 
-void print_thread(pid_t pid, pid_t tid, uid_t uid, unwindstack::ThreadUnwinder *unwinder, bool dump_memory) {
+void print_thread(pid_t pid, pid_t tid, uid_t uid, int word_size, const unwindstack::ArchEnum &arch,
+                  unwindstack::ThreadUnwinder *unwinder, bool dump_memory) {
     std::unique_ptr<unwindstack::Regs> regs;
     unwinder->UnwindWithSignal(BIONIC_SIGNAL_BACKTRACE, tid, &regs);
-    unwindstack::ArchEnum arch = unwindstack::Regs::CurrentArch();
-    const int word_size = pointer_width(arch);
-
     print_thread_header(pid, tid, uid);
     if (regs) {
         print_thread_registers(arch, word_size, regs);
