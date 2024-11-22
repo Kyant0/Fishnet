@@ -8,7 +8,7 @@
 static void print_register_row(int word_size, const std::vector<std::pair<std::string, uint64_t>> &row) {
     std::string output = "  ";
     for (const auto &[name, value]: row) {
-        output += StringPrintf("  %-3s %0*" PRIx64, name.c_str(), 2 * word_size, static_cast<uint64_t>(value));
+        output += StringPrintf("  %-3s %0*" PRIx64, name.c_str(), 2 * word_size, (uint64_t) value);
     }
     LOG_FISHNET("%s", output.c_str());
 }

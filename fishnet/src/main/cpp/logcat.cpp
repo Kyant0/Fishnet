@@ -22,9 +22,9 @@ void print_logs() {
     LOG_FISHNET("");
     LOG_FISHNET("--------- tail end of log main");
 
-    int size = (int) logs.size();
+    const size_t size = logs.size();
 
-    for (int i = 0; i < size; ++i) {
+    for (size_t i = 0; i < size; ++i) {
         LOG_FISHNET_LN("%s", logs[i].c_str());
     }
 }

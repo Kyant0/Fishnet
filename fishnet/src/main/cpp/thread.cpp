@@ -103,12 +103,12 @@ static std::string describe_pac_enabled_keys(long value) {
 }
 
 void print_thread_header(pid_t pid, pid_t tid, uid_t uid) {
-    std::vector<std::string> command_line = get_command_line(pid);
+    const std::vector<std::string> command_line = get_command_line(pid);
     if (!command_line.empty()) {
         if (command_line.size() == 1) {
             LOG_FISHNET("Cmdline: %s", command_line[0].c_str());
         } else {
-            std::string command_line_string = std::accumulate(
+            const std::string command_line_string = std::accumulate(
                     std::next(command_line.begin()), command_line.end(), command_line[0],
                     [](const std::string &a, const std::string &b) {
                         return a + ' ' + b;
@@ -118,14 +118,14 @@ void print_thread_header(pid_t pid, pid_t tid, uid_t uid) {
     } else {
         LOG_FISHNET("Cmdline: <unknown>");
     }
-    std::string thread_name = get_thread_name(tid);
-    std::string process_name = get_process_name(pid);
+    const std::string thread_name = get_thread_name(tid);
+    const std::string process_name = get_process_name(pid);
     LOG_FISHNET("pid: %d, tid: %d, name: %s  >>> %s <<<", pid, tid, thread_name.c_str(), process_name.c_str());
     LOG_FISHNET("uid: %d", uid);
     // Only supported on aarch64 for now.
 #if defined(__aarch64__)
-    long tagged_addr_ctrl = prctl(PR_GET_TAGGED_ADDR_CTRL, 0, 0, 0, 0);
-    long pac_enabled_keys = prctl(PR_PAC_GET_ENABLED_KEYS, 0, 0, 0, 0);
+    const long tagged_addr_ctrl = prctl(PR_GET_TAGGED_ADDR_CTRL, 0, 0, 0, 0);
+    const long pac_enabled_keys = prctl(PR_PAC_GET_ENABLED_KEYS, 0, 0, 0, 0);
     if (tagged_addr_ctrl != -1) {
         LOG_FISHNET("tagged_addr_ctrl: %016" PRIx64 "%s", tagged_addr_ctrl,
                     describe_tagged_addr_ctrl(tagged_addr_ctrl).c_str());
@@ -142,7 +142,7 @@ void print_main_thread(pid_t pid, pid_t tid, uid_t uid, siginfo_t *si, int word_
                        unwindstack::AndroidUnwinderData *data, const std::unique_ptr<unwindstack::Regs> &regs,
                        bool dump_memory, bool dump_memory_maps) {
     const bool has_fault_addr = signal_has_si_addr(si);
-    auto fault_addr = (uintptr_t) si->si_addr;
+    const auto fault_addr = (uintptr_t) si->si_addr;
     print_thread_header(pid, tid, uid);
 
     std::string sender_desc;

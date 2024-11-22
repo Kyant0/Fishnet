@@ -38,7 +38,7 @@ ssize_t dump_memory(void *out, size_t len, uint8_t *tags, size_t tags_len, uint6
 
     memset(out, 0, len);
 
-    size_t bytes = memory->Read(*addr, reinterpret_cast<uint8_t *>(out), len);
+    size_t bytes = memory->Read(*addr, (uint8_t *) out, len);
     if (bytes % sizeof(uintptr_t) != 0) {
         // This should never happen, but just in case.
         // ALOGE("Bytes read %zu, is not a multiple of %zu", bytes, sizeof(uintptr_t));
@@ -65,7 +65,7 @@ ssize_t dump_memory(void *out, size_t len, uint8_t *tags, size_t tags_len, uint6
         // into a readable map. Only requires one extra read because a map has
         // to contain at least one page, and the total number of bytes to dump
         // is smaller than a page.
-        size_t bytes2 = memory->Read(*addr + bytes, static_cast<uint8_t *>(out) + bytes, len - bytes);
+        size_t bytes2 = memory->Read(*addr + bytes, (uint8_t *) out + bytes, len - bytes);
         bytes += bytes2;
         if (bytes2 > 0 && bytes % sizeof(uintptr_t) != 0) {
             // This should never happen, but we'll try and continue any way.
@@ -129,7 +129,7 @@ void print_tag_dump(uint64_t fault_addr, unwindstack::ArchEnum arch,
     for (size_t i = 0; i < granules_to_read; ++i) {
         long tag = process_memory->ReadTag(start_address + i * kTagGranuleSize);
         if (tag < 0) break;
-        mte_tags.push_back(static_cast<uint8_t>(tag));
+        mte_tags.push_back((uint8_t) tag);
     }
 
     if (mte_tags.empty()) {
@@ -145,10 +145,10 @@ void print_tag_dump(uint64_t fault_addr, unwindstack::ArchEnum arch,
                 fault_addr, kTagGranuleSize);
 
     size_t tag_index = 0;
-    size_t num_tags = tags.length();
-    uintptr_t fault_granule = untag_address(fault_addr) & ~(kTagGranuleSize - 1);
+    const size_t num_tags = tags.length();
+    const uintptr_t fault_granule = untag_address(fault_addr) & ~(kTagGranuleSize - 1);
     for (size_t row = 0; tag_index < num_tags; ++row) {
-        uintptr_t row_addr = (begin_address + row * kNumTagColumns * kTagGranuleSize) & kRowStartMask;
+        const uintptr_t row_addr = (begin_address + row * kNumTagColumns * kTagGranuleSize) & kRowStartMask;
         std::string row_contents;
         bool row_has_fault = false;
 
@@ -181,7 +181,7 @@ void print_thread_memory_dump(int word_size, const std::unique_ptr<unwindstack::
     static_assert(bytes_per_line == kTagGranuleSize);
 
     regs->IterateRegisters([&word_size, maps, memory](const char *name, uint64_t value) {
-        std::shared_ptr<unwindstack::MapInfo> map_info = maps->Find(untag_address(value));
+        const std::shared_ptr<unwindstack::MapInfo> map_info = maps->Find(untag_address(value));
         std::string mapping_name;
         if (map_info) {
             mapping_name = map_info->name();
@@ -191,7 +191,8 @@ void print_thread_memory_dump(int word_size, const std::unique_ptr<unwindstack::
         constexpr size_t kNumTagsAroundRegister = kNumBytesAroundRegister / kTagGranuleSize;
         char buf[kNumBytesAroundRegister];
         uint8_t tags[kNumTagsAroundRegister];
-        ssize_t memory_size = dump_memory(buf, sizeof(buf), tags, sizeof(tags), &value, memory);
+        const ssize_t memory_size =
+                dump_memory(buf, sizeof(buf), tags, sizeof(tags), &value, memory);
         if (memory_size == -1) {
             return;
         }
@@ -212,15 +213,15 @@ void print_thread_memory_dump(int word_size, const std::unique_ptr<unwindstack::
         } else {
             LOG_FISHNET("memory near %s (%s):", name, mapping_name.c_str());
         }
-        uint64_t addr = value;
+        const uint64_t addr = value;
         for (size_t offset = 0; offset < memory_size; offset += bytes_per_line) {
             uint64_t tagged_addr = addr;
             if (has_tags && kNumTagsAroundRegister > offset / kTagGranuleSize) {
-                tagged_addr |= static_cast<uint64_t>(tags[offset / kTagGranuleSize]) << 56;
+                tagged_addr |= (uint64_t) tags[offset / kTagGranuleSize] << 56;
             }
             std::string line = StringPrintf("    %0*" PRIx64, word_size * 2, tagged_addr + offset);
 
-            size_t bytes = std::min(bytes_per_line, memory_size - offset);
+            const size_t bytes = std::min(bytes_per_line, memory_size - offset);
             for (size_t i = 0; i < bytes; i += word_size) {
                 uint64_t word = 0;
 
@@ -236,7 +237,7 @@ void print_thread_memory_dump(int word_size, const std::unique_ptr<unwindstack::
             ascii[bytes_per_line] = '\0';
 
             for (size_t i = 0; i < bytes; ++i) {
-                uint8_t byte = buf[offset + i];
+                const uint8_t byte = buf[offset + i];
                 if (byte >= 0x20 && byte < 0x7f) {
                     ascii[i] = byte;
                 }
@@ -251,8 +252,8 @@ void print_memory_maps(uint64_t fault_addr, int word_size, unwindstack::Maps *ma
                        std::shared_ptr<unwindstack::Memory> &process_memory) {
     const auto format_pointer = [word_size](uint64_t ptr) -> std::string {
         if (word_size == 8) {
-            uint64_t top = ptr >> 32;
-            uint64_t bottom = ptr & 0xFFFFFFFF;
+            const uint64_t top = ptr >> 32;
+            const uint64_t bottom = ptr & 0xFFFFFFFF;
             return StringPrintf("%08" PRIx64 "'%08" PRIx64, top, bottom);
         }
 
@@ -262,25 +263,25 @@ void print_memory_maps(uint64_t fault_addr, int word_size, unwindstack::Maps *ma
     std::string memory_map_header =
             StringPrintf("memory map (%zu %s):", maps->Total(), maps->Total() == 1 ? "entry" : "entries");
 
-    bool has_fault_address = fault_addr != 0;
-    uint64_t fault_address = untag_address(fault_addr);
+    const bool has_fault_address = fault_addr != 0;
+    const uint64_t fault_address = untag_address(fault_addr);
     bool preamble_printed = false;
     bool printed_fault_address_marker = false;
 
     for (const auto &map_info: *maps) {
-        uint64_t begin_address = map_info->start();
-        uint64_t end_address = map_info->end();
-        uint64_t offset = map_info->offset();
+        const uint64_t begin_address = map_info->start();
+        const uint64_t end_address = map_info->end();
+        const uint64_t offset = map_info->offset();
 
-        bool readable = map_info->flags() & PROT_READ;
-        bool writable = map_info->flags() & PROT_WRITE;
-        bool executable = map_info->flags() & PROT_EXEC;
+        const bool readable = map_info->flags() & PROT_READ;
+        const bool writable = map_info->flags() & PROT_WRITE;
+        const bool executable = map_info->flags() & PROT_EXEC;
 
-        std::string mapping_name = map_info->name();
+        const std::string mapping_name = map_info->name();
 
-        std::string build_id = map_info->GetPrintableBuildID();
+        const std::string build_id = map_info->GetPrintableBuildID();
 
-        uint64_t load_bias = map_info->GetLoadBias(process_memory);
+        const uint64_t load_bias = map_info->GetLoadBias(process_memory);
 
         if (!preamble_printed) {
             preamble_printed = true;

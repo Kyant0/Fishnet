@@ -29,7 +29,7 @@ void dump_open_fds(pid_t pid) {
     while ((entry = readdir(dir)) != nullptr) {
         if (entry->d_name[0] == '.') continue;
 
-        int fd = atoi(entry->d_name);
+        const int fd = atoi(entry->d_name);
         FD fd_info = {.fd = fd};
 
         snprintf(fd_path, sizeof(fd_path), "%s/%s", fd_dir, entry->d_name);
@@ -42,7 +42,7 @@ void dump_open_fds(pid_t pid) {
         }
 
         if (__builtin_available(android 29, *)) {
-            uint64_t tag = android_fdsan_get_owner_tag(fd);
+            const uint64_t tag = android_fdsan_get_owner_tag(fd);
             fd_info.tag = android_fdsan_get_tag_value(tag);
             if (fd_info.tag) {
                 fd_info.owner = android_fdsan_get_tag_type(tag);
@@ -57,7 +57,7 @@ void dump_open_fds(pid_t pid) {
     if (!open_fds.empty()) {
         LOG_FISHNET("");
         LOG_FISHNET("open files:");
-        for (const auto &fd: open_fds) {
+        for (const FD &fd: open_fds) {
             if (!fd.owner.empty()) {
                 LOG_FISHNET("    fd %d: %s (owned by %s 0x%" PRIx64 ")",
                             fd.fd, fd.path.c_str(), fd.owner.c_str(), fd.tag);

@@ -115,7 +115,7 @@ void init_signal_handler(bool enabled) {
         LOG_FISHNET("failed to allocate fishnet thread stack");
     }
 
-    char *stack = static_cast<char *>(thread_stack_allocation) + getpagesize();
+    char *stack = (char *) thread_stack_allocation + getpagesize();
     if (mprotect(stack, getpagesize() * thread_stack_pages, PROT_READ | PROT_WRITE) != 0) {
         LOG_FISHNET("failed to mprotect fishnet thread stack");
     }

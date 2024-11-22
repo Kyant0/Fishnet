@@ -64,18 +64,18 @@ uint64_t get_process_start_time(pid_t pid) {
     int ppid = 0;
     unsigned long long start_time = 0;
     const char *end_of_comm = strrchr(stat, ')');
-    int rc = sscanf(end_of_comm + 2, pattern, &state, &ppid, &start_time);
+    const int rc = sscanf(end_of_comm + 2, pattern, &state, &ppid, &start_time);
     return rc == 3 ? start_time : -1;
 }
 
 uint64_t get_process_uptime(pid_t pid) {
     struct sysinfo si{};
     sysinfo(&si);
-    long uptime = si.uptime;
+    const long uptime = si.uptime;
     if (uptime == -1) return -1;
 
-    long clock_ticks = sysconf(_SC_CLK_TCK);
-    uint64_t start_time = get_process_start_time(pid);
+    const long clock_ticks = sysconf(_SC_CLK_TCK);
+    const uint64_t start_time = get_process_start_time(pid);
     if (start_time == -1) return -1;
 
     return uptime - (start_time / clock_ticks);
