@@ -21,14 +21,15 @@ void signal_handler(int s, struct siginfo *si, void *uc) {
     pid_t tid = gettid();
     uid_t uid = getuid();
 
-    unwindstack::AndroidUnwinder *unwinder = unwindstack::AndroidUnwinder::Create(pid);
+    std::shared_ptr<unwindstack::Memory> process_memory = unwindstack::Memory::CreateProcessMemoryCached(pid);
+    unwindstack::AndroidLocalUnwinder unwinder(process_memory);
     unwindstack::ErrorData error_data{};
-    unwinder->Initialize(error_data);
+    unwinder.Initialize(error_data);
     unwindstack::ArchEnum arch = unwindstack::Regs::CurrentArch();
     int word_size = pointer_width(arch);
     unwindstack::Regs *regs(unwindstack::Regs::CreateFromUcontext(arch, uc));
     unwindstack::AndroidUnwinderData data{};
-    unwinder->Unwind(regs, data);
+    unwinder.Unwind(regs, data);
 
     unwindstack::ThreadUnwinder thread_unwinder(128);
     thread_unwinder.Init();
@@ -63,7 +64,7 @@ void signal_handler(int s, struct siginfo *si, void *uc) {
         LOG_FISHNET("Has been in 16kb mode: yes");
     }
 
-    print_main_thread(pid, tid, uid, si, word_size, arch, unwinder, &data, regs,
+    print_main_thread(pid, tid, uid, si, word_size, arch, &unwinder, &data, regs,
                       true, false);
 
     for (pid_t thread_id: tids) {
