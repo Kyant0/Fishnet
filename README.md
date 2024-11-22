@@ -11,10 +11,11 @@ and it is powerful than `libdebuggerd`.
 
 ### Abort message detection
 
-- [x] Scudo
-- [ ] fdsan
-- [ ] GWP-ASan
-- [ ] MTE
+- [ ] [FORTIFY](https://android-developers.googleblog.com/2017/04/fortify-in-android.html)
+- [ ] [fdsan](https://android.googlesource.com/platform/bionic/+/master/docs/fdsan.md) (Android 10+)
+- [x] [Scudo error](https://source.android.com/docs/security/test/scudo) (Android 11+)
+- [ ] [GWP-ASan](https://developer.android.com/ndk/guides/gwp-asan) (Android 14 +)
+- [ ] [MTE](https://developer.android.com/ndk/guides/arm-mte) (Android 14 QPR3 +)
 
 ## Example logs
 
