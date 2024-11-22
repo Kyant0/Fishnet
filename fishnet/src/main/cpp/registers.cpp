@@ -13,7 +13,7 @@ static void print_register_row(int word_size, const std::vector<std::pair<std::s
     LOG_FISHNET("%s", output.c_str());
 }
 
-void print_thread_registers(unwindstack::ArchEnum arch, int word_size, unwindstack::Regs *regs) {
+void print_thread_registers(unwindstack::ArchEnum arch, int word_size, const std::unique_ptr<unwindstack::Regs> &regs) {
     static constexpr size_t column_count = 4;
     std::vector<std::pair<std::string, uint64_t>> current_row;
     std::vector<std::pair<std::string, uint64_t>> special_row;

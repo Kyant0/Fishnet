@@ -41,7 +41,7 @@ static std::optional<std::string> get_stack_overflow_cause(uint64_t fault_addr, 
     return {};
 }
 
-void dump_probable_cause(const siginfo *si, unwindstack::Maps *maps, unwindstack::Regs *regs) {
+void dump_probable_cause(const siginfo *si, unwindstack::Maps *maps, const std::unique_ptr<unwindstack::Regs> &regs) {
     auto fault_addr = reinterpret_cast<uint64_t>(si->si_addr);
 
     std::optional<std::string> cause;

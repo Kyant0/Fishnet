@@ -139,7 +139,7 @@ void print_thread_header(pid_t pid, pid_t tid, uid_t uid) {
 
 void print_main_thread(pid_t pid, pid_t tid, uid_t uid, siginfo_t *si, int word_size,
                        unwindstack::ArchEnum arch, unwindstack::AndroidUnwinder *unwinder,
-                       unwindstack::AndroidUnwinderData *data, unwindstack::Regs *regs,
+                       unwindstack::AndroidUnwinderData *data, const std::unique_ptr<unwindstack::Regs> &regs,
                        bool dump_memory, bool dump_memory_maps) {
     const bool has_fault_addr = signal_has_si_addr(si);
     auto fault_addr = (uintptr_t) si->si_addr;
@@ -212,40 +212,18 @@ void print_thread(pid_t pid, pid_t tid, uid_t uid, unwindstack::ThreadUnwinder *
     std::unique_ptr<unwindstack::Regs> regs;
     unwinder->UnwindWithSignal(BIONIC_SIGNAL_BACKTRACE, tid, &regs);
     unwindstack::ArchEnum arch = unwindstack::Regs::CurrentArch();
-    int word_size = pointer_width(arch);
+    const int word_size = pointer_width(arch);
 
     print_thread_header(pid, tid, uid);
     if (regs) {
-        print_thread_registers(arch, word_size, regs.get());
+        print_thread_registers(arch, word_size, regs);
     }
     print_thread_backtrace(arch, unwinder->ConsumeFrames());
     if (dump_memory) {
         unwindstack::Maps *maps = unwinder->GetMaps();
         unwindstack::Memory *memory = unwinder->GetProcessMemory().get();
         if (regs) {
-            print_thread_memory_dump(word_size, regs.get(), maps, memory);
+            print_thread_memory_dump(word_size, regs, maps, memory);
         }
-    }
-}
-
-void print_guest_thread(pid_t tid, unwindstack::ThreadUnwinder *unwinder, bool dump_memory) {
-    std::unique_ptr<unwindstack::Regs> regs;
-    unwinder->UnwindWithSignal(BIONIC_SIGNAL_BACKTRACE, tid, &regs);
-    unwindstack::ArchEnum arch = unwindstack::Regs::CurrentArch();
-    int word_size = pointer_width(arch);
-
-    LOG_FISHNET("--- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---");
-    LOG_FISHNET("Guest thread information for tid: %d", tid);
-    print_thread_registers(arch, word_size, regs.get());
-
-    LOG_FISHNET("");
-    LOG_FISHNET("%zu total frames", unwinder->frames().size());
-    LOG_FISHNET("backtrace:");
-    print_backtrace(arch, unwinder->ConsumeFrames());
-
-    if (dump_memory) {
-        unwindstack::Maps *maps = unwinder->GetMaps();
-        unwindstack::Memory *memory = unwinder->GetProcessMemory().get();
-        print_thread_memory_dump(word_size, regs.get(), maps, memory);
     }
 }

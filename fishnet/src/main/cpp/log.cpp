@@ -2,8 +2,6 @@
 
 #include <unistd.h>
 
-#define LOG_TAG "Fishnet"
-
 static int log_fd = -1;
 
 static std::string log_buffer{};

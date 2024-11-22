@@ -175,7 +175,7 @@ void print_tag_dump(uint64_t fault_addr, unwindstack::ArchEnum arch,
     }
 }
 
-void print_thread_memory_dump(int word_size, unwindstack::Regs *regs, unwindstack::Maps *maps,
+void print_thread_memory_dump(int word_size, const std::unique_ptr<unwindstack::Regs> &regs, unwindstack::Maps *maps,
                               unwindstack::Memory *memory) {
     static constexpr size_t bytes_per_line = 16;
     static_assert(bytes_per_line == kTagGranuleSize);

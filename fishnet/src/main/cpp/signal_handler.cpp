@@ -17,19 +17,23 @@
 static struct sigaction old_actions[NSIG];
 
 void signal_handler(int s, struct siginfo *si, void *uc) {
-    pid_t pid = getpid();
-    pid_t tid = gettid();
-    uid_t uid = getuid();
+    const pid_t pid = getpid();
+    const pid_t tid = gettid();
+    const uid_t uid = getuid();
 
     std::shared_ptr<unwindstack::Memory> process_memory = unwindstack::Memory::CreateProcessMemoryCached(pid);
     unwindstack::AndroidLocalUnwinder unwinder(process_memory);
-    unwindstack::ErrorData error_data{};
-    unwinder.Initialize(error_data);
-    unwindstack::ArchEnum arch = unwindstack::Regs::CurrentArch();
-    int word_size = pointer_width(arch);
-    unwindstack::Regs *regs(unwindstack::Regs::CreateFromUcontext(arch, uc));
+    unwindstack::ErrorData error{};
+    if (!unwinder.Initialize(error)) {
+        LOGE("failed to init unwinder object: %s", unwindstack::GetErrorCodeString(error.code));
+        return;
+    }
+
+    const unwindstack::ArchEnum arch = unwindstack::Regs::CurrentArch();
+    const int word_size = pointer_width(arch);
+    std::unique_ptr<unwindstack::Regs> regs(unwindstack::Regs::CreateFromUcontext(arch, uc));
     unwindstack::AndroidUnwinderData data{};
-    unwinder.Unwind(regs, data);
+    unwinder.Unwind(regs.get(), data);
 
     unwindstack::ThreadUnwinder thread_unwinder(128);
     thread_unwinder.Init();
@@ -56,8 +60,8 @@ void signal_handler(int s, struct siginfo *si, void *uc) {
     LOG_FISHNET("Process uptime: %lus", get_process_uptime(pid));
 
     // only print this info if the page size is not 4k or has been in 16k mode
-    size_t page_size = getpagesize();
-    bool has_been_16kb_mode = get_bool_property("ro.misctrl.16kb_before", false);
+    const size_t page_size = getpagesize();
+    const bool has_been_16kb_mode = get_bool_property("ro.misctrl.16kb_before", false);
     if (page_size != 4096) {
         LOG_FISHNET("Page size: %zu bytes", page_size);
     } else if (has_been_16kb_mode) {
@@ -67,11 +71,10 @@ void signal_handler(int s, struct siginfo *si, void *uc) {
     print_main_thread(pid, tid, uid, si, word_size, arch, &unwinder, &data, regs,
                       true, false);
 
-    for (pid_t thread_id: tids) {
+    for (const pid_t &thread_id: tids) {
         if (thread_id == tid) continue;
         LOG_FISHNET("--- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---");
         print_thread(pid, thread_id, uid, &thread_unwinder, false);
-        // print_guest_thread(thread_id, &thread_unwinder, false);
     }
 
     dump_open_fds(pid);

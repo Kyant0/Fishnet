@@ -4,6 +4,10 @@
 #include <android/log.h>
 #include <string>
 
+#define LOG_TAG "Fishnet"
+
+#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+
 #define LOG_FISHNET(...) log_fishnet(true, __VA_ARGS__)
 
 #define LOG_FISHNET_LN(...) log_fishnet(false, __VA_ARGS__)
