@@ -6,8 +6,10 @@
 
 static std::vector<std::string> logs{};
 
-void dump_logcat() {
-    FILE *fp = popen("logcat -d -t 50", "r");
+void dump_logcat(pid_t pid) {
+    char command[24];
+    snprintf(command, sizeof(command), "logcat -d --pid=%d", pid);
+    FILE *fp = popen(command, "r");
     char line[1024];
     if (fp) {
         // 11-19 22:37:54.578 10167 10167 D Com...
@@ -20,7 +22,7 @@ void dump_logcat() {
 
 void print_logs() {
     LOG_FISHNET("");
-    LOG_FISHNET("--------- tail end of log main");
+    LOG_FISHNET("--------- log main");
 
     const size_t size = logs.size();
 

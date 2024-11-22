@@ -57,12 +57,18 @@ void dump_open_fds(pid_t pid) {
     if (!open_fds.empty()) {
         LOG_FISHNET("");
         LOG_FISHNET("open files:");
-        for (const FD &fd: open_fds) {
-            if (!fd.owner.empty()) {
-                LOG_FISHNET("    fd %d: %s (owned by %s 0x%" PRIx64 ")",
-                            fd.fd, fd.path.c_str(), fd.owner.c_str(), fd.tag);
-            } else {
-                LOG_FISHNET("    fd %d: %s (unowned)", fd.fd, fd.path.c_str());
+        if (__builtin_available(android 29, *)) {
+            for (const FD &fd: open_fds) {
+                if (!fd.owner.empty()) {
+                    LOG_FISHNET("    fd %d: %s (owned by %s 0x%" PRIx64 ")",
+                                fd.fd, fd.path.c_str(), fd.owner.c_str(), fd.tag);
+                } else {
+                    LOG_FISHNET("    fd %d: %s (unowned)", fd.fd, fd.path.c_str());
+                }
+            }
+        } else {
+            for (const FD &fd: open_fds) {
+                LOG_FISHNET("    fd %d: %s", fd.fd, fd.path.c_str());
             }
         }
     }

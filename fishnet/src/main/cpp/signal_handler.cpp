@@ -46,7 +46,7 @@ void signal_handler(int s, struct siginfo *si, void *uc) {
     // Do not attempt to dump logs of the logd process because the gathering
     // of logs can hang until a timeout occurs.
     if (get_thread_name(tid) != "logd") {
-        dump_logcat();
+        dump_logcat(pid);
         try_read_abort_message_from_logcat();
     }
 
