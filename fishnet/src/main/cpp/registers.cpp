@@ -21,9 +21,6 @@ void print_thread_registers(unwindstack::ArchEnum arch, int word_size, const std
 
     switch (arch) {
         case unwindstack::ArchEnum::ARCH_ARM:
-            special_registers = {"ip", "lr", "sp", "pc", "pst"};
-            break;
-
         case unwindstack::ArchEnum::ARCH_ARM64:
             special_registers = {"ip", "lr", "sp", "pc", "pst"};
             break;

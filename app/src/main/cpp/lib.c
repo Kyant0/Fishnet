@@ -100,10 +100,10 @@ Java_com_kyant_fishnet_demo_CrashFragment_jniAbort(JNIEnv *env, jobject obj) {
         return (*env)->NewStringUTF(env, invalid_utf8);
     } else { // Scudo ERROR
         jbyteArray array = (*env)->NewByteArray(env, 10);
-        jbyte *elements = (*env)->GetByteArrayElements(env, array, NULL);
+        jbyte *elements = (*env)->GetByteArrayElements(env, array, nullptr);
         elements[20] = 42; // Access out of bounds; will likely crash
         (*env)->ReleaseByteArrayElements(env, array, elements, 0);
-        return (*env)->NewStringUTF(env, elements);
+        return (*env)->NewStringUTF(env, (const char *) elements);
     }
 }
 
