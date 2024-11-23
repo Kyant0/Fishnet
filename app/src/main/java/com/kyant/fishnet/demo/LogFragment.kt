@@ -11,19 +11,13 @@ import android.widget.TextView
 import java.io.File
 
 class LogFragment : Fragment() {
-    private lateinit var logTextView: TextView
-
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater?.inflate(R.layout.fragment_log, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        logTextView = view.findViewById(R.id.tv_log)
+        val logTextView = view.findViewById<TextView>(R.id.tv_log)
         logTextView.text = getLog()
-
-        view.findViewById<View>(R.id.btn_refresh_log).setOnClickListener {
-            logTextView.text = getLog()
-        }
     }
 
     private fun getLog(): String {
