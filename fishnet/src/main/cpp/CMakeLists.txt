@@ -23,7 +23,6 @@ set(ARTBASE_SRC "${EXTERNAL_SRC}/libartbase")
 set(ARTPALETTE_SRC "${EXTERNAL_SRC}/libartpalette")
 set(ASYNCSAFE_SRC "${LIBC_SRC}/async_safe")
 set(ANDROIDBASE_SRC "${EXTERNAL_SRC}/libbase")
-set(CAPSTONE_SRC "${EXTERNAL_SRC}/capstone")
 set(DEXFILE_SRC "${EXTERNAL_SRC}/libdexfile")
 set(LOG_SRC "${EXTERNAL_SRC}/liblog")
 set(LZMA_SRC "${EXTERNAL_SRC}/lzma")
@@ -32,8 +31,6 @@ set(LIBIBERTY_SRC "${EXTERNAL_SRC}/libiberty")
 set(UNWINDSTACK_SRC "${EXTERNAL_SRC}/libunwindstack")
 set(ZIPARCHIVE_SRC "${EXTERNAL_SRC}/libziparchive")
 set(ZSTD_SRC "${EXTERNAL_SRC}/zstd")
-
-add_subdirectory("${CAPSTONE_SRC}" capstone)
 
 
 add_library(async_safe STATIC
@@ -346,8 +343,7 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
         signal_handler.cpp)
 
 target_include_directories(${CMAKE_PROJECT_NAME}
-        PUBLIC "${CMAKE_SOURCE_DIR}/include"
-        PRIVATE "${CAPSTONE_SRC}/include")
+        PUBLIC "${CMAKE_SOURCE_DIR}/include")
 
 target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
         -D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__ -Werror=unguarded-availability)
@@ -361,5 +357,4 @@ add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE
         android
         log
-        unwindstack
-        capstone_static)
+        unwindstack)

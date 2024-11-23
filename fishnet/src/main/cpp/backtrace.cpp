@@ -2,8 +2,6 @@
 
 #include <set>
 
-#include "capstone/include/capstone/capstone.h"
-
 #include "log.h"
 
 #if defined(__arm__)
@@ -51,29 +49,14 @@ void print_backtrace(unwindstack::ArchEnum arch, const std::vector<unwindstack::
         if (is_first_frame) {
             is_first_frame = false;
 
-            csh handle;
-            cs_insn *insn;
-            size_t count;
+            uint8_t bytes[128];
+            frame.map_info->elf()->memory()->ReadFully(frame.rel_pc, bytes, sizeof(bytes));
 
-            if (!frame.map_info->elf()) {
-                continue;
+            std::string hexdump;
+            for (size_t i = 0; i < sizeof(bytes); i++) {
+                hexdump += StringPrintf("%02x ", bytes[i]);
             }
-
-            uint8_t CODE[128];
-            frame.map_info->elf()->memory()->ReadFully(frame.rel_pc, CODE, sizeof(CODE));
-
-            if (cs_open(CS_ARCH, CS_MODE, &handle) != CS_ERR_OK) {
-                continue;
-            }
-            if ((count = cs_disasm(handle, CODE, sizeof(CODE), frame.rel_pc, 0, &insn)) > 0) {
-                for (size_t j = 0; j < count; j++) {
-                    LOG_FISHNET("             %016" PRIx64 ": %s  %s",
-                                insn[j].address, insn[j].mnemonic, insn[j].op_str);
-                }
-                cs_free(insn, count);
-            }
-
-            cs_close(&handle);
+            LOG_FISHNET("                   bytes here: %s", hexdump.c_str());
         }
     }
 }

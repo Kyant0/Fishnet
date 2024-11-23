@@ -38,10 +38,5 @@ android {
     }
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_21.toString()
-        freeCompilerArgs += arrayOf(
-            "-Xno-param-assertions",
-            "-Xno-call-assertions",
-            "-Xno-receiver-assertions",
-        )
     }
 }

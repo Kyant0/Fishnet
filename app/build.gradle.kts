@@ -99,4 +99,5 @@ tasks.withType<AppMetadataTask> {
 
 dependencies {
     implementation(project(":fishnet"))
+    implementation(project(":disasm"))
 }

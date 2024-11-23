@@ -50,8 +50,8 @@ ssize_t dump_memory(void *out, size_t len, uint8_t *tags, size_t tags_len, uint6
         // In this case, we might want to try another read at the beginning of
         // the next page only if it's within the amount of memory we would have
         // read.
-        size_t page_size = sysconf(_SC_PAGE_SIZE);
-        uint64_t next_page = (*addr + (page_size - 1)) & ~(page_size - 1);
+        const size_t page_size = sysconf(_SC_PAGE_SIZE);
+        const uint64_t next_page = (*addr + (page_size - 1)) & ~(page_size - 1);
         if (next_page == *addr || next_page >= *addr + len) {
             skip_2nd_read = true;
         }
@@ -65,7 +65,7 @@ ssize_t dump_memory(void *out, size_t len, uint8_t *tags, size_t tags_len, uint6
         // into a readable map. Only requires one extra read because a map has
         // to contain at least one page, and the total number of bytes to dump
         // is smaller than a page.
-        size_t bytes2 = memory->Read(*addr + bytes, (uint8_t *) out + bytes, len - bytes);
+        const size_t bytes2 = memory->Read(*addr + bytes, (uint8_t *) out + bytes, len - bytes);
         bytes += bytes2;
         if (bytes2 > 0 && bytes % sizeof(uintptr_t) != 0) {
             // This should never happen, but we'll try and continue any way.
@@ -81,7 +81,7 @@ ssize_t dump_memory(void *out, size_t len, uint8_t *tags, size_t tags_len, uint6
     }
 
     for (uint64_t tag_granule = 0; tag_granule < bytes / kTagGranuleSize; ++tag_granule) {
-        long tag = memory->ReadTag(*addr + kTagGranuleSize * tag_granule);
+        const long tag = memory->ReadTag(*addr + kTagGranuleSize * tag_granule);
         if (tag_granule < tags_len) {
             tags[tag_granule] = tag >= 0 ? tag : 0;
         } else {
@@ -122,12 +122,12 @@ void print_tag_dump(uint64_t fault_addr, unwindstack::ArchEnum arch,
         start_address += bytes_to_next_page;
         granules_to_read -= bytes_to_next_page / kTagGranuleSize;
     }
-    uintptr_t begin_address = start_address;
+    const uintptr_t begin_address = start_address;
 
     std::string mte_tags{};
 
     for (size_t i = 0; i < granules_to_read; ++i) {
-        long tag = process_memory->ReadTag(start_address + i * kTagGranuleSize);
+        const long tag = process_memory->ReadTag(start_address + i * kTagGranuleSize);
         if (tag < 0) break;
         mte_tags.push_back((uint8_t) tag);
     }
