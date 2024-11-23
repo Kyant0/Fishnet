@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 
 class CrashFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -15,20 +14,20 @@ class CrashFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        view.findViewById<Button>(R.id.btn_test_java_crash).setOnClickListener {
+        view.findViewById<View>(R.id.btn_test_java_crash).setOnClickListener {
             throw RuntimeException("Java Crash")
         }
-        view.findViewById<Button>(R.id.btn_test_anr).setOnClickListener {
+        view.findViewById<View>(R.id.btn_test_anr).setOnClickListener {
             Thread.sleep(10000)
         }
 
-        view.findViewById<Button>(R.id.btn_test_native_crash).setOnClickListener {
+        view.findViewById<View>(R.id.btn_test_native_crash).setOnClickListener {
             nativeCrash("SIGSEGV")
         }
-        view.findViewById<Button>(R.id.btn_test_jni_abort).setOnClickListener {
+        view.findViewById<View>(R.id.btn_test_jni_abort).setOnClickListener {
             println(jniAbort())
         }
-        view.findViewById<Button>(R.id.btn_test_fdsan_crash).setOnClickListener {
+        view.findViewById<View>(R.id.btn_test_fdsan_crash).setOnClickListener {
             nativeFdsanCrash()
         }
     }

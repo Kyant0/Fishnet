@@ -2,8 +2,6 @@ package com.kyant.fishnet.demo
 
 import android.app.Activity
 import android.graphics.Outline
-import android.graphics.drawable.ColorDrawable
-import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.ViewOutlineProvider
@@ -24,34 +22,30 @@ class MainActivity : Activity() {
         val crashTab = findViewById<TextView>(R.id.tab_crash)
         val logTab = findViewById<TextView>(R.id.tab_log)
 
-        val unselectedDrawable = resources.getDrawable(android.R.color.white)
-        val selectedDrawable =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
-                resources.getDrawable(android.R.color.system_accent1_100)
-            else
-                resources.getDrawable(android.R.color.darker_gray)
+        val selectedTabDrawable = resources.getDrawable(R.color.tab, theme)
+        val unselectedTabDrawable = resources.getDrawable(R.color.tab_container, theme)
 
-        val cornerRadiusPx = 12f * resources.displayMetrics.density
+        val cornerRadiusPx = 12 * resources.displayMetrics.density
         tabLayout.outlineProvider = object : ViewOutlineProvider() {
             override fun getOutline(view: View, outline: Outline) {
                 outline.setRoundRect(0, 0, view.width, view.height, cornerRadiusPx)
             }
         }
         tabLayout.clipToOutline = true
-        crashTab.background = selectedDrawable
-        logTab.background = unselectedDrawable
+        crashTab.background = selectedTabDrawable
+        logTab.background = unselectedTabDrawable
 
         crashTab.setOnClickListener { v ->
-            v.background = selectedDrawable
-            logTab.background = unselectedDrawable
+            v.background = selectedTabDrawable
+            logTab.background = unselectedTabDrawable
 
             fragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, CrashFragment())
                 .commit()
         }
         logTab.setOnClickListener { v ->
-            v.background = selectedDrawable
-            crashTab.background = unselectedDrawable
+            v.background = selectedTabDrawable
+            crashTab.background = unselectedTabDrawable
 
             fragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, LogFragment())
