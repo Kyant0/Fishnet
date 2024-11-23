@@ -39,31 +39,17 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:layout_marginVertical="8dp"
-        android:background="@color/tab_container">
+        android:background="?android:colorPrimary">
 
         <TextView
             android:id="@+id/tab_crash"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:layout_weight="1"
-            android:background="@color/tab"
             android:foreground="?android:selectableItemBackground"
             android:gravity="center"
             android:paddingHorizontal="12dp"
             android:text="Crash"
-            android:textColor="@android:color/black"
-            android:textFontWeight="500"
-            android:textSize="15sp" />
-
-        <TextView
-            android:id="@+id/tab_raw_log"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:layout_weight="1"
-            android:foreground="?android:selectableItemBackground"
-            android:gravity="center"
-            android:paddingHorizontal="12dp"
-            android:text="Raw log"
             android:textColor="@android:color/black"
             android:textFontWeight="500"
             android:textSize="15sp" />

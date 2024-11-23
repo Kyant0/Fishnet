@@ -20,7 +20,6 @@ class MainActivity : Activity() {
 
         val tabLayout = findViewById<LinearLayout>(R.id.tab_layout)
         val crashTab = findViewById<TextView>(R.id.tab_crash)
-        val rawLogTab = findViewById<TextView>(R.id.tab_raw_log)
         val logTab = findViewById<TextView>(R.id.tab_log)
 
         val selectedTabDrawable = resources.getDrawable(R.color.tab, theme)
@@ -38,25 +37,14 @@ class MainActivity : Activity() {
 
         crashTab.setOnClickListener { v ->
             v.background = selectedTabDrawable
-            rawLogTab.background = unselectedTabDrawable
             logTab.background = unselectedTabDrawable
 
             fragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, CrashFragment())
                 .commit()
         }
-        rawLogTab.setOnClickListener { v ->
-            v.background = selectedTabDrawable
-            crashTab.background = unselectedTabDrawable
-            logTab.background = unselectedTabDrawable
-
-            fragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, RawLogFragment())
-                .commit()
-        }
         logTab.setOnClickListener { v ->
             v.background = selectedTabDrawable
-            rawLogTab.background = unselectedTabDrawable
             crashTab.background = unselectedTabDrawable
 
             fragmentManager.beginTransaction()
