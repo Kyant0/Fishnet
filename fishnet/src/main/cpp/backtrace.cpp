@@ -6,6 +6,23 @@
 
 #include "log.h"
 
+#if defined(__arm__)
+#define CS_ARCH CS_ARCH_ARM
+#define CS_MODE CS_MODE_ARM
+#elif defined(__aarch64__)
+#define CS_ARCH CS_ARCH_AARCH64
+#define CS_MODE CS_MODE_LITTLE_ENDIAN
+#elif defined(__i386__)
+#define CS_ARCH CS_ARCH_X86
+#define CS_MODE CS_MODE_32
+#elif defined(__riscv)
+#define CS_ARCH CS_ARCH_RISCV
+#define CS_MODE CS_MODE_64
+#elif defined(__x86_64__)
+#define CS_ARCH CS_ARCH_X86
+#define CS_MODE CS_MODE_64
+#endif
+
 void dump_thread_backtrace(const std::vector<unwindstack::FrameData> &frames) {
     std::set<std::string> unreadable_elf_files;
     for (const auto &frame: frames) {
@@ -45,7 +62,7 @@ void print_backtrace(unwindstack::ArchEnum arch, const std::vector<unwindstack::
             uint8_t CODE[128];
             frame.map_info->elf()->memory()->ReadFully(frame.rel_pc, CODE, sizeof(CODE));
 
-            if (cs_open(CS_ARCH_AARCH64, CS_MODE_LITTLE_ENDIAN, &handle) != CS_ERR_OK) {
+            if (cs_open(CS_ARCH, CS_MODE, &handle) != CS_ERR_OK) {
                 continue;
             }
             if ((count = cs_disasm(handle, CODE, sizeof(CODE), frame.rel_pc, 0, &insn)) > 0) {
