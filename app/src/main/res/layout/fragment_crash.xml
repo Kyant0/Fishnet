@@ -78,21 +78,6 @@
 
         </LinearLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:text="Signals"
-            android:textColor="?android:textColorPrimary"
-            android:textSize="30sp"
-            android:textStyle="bold" />
-
-        <RadioGroup
-            android:id="@+id/radio_group__signals"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp" />
-
     </LinearLayout>
 
 </ScrollView>

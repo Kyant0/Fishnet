@@ -53,12 +53,6 @@ void fdsanCrash() {
     }
 }
 
-// JNI functions
-JNIEXPORT void JNICALL
-Java_com_kyant_fishnet_demo_CrashFragment_signal(JNIEnv *env, jobject obj, jint signal) {
-    kill(getpid(), signal);
-}
-
 __attribute__((optnone))
 void *crash_thread_function(void *arg) {
     const char *type_str = (const char *) arg;
