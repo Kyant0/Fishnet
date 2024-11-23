@@ -1,14 +1,14 @@
 package com.kyant.fishnet.demo
 
+import android.app.Activity
 import android.graphics.Outline
 import android.os.Bundle
 import android.view.View
 import android.view.ViewOutlineProvider
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.activity.ComponentActivity
 
-class MainActivity : ComponentActivity() {
+class MainActivity : Activity() {
     @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

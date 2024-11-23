@@ -7,43 +7,22 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.unit.dp
-import com.kyant.fishnet.demo.ui.FishnetTheme
+import android.widget.TextView
 import java.io.File
 
 class RawLogFragment : Fragment() {
-    val jetbrainsMono = FontFamily(Font(R.font.jetbrains_mono))
+    private lateinit var logTextView: TextView
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val log = getLog()
-        return ComposeView(context).apply {
-            setContent {
-                FishnetTheme {
-                    Column(
-                        Modifier
-                            .horizontalScroll(rememberScrollState())
-                            .verticalScroll(rememberScrollState())
-                            .padding(8.dp)
-                    ) {
-                        Text(
-                            log,
-                            fontFamily = jetbrainsMono,
-                            style = MaterialTheme.typography.bodySmall
-                        )
-                    }
-                }
-            }
+        return inflater?.inflate(R.layout.fragment_raw_log, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        logTextView = view.findViewById(R.id.tv_log)
+        logTextView.text = getLog()
+
+        view.findViewById<View>(R.id.btn_refresh_log).setOnClickListener {
+            logTextView.text = getLog()
         }
     }
 

@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.compose.ui.platform.AndroidComposeView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <com.kyant.fishnet.demo.ui.MaterialButton
+    <com.kyant.fishnet.demo.MaterialButton
         android:id="@+id/btn_refresh_log"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -12,66 +13,18 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <HorizontalScrollView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="8dp"
-                    android:layout_marginVertical="2dp"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical">
-
-                    <com.kyant.fishnet.demo.ui.Tag
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="4dp"
-                        android:text="x0" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="0xFFFFFFFFFFFFF" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="8dp"
-                    android:layout_marginVertical="2dp"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical">
-
-                    <com.kyant.fishnet.demo.ui.Tag
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="4dp"
-                        android:text="x1" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="0xFFFFFFFFFFFFF" />
-
-                </LinearLayout>
-
-            </LinearLayout>
+            android:clipToPadding="false">
 
             <TextView
                 android:id="@+id/tv_log"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/jetbrains_mono"
                 android:padding="16dp"
                 android:text="No log yet"
                 android:textColor="?android:textColorPrimary"
@@ -79,8 +32,8 @@
                 android:textSize="12sp"
                 android:typeface="monospace" />
 
-        </LinearLayout>
+        </HorizontalScrollView>
 
     </ScrollView>
 
-</androidx.compose.ui.platform.AndroidComposeView>
+</LinearLayout>

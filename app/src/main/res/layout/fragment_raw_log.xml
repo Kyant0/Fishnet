@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.kyant.fishnet.demo.ui.MaterialButton
+    <com.kyant.fishnet.demo.MaterialButton
         android:id="@+id/btn_refresh_log"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -13,7 +13,8 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
         <HorizontalScrollView
             android:layout_width="wrap_content"
