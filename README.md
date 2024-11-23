@@ -36,6 +36,7 @@ Page size: 16384 bytes
 Cmdline: com.kyant.fishnet.demo
 pid: 22575, tid: 22575, name: nt.fishnet.demo  >>> com.kyant.fishnet.demo <<<
 uid: 10565
+tagged_addr_ctrl: 0000000000000001 (PR_TAGGED_ADDR_ENABLE)
 signal 6 (SIGABRT), code -1 (SI_QUEUE), fault addr 0x000029450000582f
 Abort message: 'FORTIFY: memcpy: prevented 10-byte write into 8-byte buffer'
 
