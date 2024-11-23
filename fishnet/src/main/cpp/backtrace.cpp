@@ -2,6 +2,8 @@
 
 #include <set>
 
+#include "capstone/include/capstone/capstone.h"
+
 #include "log.h"
 
 void dump_thread_backtrace(const std::vector<unwindstack::FrameData> &frames) {
@@ -25,8 +27,37 @@ void dump_thread_backtrace(const std::vector<unwindstack::FrameData> &frames) {
 }
 
 void print_backtrace(unwindstack::ArchEnum arch, const std::vector<unwindstack::FrameData> &frames) {
+    bool is_first_frame = true;
     for (const auto &frame: frames) {
         LOG_FISHNET("    %s", unwindstack::Unwinder::FormatFrame(arch, frame, true).c_str());
+
+        if (is_first_frame) {
+            is_first_frame = false;
+
+            csh handle;
+            cs_insn *insn;
+            size_t count;
+
+            if (!frame.map_info->elf()) {
+                continue;
+            }
+
+            uint8_t CODE[128];
+            frame.map_info->elf()->memory()->ReadFully(frame.rel_pc, CODE, sizeof(CODE));
+
+            if (cs_open(CS_ARCH_AARCH64, CS_MODE_LITTLE_ENDIAN, &handle) != CS_ERR_OK) {
+                continue;
+            }
+            if ((count = cs_disasm(handle, CODE, sizeof(CODE), frame.rel_pc, 0, &insn)) > 0) {
+                for (size_t j = 0; j < count; j++) {
+                    LOG_FISHNET("             %016" PRIx64 ": %s  %s",
+                                insn[j].address, insn[j].mnemonic, insn[j].op_str);
+                }
+                cs_free(insn, count);
+            }
+
+            cs_close(&handle);
+        }
     }
 }
 

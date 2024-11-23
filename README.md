@@ -53,6 +53,15 @@ registers:
 63 total frames
 backtrace:
       #00 pc 0000000000051894  /apex/com.android.runtime/lib64/bionic/libc.so (abort+164) (BuildId: 058e3ec96fa600fb840a6a6956c6b64e)
+             0000000000051894: ldr  q0, [x9]
+             0000000000051898: ldr  q1, [x9, #0x10]
+             000000000005189c: mov  x1, sp
+             00000000000518a0: mov  w0, #6
+             00000000000518a4: mov  x2, xzr
+             00000000000518a8: stp  q0, q1, [sp]
+             00000000000518ac: bl  0xbf850
+             00000000000518b0: add  x1, x29, #0x18
+             ...
       #01 pc 000000000005353c  /apex/com.android.runtime/lib64/bionic/libc.so (__fortify_fatal(char const*, ...)+124) (BuildId: 058e3ec96fa600fb840a6a6956c6b64e)
       #02 pc 000000000007b540  /apex/com.android.runtime/lib64/bionic/libc.so (__check_buffer_access(char const*, char const*, unsigned long, unsigned long)+40) (BuildId: 058e3ec96fa600fb840a6a6956c6b64e)
       #03 pc 000000000007b6b4  /apex/com.android.runtime/lib64/bionic/libc.so (__memcpy_chk_fail+68) (BuildId: 058e3ec96fa600fb840a6a6956c6b64e)
@@ -114,6 +123,35 @@ memory map (2220 entries): (fault address prefixed with --->)
     0000007f'ce123000-0000007f'ce123fff ---         0      1000
     0000007f'ce124000-0000007f'ce922fff rw-         0    7ff000  [stack]
 --->Fault address falls at 00002945'00005bb4 after any mapped regions
+
+--- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+Cmdline: com.kyant.fishnet.demo
+pid: 11377, tid: 11389, name: Metrics Backgro  >>> com.kyant.fishnet.demo <<<
+uid: 10572
+tagged_addr_ctrl: 0000000000000001 (PR_TAGGED_ADDR_ENABLE)
+
+registers:
+    x0  b40000789aa94480  x1  0000000000000080  x2  0000000000000002  x3  0000000000000000
+    x4  0000000000000000  x5  0000000000000000  x6  0000000000000000  x7  00000000000000ff
+    x8  0000000000000062  x9  76cc194a13e40754  x10 431bde82d7b634db  x11 76cc194a13e40754
+    x12 ffffffffc4653600  x13 00000284bbc064ec  x14 ffffffff98befc10  x15 000a27b98539e703
+    x16 00000077b9c22bb0  x17 0000007a64813e40  x18 00000077a33ba000  x19 b40000789aa94470
+    x20 b40000792aa9df50  x21 0000000000000002  x22 00000077a7559000  x23 00000077a7558ba0
+    x24 00000077a7559000  x25 0000000000000001  x26 00000077a7558ff8  x27 00000000000fc000
+    x28 00000000000fe000  x29 00000077a7558ae0
+    lr  00000077b942a224  sp  00000077a7558ad0  pc  0000007a64813e5c  pst 0000000060001000
+
+7 total frames
+backtrace:
+      #00 pc 000000000004de5c  /apex/com.android.runtime/lib64/bionic/libc.so (syscall+28) (BuildId: 058e3ec96fa600fb840a6a6956c6b64e)
+             000000000004de5c: svc  #0
+             000000000004de60: cmn  x0, #1, lsl #12
+             000000000004de64: cneg  x0, x0, hi
+             000000000004de68: b.hi  0xa1b24
+             000000000004de6c: ret
+             ...
+      ...
+...
 
 open files:
     fd 0: /dev/null (unowned)
