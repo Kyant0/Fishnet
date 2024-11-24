@@ -49,11 +49,24 @@ void print_backtrace(unwindstack::ArchEnum arch, const std::vector<unwindstack::
         if (is_first_frame) {
             is_first_frame = false;
 
-            uint8_t bytes[128];
-            frame.map_info->elf()->memory()->ReadFully(frame.rel_pc, bytes, sizeof(bytes));
+            const std::shared_ptr<unwindstack::Elf> elf = frame.map_info->elf();
+            if (!elf) {
+                continue;
+            }
+
+            const size_t size = std::min(frame.map_info->end() - frame.rel_pc, (uint64_t) 128);
+            const std::shared_ptr<unwindstack::Memory> memory = elf->memory();
+            if (!memory) {
+                continue;
+            }
+
+            uint8_t bytes[size];
+            if (!memory->ReadFully(frame.rel_pc, bytes, sizeof(bytes))) {
+                continue;
+            }
 
             std::string hexdump;
-            for (size_t i = 0; i < sizeof(bytes); i++) {
+            for (size_t i = 0; i < size; i++) {
                 hexdump += StringPrintf("%02x ", bytes[i]);
             }
             LOG_FISHNET("                   bytes here: %s", hexdump.c_str());
