@@ -4,6 +4,9 @@ package com.kyant.fishnet.demo
 
 import android.app.Fragment
 import android.os.Bundle
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,27 +21,70 @@ class DisAsmFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val startAddressEditText = view.findViewById<EditText>(R.id.et_address)
         val disasmEditText = view.findViewById<EditText>(R.id.et_disasm)
         val disasmButton = view.findViewById<View>(R.id.btn_disasm)
         val disasmTextView = view.findViewById<TextView>(R.id.tv_disasm)
 
         disasmButton.setOnClickListener {
-            try {
-                val input = disasmEditText.text.toString().replace("\\s".toRegex(), "")
+            val regex = "\\s".toRegex()
+            val result = try {
+                val address = startAddressEditText.text.toString()
+                    .replace(regex, "")
+                    .removePrefix("0x")
+                    .ifEmpty { "0" }
+                    .toLong(16)
+                val input = disasmEditText.text.toString()
+                    .replace(regex, "")
                 val bytes = buildList {
-                    for (i in input.indices step 2) {
+                    val endIndex = if (input.length % 2 == 0) input.lastIndex else input.lastIndex - 1
+                    for (i in 0..endIndex step 2) {
                         add((input[i].digitToInt(16) shl 4 or input[i + 1].digitToInt(16)).toByte())
                     }
                 }.toByteArray()
-                val disasm = DisAsm.disasm(bytes, 0)
-                disasmTextView.text = disasm.joinToString("\n") { instruction ->
-                    "0x${
-                        instruction.address.toString(16).padStart(8, '0')
-                    } [${instruction.bytes.toHexString()}] : ${instruction.mnemonic} ${instruction.operands}"
+                val disasm = DisAsm.disasm(bytes, address)
+                SpannableStringBuilder().apply {
+                    val lowEmphasizedColor = disasmTextView.textColors.defaultColor and 0x00FFFFFF or 0x80000000.toInt()
+                    val highlightedColor = context.resources.getColor(R.color.primary, context.theme)
+                    var start: Int
+                    val callMnemonics = setOf(
+                        // ARM64
+                        "bl", "blr",
+                        // ARM32
+                        "blx", "bl",
+                        // x86/x64
+                        "call", "lcall"
+                    )
+                    val maxByteLength = disasm.maxOf { it.bytes.size }
+                    disasm.forEach { instruction ->
+                        append("0x${instruction.address.toString(16).padStart(16, '0')} ")
+                        start = length
+                        append(instruction.bytes.toHexString().padEnd(maxByteLength * 2, ' '))
+                        setSpan(
+                            ForegroundColorSpan(lowEmphasizedColor),
+                            start,
+                            length,
+                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                        )
+                        if (instruction.mnemonic in callMnemonics) {
+                            append(" : ${instruction.mnemonic.padEnd(8, ' ')} ")
+                            start = length
+                            append("${instruction.operands}\n")
+                            setSpan(
+                                ForegroundColorSpan(highlightedColor),
+                                start,
+                                length,
+                                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                            )
+                        } else {
+                            append(" : ${instruction.mnemonic.padEnd(8, ' ')} ${instruction.operands}\n")
+                        }
+                    }
                 }
             } catch (e: Exception) {
-                disasmTextView.text = e.message
+                e.message
             }
+            disasmTextView.text = result
         }
     }
 }

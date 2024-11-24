@@ -28,12 +28,33 @@
             android:orientation="vertical">
 
             <EditText
+                android:id="@+id/et_address"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:fontFamily="@font/jetbrains_mono"
+                android:hint="Start address (hex)"
+                android:inputType="textCapCharacters"
+                android:padding="16dp"
+                android:textSize="14sp"
+                android:typeface="monospace" />
+
+        </com.kyant.fishnet.demo.MaterialCard>
+
+        <com.kyant.fishnet.demo.MaterialCard
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginVertical="8dp"
+            android:orientation="vertical">
+
+            <EditText
                 android:id="@+id/et_disasm"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@null"
                 android:fontFamily="@font/jetbrains_mono"
-                android:hint="Enter code"
+                android:hint="Bytes (hex, whitespaces ignored)"
                 android:inputType="textMultiLine"
                 android:padding="16dp"
                 android:textSize="14sp"
