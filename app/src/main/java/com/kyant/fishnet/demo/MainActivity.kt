@@ -24,7 +24,6 @@ class MainActivity : Activity() {
         val disasmTab = findViewById<TextView>(R.id.tab_disasm)
 
         val selectedTabDrawable = resources.getDrawable(R.color.tab, theme)
-        val unselectedTabDrawable = resources.getDrawable(R.color.tab_container, theme)
 
         val cornerRadiusPx = 12 * resources.displayMetrics.density
         tabLayout.outlineProvider = object : ViewOutlineProvider() {
@@ -34,30 +33,30 @@ class MainActivity : Activity() {
         }
         tabLayout.clipToOutline = true
         crashTab.background = selectedTabDrawable
-        logTab.background = unselectedTabDrawable
-        disasmTab.background = unselectedTabDrawable
+        logTab.background = null
+        disasmTab.background = null
 
         crashTab.setOnClickListener {
             crashTab.background = selectedTabDrawable
-            logTab.background = unselectedTabDrawable
-            disasmTab.background = unselectedTabDrawable
+            logTab.background = null
+            disasmTab.background = null
 
             fragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, CrashFragment())
                 .commit()
         }
         logTab.setOnClickListener {
-            crashTab.background = unselectedTabDrawable
+            crashTab.background = null
             logTab.background = selectedTabDrawable
-            disasmTab.background = unselectedTabDrawable
+            disasmTab.background = null
 
             fragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, LogFragment())
                 .commit()
         }
         disasmTab.setOnClickListener {
-            crashTab.background = unselectedTabDrawable
-            logTab.background = unselectedTabDrawable
+            crashTab.background = null
+            logTab.background = null
             disasmTab.background = selectedTabDrawable
 
             fragmentManager.beginTransaction()

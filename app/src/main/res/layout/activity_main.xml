@@ -41,7 +41,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:layout_marginVertical="8dp"
-        android:background="?android:colorPrimary">
+        android:background="@color/tab_container">
 
         <TextView
             android:id="@+id/tab_crash"
