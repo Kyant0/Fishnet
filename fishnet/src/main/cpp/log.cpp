@@ -85,12 +85,12 @@ void StringAppendF(std::string *dst, const char *format, ...) {
 void log_fishnet(bool linebreak, const char *fmt, ...) {
     va_list args;
     va_start(args, fmt);
-#ifdef ENABLE_LOG
+#if ENABLE_LOG
     const size_t next_start = log_buffer.size();
 #endif
     StringAppendV(&log_buffer, strdup(fmt), args);
     va_end(args);
-#ifdef ENABLE_LOG
+#if ENABLE_LOG
     __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "%s", log_buffer.c_str() + next_start);
 #endif
     if (linebreak) {
