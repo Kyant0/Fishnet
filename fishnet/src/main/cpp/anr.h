@@ -3,6 +3,6 @@
 
 #include <csignal>
 
-void anr_signal_handler(int signal, siginfo_t *info, void *context);
+void anr_signal_handler(int signal_number, siginfo_t *info, void *context);
 
 #endif //FISHNET_ANR_H

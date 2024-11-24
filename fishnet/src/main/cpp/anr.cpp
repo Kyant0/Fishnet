@@ -62,7 +62,7 @@ int get_signal_catcher_tid(pid_t myPid) {
     return -1;
 }
 
-void anr_signal_handler(int signal, siginfo_t *info, void *context) {
+void anr_signal_handler(int signal_number, siginfo_t *info, void *context) {
     int fromPid1 = info->_si_pad[3];
     int fromPid2 = info->_si_pad[4];
     int myPid = getpid();
