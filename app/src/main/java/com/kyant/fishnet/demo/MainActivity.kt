@@ -21,6 +21,7 @@ class MainActivity : Activity() {
         val tabLayout = findViewById<LinearLayout>(R.id.tab_layout)
         val crashTab = findViewById<TextView>(R.id.tab_crash)
         val logTab = findViewById<TextView>(R.id.tab_log)
+        val disasmTab = findViewById<TextView>(R.id.tab_disasm)
 
         val selectedTabDrawable = resources.getDrawable(R.color.tab, theme)
         val unselectedTabDrawable = resources.getDrawable(R.color.tab_container, theme)
@@ -34,21 +35,33 @@ class MainActivity : Activity() {
         tabLayout.clipToOutline = true
         crashTab.background = selectedTabDrawable
         logTab.background = unselectedTabDrawable
+        disasmTab.background = unselectedTabDrawable
 
-        crashTab.setOnClickListener { v ->
-            v.background = selectedTabDrawable
+        crashTab.setOnClickListener {
+            crashTab.background = selectedTabDrawable
             logTab.background = unselectedTabDrawable
+            disasmTab.background = unselectedTabDrawable
 
             fragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, CrashFragment())
                 .commit()
         }
-        logTab.setOnClickListener { v ->
-            v.background = selectedTabDrawable
+        logTab.setOnClickListener {
             crashTab.background = unselectedTabDrawable
+            logTab.background = selectedTabDrawable
+            disasmTab.background = unselectedTabDrawable
 
             fragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, LogFragment())
+                .commit()
+        }
+        disasmTab.setOnClickListener {
+            crashTab.background = unselectedTabDrawable
+            logTab.background = unselectedTabDrawable
+            disasmTab.background = selectedTabDrawable
+
+            fragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, DisAsmFragment())
                 .commit()
         }
     }
