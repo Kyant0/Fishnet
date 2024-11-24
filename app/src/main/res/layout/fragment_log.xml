@@ -14,7 +14,7 @@
             android:layout_height="wrap_content"
             android:padding="16dp"
             android:text="No log yet"
-            android:textColor="?android:textColorPrimary"
+            android:textColor="@color/text"
             android:textIsSelectable="true"
             android:textSize="12sp"
             android:typeface="monospace" />

@@ -33,7 +33,7 @@
                 android:gravity="center_vertical"
                 android:paddingHorizontal="24dp"
                 android:text="Test Java crash"
-                android:textColor="?android:textColorPrimary"
+                android:textColor="@color/text"
                 android:textSize="20dp" />
 
             <TextView
@@ -44,7 +44,7 @@
                 android:gravity="center_vertical"
                 android:paddingHorizontal="24dp"
                 android:text="Test ANR"
-                android:textColor="?android:textColorPrimary"
+                android:textColor="@color/text"
                 android:textSize="20dp" />
 
         </LinearLayout>
@@ -73,7 +73,7 @@
                 android:gravity="center_vertical"
                 android:paddingHorizontal="24dp"
                 android:text="Test Native crash"
-                android:textColor="?android:textColorPrimary"
+                android:textColor="@color/text"
                 android:textSize="20dp" />
 
             <TextView
@@ -84,7 +84,7 @@
                 android:gravity="center_vertical"
                 android:paddingHorizontal="24dp"
                 android:text="Test JNI abort"
-                android:textColor="?android:textColorPrimary"
+                android:textColor="@color/text"
                 android:textSize="20dp" />
 
             <TextView
@@ -95,7 +95,7 @@
                 android:gravity="center_vertical"
                 android:paddingHorizontal="24dp"
                 android:text="Test fdsan crash"
-                android:textColor="?android:textColorPrimary"
+                android:textColor="@color/text"
                 android:textSize="20dp" />
 
         </LinearLayout>
@@ -106,7 +106,7 @@
             android:layout_marginHorizontal="16dp"
             android:layout_marginVertical="8dp"
             android:alpha="0.2"
-            android:background="?android:textColorPrimary" />
+            android:background="@color/text" />
 
         <TextView
             android:layout_width="wrap_content"

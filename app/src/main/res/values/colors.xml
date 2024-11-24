@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="text">@android:color/black</color>
     <color name="primary">#475D92</color>
     <color name="background">#F1F0F7</color>
     <color name="button">#D9E2FF</color>
