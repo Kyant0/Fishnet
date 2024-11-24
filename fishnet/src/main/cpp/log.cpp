@@ -2,6 +2,8 @@
 
 #include <unistd.h>
 
+#define ENABLE_LOG 1
+
 static int log_fd = -1;
 
 static std::string log_buffer{};
@@ -10,10 +12,15 @@ void set_log_fd(int fd) {
     log_fd = fd;
 }
 
-void write_log() {
+void write_log_to_fd() {
     if (log_fd != -1) {
         ftruncate(log_fd, 0);
         write(log_fd, log_buffer.c_str(), log_buffer.size());
+    }
+}
+
+void close_log_fd() {
+    if (log_fd != -1) {
         close(log_fd);
         log_fd = -1;
     }
@@ -78,10 +85,14 @@ void StringAppendF(std::string *dst, const char *format, ...) {
 void log_fishnet(bool linebreak, const char *fmt, ...) {
     va_list args;
     va_start(args, fmt);
-    // const size_t next_start = log_buffer.size();
+#ifdef ENABLE_LOG
+    const size_t next_start = log_buffer.size();
+#endif
     StringAppendV(&log_buffer, strdup(fmt), args);
     va_end(args);
-    // __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "%s", log_buffer.c_str() + next_start);
+#ifdef ENABLE_LOG
+    __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "%s", log_buffer.c_str() + next_start);
+#endif
     if (linebreak) {
         log_buffer.append("\n");
     }

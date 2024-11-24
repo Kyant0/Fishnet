@@ -14,7 +14,9 @@
 
 void set_log_fd(int fd);
 
-void write_log();
+void write_log_to_fd();
+
+void close_log_fd();
 
 __attribute__((__format__(printf, 1, 2)))
 std::string StringPrintf(const char *fmt, ...);

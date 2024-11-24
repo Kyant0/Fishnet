@@ -3,8 +3,8 @@
 
 #include <csignal>
 
-const char *get_signame(const siginfo_t *si);
+const char *get_signame(const siginfo_t *info);
 
-const char *get_sigcode(const siginfo_t *si);
+const char *get_sigcode(const siginfo_t *info);
 
 #endif //FISHNET_HUMAN_READABLE_H

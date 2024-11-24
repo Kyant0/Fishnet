@@ -2,8 +2,8 @@
 
 #include <linux/ptrace.h>
 
-const char *get_signame(const siginfo_t *si) {
-    switch (si->si_signo) {
+const char *get_signame(const siginfo_t *info) {
+    switch (info->si_signo) {
         case SIGABRT:
             return "SIGABRT";
         case SIGBUS:
@@ -27,11 +27,11 @@ const char *get_signame(const siginfo_t *si) {
     }
 }
 
-const char *get_sigcode(const siginfo_t *si) {
+const char *get_sigcode(const siginfo_t *info) {
     // Try the signal-specific codes...
-    switch (si->si_signo) {
+    switch (info->si_signo) {
         case SIGILL:
-            switch (si->si_code) {
+            switch (info->si_code) {
                 case ILL_ILLOPC:
                     return "ILL_ILLOPC";
                 case ILL_ILLOPN:
@@ -58,7 +58,7 @@ const char *get_sigcode(const siginfo_t *si) {
             static_assert(NSIGILL == __ILL_BNDMOD, "missing ILL_* si_code");
             break;
         case SIGBUS:
-            switch (si->si_code) {
+            switch (info->si_code) {
                 case BUS_ADRALN:
                     return "BUS_ADRALN";
                 case BUS_ADRERR:
@@ -73,7 +73,7 @@ const char *get_sigcode(const siginfo_t *si) {
             static_assert(NSIGBUS == BUS_MCEERR_AO, "missing BUS_* si_code");
             break;
         case SIGFPE:
-            switch (si->si_code) {
+            switch (info->si_code) {
                 case FPE_INTDIV:
                     return "FPE_INTDIV";
                 case FPE_INTOVF:
@@ -108,7 +108,7 @@ const char *get_sigcode(const siginfo_t *si) {
             static_assert(NSIGFPE == FPE_CONDTRAP, "missing FPE_* si_code");
             break;
         case SIGSEGV:
-            switch (si->si_code) {
+            switch (info->si_code) {
                 case SEGV_MAPERR:
                     return "SEGV_MAPERR";
                 case SEGV_ACCERR:
@@ -133,7 +133,7 @@ const char *get_sigcode(const siginfo_t *si) {
             static_assert(NSIGSEGV == SEGV_CPERR, "missing SEGV_* si_code");
             break;
         case SIGSYS:
-            switch (si->si_code) {
+            switch (info->si_code) {
                 case SYS_SECCOMP:
                     return "SYS_SECCOMP";
                 case SYS_USER_DISPATCH:
@@ -142,7 +142,7 @@ const char *get_sigcode(const siginfo_t *si) {
             static_assert(NSIGSYS == SYS_USER_DISPATCH, "missing SYS_* si_code");
             break;
         case SIGTRAP:
-            switch (si->si_code) {
+            switch (info->si_code) {
                 case TRAP_BRKPT:
                     return "TRAP_BRKPT";
                 case TRAP_TRACE:
@@ -156,8 +156,8 @@ const char *get_sigcode(const siginfo_t *si) {
                 case TRAP_PERF:
                     return "TRAP_PERF";
             }
-            if ((si->si_code & 0xff) == SIGTRAP) {
-                switch ((si->si_code >> 8) & 0xff) {
+            if ((info->si_code & 0xff) == SIGTRAP) {
+                switch ((info->si_code >> 8) & 0xff) {
                     case PTRACE_EVENT_FORK:
                         return "PTRACE_EVENT_FORK";
                     case PTRACE_EVENT_VFORK:
@@ -180,7 +180,7 @@ const char *get_sigcode(const siginfo_t *si) {
             break;
     }
     // Then the other codes...
-    switch (si->si_code) {
+    switch (info->si_code) {
         case SI_USER:
             return "SI_USER";
         case SI_KERNEL:

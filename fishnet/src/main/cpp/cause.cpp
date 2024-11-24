@@ -41,11 +41,12 @@ static std::optional<std::string> get_stack_overflow_cause(uint64_t fault_addr, 
     return {};
 }
 
-void dump_probable_cause(const siginfo *si, unwindstack::Maps *maps, const std::unique_ptr<unwindstack::Regs> &regs) {
-    const auto fault_addr = (const uint64_t) (si->si_addr);
+void dump_probable_cause(const siginfo_t *info, unwindstack::Maps *maps,
+                         const std::unique_ptr<unwindstack::Regs> &regs) {
+    const auto fault_addr = (const uint64_t) (info->si_addr);
 
     std::optional<std::string> cause;
-    if (si->si_signo == SIGSEGV && si->si_code == SEGV_MAPERR) {
+    if (info->si_signo == SIGSEGV && info->si_code == SEGV_MAPERR) {
         if (fault_addr < 4096) {
             cause = "null pointer dereference";
         } else if (fault_addr == 0xffff0ffc) {
@@ -61,7 +62,7 @@ void dump_probable_cause(const siginfo *si, unwindstack::Maps *maps, const std::
         } else {
             cause = get_stack_overflow_cause(fault_addr, regs->sp(), maps);
         }
-    } else if (si->si_signo == SIGSEGV && si->si_code == SEGV_ACCERR) {
+    } else if (info->si_signo == SIGSEGV && info->si_code == SEGV_ACCERR) {
         auto map_info = maps->Find(fault_addr);
         if (map_info != nullptr && map_info->flags() == PROT_EXEC) {
             cause = "execute-only (no-read) memory access error; likely due to data in .text.";
@@ -72,14 +73,14 @@ void dump_probable_cause(const siginfo *si, unwindstack::Maps *maps, const std::
         }
     }
 #if defined(__aarch64__) && defined(SEGV_MTESERR)
-    else if (si->si_signo == SIGSEGV && si->si_code == SEGV_MTESERR) {
+    else if (info->si_signo == SIGSEGV && info->si_code == SEGV_MTESERR) {
         // If this was a heap MTE crash, it would have been handled by scudo. Checking whether it
         // is a stack one.
         // cause = maybe_stack_mte_cause(tombstone, unwinder, target_thread, threads, fault_addr);
     }
 #endif
-    else if (si->si_signo == SIGSYS && si->si_code == SYS_SECCOMP) {
-        cause = StringPrintf("seccomp prevented call to disallowed %s system call %d", ABI_STRING, si->si_syscall);
+    else if (info->si_signo == SIGSYS && info->si_code == SYS_SECCOMP) {
+        cause = StringPrintf("seccomp prevented call to disallowed %s system call %d", ABI_STRING, info->si_syscall);
     }
 
     if (cause) {

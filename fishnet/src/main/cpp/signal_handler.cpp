@@ -16,22 +16,38 @@
 
 static struct sigaction old_actions[NSIG];
 
-void signal_handler(int s, struct siginfo *si, void *uc) {
+struct debugger_thread_info {
+    pid_t crashing_tid;
+    siginfo_t *siginfo;
+    void *ucontext;
+};
+
+static void *thread_stack;
+
+static void *fishnet_dispatch_thread(void *arg) {
+    debugger_thread_info *thread_info = (debugger_thread_info *) arg;
+
+    LOGE("fishnet_dispatch_thread started");
+
     const pid_t pid = getpid();
-    const pid_t tid = gettid();
+    const pid_t tid = thread_info->crashing_tid;
+    const pid_t the_tid = gettid();
     const uid_t uid = getuid();
+    const siginfo_t *info = thread_info->siginfo;
+    void *context = thread_info->ucontext;
 
     std::shared_ptr<unwindstack::Memory> process_memory = unwindstack::Memory::CreateProcessMemoryCached(pid);
     unwindstack::AndroidLocalUnwinder unwinder(process_memory);
     unwindstack::ErrorData error{};
     if (!unwinder.Initialize(error)) {
         LOGE("failed to init unwinder object: %s", unwindstack::GetErrorCodeString(error.code));
-        return;
+        close_log_fd();
+        return nullptr;
     }
 
     const unwindstack::ArchEnum arch = unwindstack::Regs::CurrentArch();
     const int word_size = pointer_width(arch);
-    std::unique_ptr<unwindstack::Regs> regs(unwindstack::Regs::CreateFromUcontext(arch, uc));
+    std::unique_ptr<unwindstack::Regs> regs(unwindstack::Regs::CreateFromUcontext(arch, context));
     unwindstack::AndroidUnwinderData data{};
     unwinder.Unwind(regs.get(), data);
 
@@ -68,11 +84,11 @@ void signal_handler(int s, struct siginfo *si, void *uc) {
         LOG_FISHNET("Has been in 16kb mode: yes");
     }
 
-    print_main_thread(pid, tid, uid, si, word_size, arch, &unwinder, regs, data.frames,
+    print_main_thread(pid, tid, uid, info, word_size, arch, &unwinder, regs, data.frames,
                       true, false);
 
     for (const pid_t &thread_id: tids) {
-        if (thread_id == tid) continue;
+        if (thread_id == tid || thread_id == the_tid) continue;
         LOG_FISHNET("--- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---");
         print_thread(pid, thread_id, uid, word_size, arch, &thread_unwinder, false);
     }
@@ -81,20 +97,62 @@ void signal_handler(int s, struct siginfo *si, void *uc) {
 
     print_logs();
 
-    write_log();
+    write_log_to_fd();
 
-    if (old_actions[s].sa_flags & SA_SIGINFO) {
-        if (old_actions[s].sa_sigaction) {
-            old_actions[s].sa_sigaction(s, si, uc);
+    return nullptr;
+}
+
+static int enter_count = 0;
+
+__attribute__((optnone))
+static void fishnet_signal_handler(int signal_number, siginfo_t *info, void *context) {
+    if (enter_count++ > 0) {
+        return;
+    }
+
+    debugger_thread_info thread_info = {
+            .crashing_tid = gettid(),
+            .siginfo = info,
+            .ucontext = context,
+    };
+
+    pthread_t thread_id;
+    pthread_attr_t thread_attr;
+    if (pthread_attr_init(&thread_attr) != 0) {
+        LOGE("pthread_attr_init failed");
+        goto resend;
+    }
+    if (pthread_attr_setstack(&thread_attr, thread_stack, 8 * getpagesize()) != 0) {
+        LOGE("pthread_attr_setstack failed");
+        if (munmap(thread_stack, 10 * getpagesize()) != 0) {
+            LOGE("munmap failed");
+        }
+        goto resend;
+    }
+    if (pthread_create(&thread_id, &thread_attr, fishnet_dispatch_thread, &thread_info) != 0) {
+        LOGE("pthread_create failed");
+        goto resend;
+    }
+    pthread_join(thread_id, nullptr);
+    if (munmap(thread_stack, 10 * getpagesize()) != 0) {
+        LOGE("munmap failed");
+    }
+
+    resend:
+    close_log_fd();
+
+    if (old_actions[signal_number].sa_flags & SA_SIGINFO) {
+        if (old_actions[signal_number].sa_sigaction) {
+            old_actions[signal_number].sa_sigaction(signal_number, info, context);
         }
     } else {
-        if (old_actions[s].sa_handler) {
-            old_actions[s].sa_handler(s);
+        if (old_actions[signal_number].sa_handler) {
+            old_actions[signal_number].sa_handler(signal_number);
         }
     }
 }
 
-void register_handlers(struct sigaction *action) {
+static void register_handlers(struct sigaction *action) {
     sigaction(SIGABRT, action, old_actions + SIGABRT);
     sigaction(SIGBUS, action, old_actions + SIGBUS);
     sigaction(SIGFPE, action, old_actions + SIGFPE);
@@ -108,28 +166,23 @@ void register_handlers(struct sigaction *action) {
 void init_signal_handler(bool enabled) {
     if (!enabled) return;
 
-    size_t thread_stack_pages = 8;
-    void *thread_stack_allocation = mmap(nullptr, getpagesize() * (thread_stack_pages + 2), PROT_NONE,
-                                         MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+    const size_t thread_stack_pages = 8;
+    const void *thread_stack_allocation = mmap(nullptr, getpagesize() * (thread_stack_pages + 2),
+                                               PROT_NONE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
     if (thread_stack_allocation == MAP_FAILED) {
-        LOG_FISHNET("failed to allocate fishnet thread stack");
+        LOGE("failed to allocate fishnet thread stack");
     }
 
     char *stack = (char *) thread_stack_allocation + getpagesize();
     if (mprotect(stack, getpagesize() * thread_stack_pages, PROT_READ | PROT_WRITE) != 0) {
-        LOG_FISHNET("failed to mprotect fishnet thread stack");
+        LOGE("failed to mprotect fishnet thread stack");
     }
-
-    // Stack grows negatively, set it to the last byte in the page...
-    stack = (stack + thread_stack_pages * getpagesize() - 1);
-    // and align it.
-    stack -= 15;
-
+    thread_stack = stack;
 
     struct sigaction action{};
     memset(&action, 0, sizeof(action));
     sigfillset(&action.sa_mask);
-    action.sa_sigaction = signal_handler;
+    action.sa_sigaction = fishnet_signal_handler;
     action.sa_flags = SA_SIGINFO | SA_ONSTACK;
     register_handlers(&action);
 

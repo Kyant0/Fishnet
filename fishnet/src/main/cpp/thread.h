@@ -9,7 +9,7 @@ std::string get_thread_name(pid_t tid);
 
 void print_thread_header(pid_t pid, pid_t tid, uid_t uid);
 
-void print_main_thread(pid_t pid, pid_t tid, uid_t uid, siginfo_t *si, int word_size,
+void print_main_thread(pid_t pid, pid_t tid, uid_t uid, const siginfo_t *info, int word_size,
                        const unwindstack::ArchEnum &arch, unwindstack::AndroidUnwinder *unwinder,
                        const std::unique_ptr<unwindstack::Regs> &regs,
                        const std::vector<unwindstack::FrameData> &frames,

@@ -62,9 +62,9 @@ int get_signal_catcher_tid(pid_t myPid) {
     return -1;
 }
 
-void anr_signal_handler(int s, siginfo_t *si, void *uc) {
-    int fromPid1 = si->_si_pad[3];
-    int fromPid2 = si->_si_pad[4];
+void anr_signal_handler(int signal, siginfo_t *info, void *context) {
+    int fromPid1 = info->_si_pad[3];
+    int fromPid2 = info->_si_pad[4];
     int myPid = getpid();
     LOG_FISHNET("Receive ANR signal, fromPid1: %d, fromPid2: %d, myPid: %d", fromPid1, fromPid2, myPid);
     if (fromPid1 != myPid && fromPid2 != myPid) {

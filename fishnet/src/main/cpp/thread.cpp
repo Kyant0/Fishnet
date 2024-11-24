@@ -20,27 +20,27 @@
 
 #define BIONIC_SIGNAL_BACKTRACE (__SIGRTMIN + 1)
 
-static bool signal_has_si_addr(const siginfo_t *si) {
+static bool signal_has_si_addr(const siginfo_t *info) {
     // Manually sent signals won't have si_addr.
-    if (si->si_code == SI_USER || si->si_code == SI_QUEUE || si->si_code == SI_TKILL) {
+    if (info->si_code == SI_USER || info->si_code == SI_QUEUE || info->si_code == SI_TKILL) {
         return false;
     }
 
-    switch (si->si_signo) {
+    switch (info->si_signo) {
         case SIGBUS:
         case SIGFPE:
         case SIGILL:
         case SIGTRAP:
             return true;
         case SIGSEGV:
-            return si->si_code != SEGV_MTEAERR;
+            return info->si_code != SEGV_MTEAERR;
         default:
             return false;
     }
 }
 
-static bool signal_has_sender(const siginfo_t *si, pid_t caller_pid) {
-    return SI_FROMUSER(si) && (si->si_pid != 0) && (si->si_pid != caller_pid);
+static bool signal_has_sender(const siginfo_t *info, pid_t caller_pid) {
+    return SI_FROMUSER(info) && (info->si_pid != 0) && (info->si_pid != caller_pid);
 }
 
 std::string get_thread_name(pid_t tid) {
@@ -137,18 +137,18 @@ void print_thread_header(pid_t pid, pid_t tid, uid_t uid) {
 #endif
 }
 
-void print_main_thread(pid_t pid, pid_t tid, uid_t uid, siginfo_t *si, int word_size,
+void print_main_thread(pid_t pid, pid_t tid, uid_t uid, const siginfo_t *info, int word_size,
                        const unwindstack::ArchEnum &arch, unwindstack::AndroidUnwinder *unwinder,
                        const std::unique_ptr<unwindstack::Regs> &regs,
                        const std::vector<unwindstack::FrameData> &frames,
                        bool dump_memory, bool dump_memory_maps) {
-    const bool has_fault_addr = signal_has_si_addr(si);
-    const auto fault_addr = (uintptr_t) si->si_addr;
+    const bool has_fault_addr = signal_has_si_addr(info);
+    const auto fault_addr = (uintptr_t) info->si_addr;
     print_thread_header(pid, tid, uid);
 
     std::string sender_desc;
-    if (signal_has_sender(si, pid)) {
-        sender_desc = StringPrintf(" from pid %d, uid %d", si->si_pid, si->si_uid);
+    if (signal_has_sender(info, pid)) {
+        sender_desc = StringPrintf(" from pid %d, uid %d", info->si_pid, info->si_uid);
     }
 
     bool is_async_mte_crash = false;
@@ -161,15 +161,15 @@ void print_main_thread(pid_t pid, pid_t tid, uid_t uid, siginfo_t *si, int word_
     }
 
     LOG_FISHNET("signal %d (%s), code %d (%s%s), fault addr %s",
-                si->si_signo, get_signame(si),
-                si->si_code, get_sigcode(si), sender_desc.c_str(),
+                info->si_signo, get_signame(info),
+                info->si_code, get_sigcode(info), sender_desc.c_str(),
                 fault_addr_desc.c_str());
 #ifdef SEGV_MTEAERR
-    is_async_mte_crash = si->si_signo == SIGSEGV && si->si_code == SEGV_MTEAERR;
-    is_mte_crash = is_async_mte_crash || (si->si_signo == SIGSEGV && si->si_code == SEGV_MTESERR);
+    is_async_mte_crash = info->si_signo == SIGSEGV && info->si_code == SEGV_MTEAERR;
+    is_mte_crash = is_async_mte_crash || (info->si_signo == SIGSEGV && info->si_code == SEGV_MTESERR);
 #endif
 
-    dump_probable_cause(si, unwinder->GetMaps(), regs);
+    dump_probable_cause(info, unwinder->GetMaps(), regs);
 
     dump_abort_message();
 
