@@ -2,7 +2,7 @@
 
 #include <unistd.h>
 
-#define ENABLE_LOG 1
+#define ENABLE_LOG 0
 
 static int log_fd = -1;
 
