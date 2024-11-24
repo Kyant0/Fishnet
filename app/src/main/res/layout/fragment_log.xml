@@ -12,6 +12,7 @@
             android:id="@+id/tv_log"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/jetbrains_mono"
             android:padding="16dp"
             android:text="No log yet"
             android:textColor="@color/text"
