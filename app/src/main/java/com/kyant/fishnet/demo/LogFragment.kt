@@ -4,6 +4,8 @@ package com.kyant.fishnet.demo
 
 import android.app.Fragment
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,16 +19,20 @@ class LogFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val logTextView = view.findViewById<TextView>(R.id.tv_log)
-        logTextView.text = getLog()
+        val progressBar = view.findViewById<View>(R.id.progress_bar)
+        Handler(Looper.getMainLooper()).post {
+            val log = getLog()
+            logTextView.text = log
+            progressBar.visibility = View.GONE
+        }
     }
 
     private fun getLog(): String {
         return try {
             val logFile = File(context.filesDir, "fishnet.log")
-            logFile.readText()
-        } catch (e: Exception) {
-            e.printStackTrace()
-            "Failed to read log file: ${e.message}"
-        }
+            logFile.readText().takeIf { it.isNotEmpty() }
+        } catch (_: Exception) {
+            null
+        } ?: "No log available"
     }
 }
