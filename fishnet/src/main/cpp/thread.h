@@ -1,13 +1,7 @@
 #ifndef FISHNET_THREAD_H
 #define FISHNET_THREAD_H
 
-#include <string>
-
 #include "unwindstack/AndroidUnwinder.h"
-
-std::string get_thread_name(pid_t tid);
-
-void print_thread_header(pid_t pid, pid_t tid, uid_t uid);
 
 void print_main_thread(pid_t pid, pid_t tid, uid_t uid, const siginfo_t *info, int word_size,
                        const unwindstack::ArchEnum &arch, unwindstack::AndroidUnwinder *unwinder,
@@ -15,7 +9,7 @@ void print_main_thread(pid_t pid, pid_t tid, uid_t uid, const siginfo_t *info, i
                        const std::vector<unwindstack::FrameData> &frames,
                        bool dump_memory, bool dump_memory_maps);
 
-void print_thread(pid_t pid, pid_t tid, uid_t uid, int word_size, const unwindstack::ArchEnum &arch,
+void print_thread(pid_t pid, pid_t tid, int word_size, const unwindstack::ArchEnum &arch,
                   unwindstack::ThreadUnwinder *unwinder, bool dump_memory);
 
 #endif //FISHNET_THREAD_H

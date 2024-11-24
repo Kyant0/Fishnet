@@ -43,7 +43,7 @@ static bool signal_has_sender(const siginfo_t *info, pid_t caller_pid) {
     return SI_FROMUSER(info) && (info->si_pid != 0) && (info->si_pid != caller_pid);
 }
 
-std::string get_thread_name(pid_t tid) {
+static std::string get_thread_name(pid_t tid) {
     char thread_name[16];
     char path[19];
 
@@ -102,7 +102,7 @@ static std::string describe_pac_enabled_keys(long value) {
     return describe_end(value, desc);
 }
 
-void print_thread_header(pid_t pid, pid_t tid, uid_t uid) {
+static void print_main_thread_header(pid_t pid, pid_t tid, uid_t uid) {
     const std::vector<std::string> command_line = get_command_line(pid);
     if (!command_line.empty()) {
         if (command_line.size() == 1) {
@@ -118,10 +118,10 @@ void print_thread_header(pid_t pid, pid_t tid, uid_t uid) {
     } else {
         LOG_FISHNET("Cmdline: <unknown>");
     }
-    const std::string thread_name = get_thread_name(tid);
     const std::string process_name = get_process_name(pid);
-    LOG_FISHNET("pid: %d, tid: %d, name: %s  >>> %s <<<", pid, tid, thread_name.c_str(), process_name.c_str());
-    LOG_FISHNET("uid: %d", uid);
+    const std::string thread_name = get_thread_name(tid);
+    LOG_FISHNET("pid: %d, tid: %d, uid: %d, name: %s  >>> %s <<<",
+                pid, tid, uid, thread_name.c_str(), process_name.c_str());
     // Only supported on aarch64 for now.
 #if defined(__aarch64__)
     const long tagged_addr_ctrl = prctl(PR_GET_TAGGED_ADDR_CTRL, 0, 0, 0, 0);
@@ -144,7 +144,7 @@ void print_main_thread(pid_t pid, pid_t tid, uid_t uid, const siginfo_t *info, i
                        bool dump_memory, bool dump_memory_maps) {
     const bool has_fault_addr = signal_has_si_addr(info);
     const auto fault_addr = (uintptr_t) info->si_addr;
-    print_thread_header(pid, tid, uid);
+    print_main_thread_header(pid, tid, uid);
 
     std::string sender_desc;
     if (signal_has_sender(info, pid)) {
@@ -209,11 +209,12 @@ void print_main_thread(pid_t pid, pid_t tid, uid_t uid, const siginfo_t *info, i
     }
 }
 
-void print_thread(pid_t pid, pid_t tid, uid_t uid, int word_size, const unwindstack::ArchEnum &arch,
+void print_thread(pid_t pid, pid_t tid, int word_size, const unwindstack::ArchEnum &arch,
                   unwindstack::ThreadUnwinder *unwinder, bool dump_memory) {
     std::unique_ptr<unwindstack::Regs> regs;
     unwinder->UnwindWithSignal(BIONIC_SIGNAL_BACKTRACE, tid, &regs);
-    print_thread_header(pid, tid, uid);
+    const std::string thread_name = get_thread_name(tid);
+    LOG_FISHNET("tid: %d, name: %s", pid, thread_name.c_str());
     if (regs) {
         print_thread_registers(arch, word_size, regs);
     }

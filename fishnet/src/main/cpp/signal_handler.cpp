@@ -22,10 +22,10 @@ struct debugger_thread_info {
     void *ucontext;
 };
 
-static void *thread_stack;
+static void *thread_stack = nullptr;
 
 static void *fishnet_dispatch_thread(void *arg) {
-    debugger_thread_info *thread_info = (debugger_thread_info *) arg;
+    const debugger_thread_info *thread_info = (const debugger_thread_info *) arg;
 
     LOGE("fishnet_dispatch_thread started");
 
@@ -59,12 +59,8 @@ static void *fishnet_dispatch_thread(void *arg) {
 
     get_scudo_message_if_needed(arch, regs, data.frames);
 
-    // Do not attempt to dump logs of the logd process because the gathering
-    // of logs can hang until a timeout occurs.
-    if (get_thread_name(tid) != "logd") {
-        dump_logcat(pid);
-        try_read_abort_message_from_logcat();
-    }
+    dump_logcat(pid);
+    try_read_abort_message_from_logcat();
 
     dump_thread_backtrace(data.frames);
 
@@ -88,9 +84,11 @@ static void *fishnet_dispatch_thread(void *arg) {
                       true, false);
 
     for (const pid_t &thread_id: tids) {
-        if (thread_id == tid || thread_id == the_tid) continue;
+        if (thread_id == tid || thread_id == the_tid) {
+            continue;
+        }
         LOG_FISHNET("--- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---");
-        print_thread(pid, thread_id, uid, word_size, arch, &thread_unwinder, false);
+        print_thread(pid, thread_id, word_size, arch, &thread_unwinder, false);
     }
 
     dump_open_fds(pid);
