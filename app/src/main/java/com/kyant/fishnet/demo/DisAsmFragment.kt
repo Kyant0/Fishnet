@@ -80,6 +80,9 @@ class DisAsmFragment : Fragment() {
                             append(" : ${instruction.mnemonic.padEnd(8, ' ')} ${instruction.operands}\n")
                         }
                     }
+                    if (getOrNull(length - 1) == '\n') {
+                        delete(length - 1, length)
+                    }
                 }
             } catch (e: Exception) {
                 e.message
