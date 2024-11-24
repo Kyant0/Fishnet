@@ -49,12 +49,16 @@ void print_backtrace(unwindstack::ArchEnum arch, const std::vector<unwindstack::
         if (is_first_frame) {
             is_first_frame = false;
 
+            if (!frame.map_info) {
+                continue;
+            }
+
             const std::shared_ptr<unwindstack::Elf> elf = frame.map_info->elf();
             if (!elf) {
                 continue;
             }
 
-            const size_t size = std::min(frame.map_info->end() - frame.rel_pc, (uint64_t) 128);
+            const size_t size = std::min(frame.map_info->end() - frame.pc, (uint64_t) 128);
             const std::shared_ptr<unwindstack::Memory> memory = elf->memory();
             if (!memory) {
                 continue;
