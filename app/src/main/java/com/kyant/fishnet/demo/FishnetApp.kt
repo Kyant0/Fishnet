@@ -2,7 +2,6 @@ package com.kyant.fishnet.demo
 
 import android.app.Application
 import android.net.Uri
-import com.kyant.disasm.DisAsm
 import com.kyant.fishnet.Fishnet
 import java.io.File
 
@@ -22,10 +21,5 @@ class FishnetApp : Application() {
         }
 
         System.loadLibrary("com.kyant.fishnet.demo")
-
-        DisAsm.disasm(byteArrayOf(0x20.toByte(), 0x01.toByte(), 0xc0.toByte(), 0x3d.toByte()), 0x51894)
-            .forEach { instruction ->
-                println("0x${instruction.address.toString(16)}: ${instruction.mnemonic} ${instruction.operands}")
-            }
     }
 }
