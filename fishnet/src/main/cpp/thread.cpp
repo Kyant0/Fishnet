@@ -18,8 +18,6 @@
 #include "backtrace.h"
 #include "memory.h"
 
-#define BIONIC_SIGNAL_BACKTRACE (__SIGRTMIN + 1)
-
 static bool signal_has_si_addr(const siginfo_t *info) {
     // Manually sent signals won't have si_addr.
     if (info->si_code == SI_USER || info->si_code == SI_QUEUE || info->si_code == SI_TKILL) {
@@ -212,7 +210,7 @@ void print_main_thread(pid_t pid, pid_t tid, uid_t uid, const siginfo_t *info, i
 void print_thread(pid_t tid, int word_size, const unwindstack::ArchEnum &arch, unwindstack::ThreadUnwinder *unwinder,
                   bool dump_memory) {
     std::unique_ptr<unwindstack::Regs> regs;
-    unwinder->UnwindWithSignal(BIONIC_SIGNAL_BACKTRACE, tid, &regs);
+    unwinder->UnwindWithSignal(SIGRTMIN, tid, &regs);
     const std::string thread_name = get_thread_name(tid);
     LOG_FISHNET("tid: %d, name: %s", tid, thread_name.c_str());
     if (regs) {

@@ -13,37 +13,61 @@ set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -flto -Wl,--exclude-
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-exceptions -fno-rtti")
 
-include_directories("${CMAKE_SOURCE_DIR}/../external")
-set(EXTERNAL_SRC "${CMAKE_SOURCE_DIR}/../external")
-set(BIONIC_SRC "${EXTERNAL_SRC}/bionic")
-set(LIBC_SRC "${BIONIC_SRC}/libc")
-include_directories("${LIBC_SRC}")
-include_directories("${LIBC_SRC}/platform")
-set(ARTBASE_SRC "${EXTERNAL_SRC}/libartbase")
-set(ARTPALETTE_SRC "${EXTERNAL_SRC}/libartpalette")
-set(ASYNCSAFE_SRC "${LIBC_SRC}/async_safe")
-set(ANDROIDBASE_SRC "${EXTERNAL_SRC}/libbase")
-set(DEXFILE_SRC "${EXTERNAL_SRC}/libdexfile")
-set(LOG_SRC "${EXTERNAL_SRC}/liblog")
-set(LZMA_SRC "${EXTERNAL_SRC}/lzma")
-set(PROCINFO_SRC "${EXTERNAL_SRC}/libprocinfo")
-set(LIBIBERTY_SRC "${EXTERNAL_SRC}/libiberty")
-set(UNWINDSTACK_SRC "${EXTERNAL_SRC}/libunwindstack")
-set(ZIPARCHIVE_SRC "${EXTERNAL_SRC}/libziparchive")
-set(ZSTD_SRC "${EXTERNAL_SRC}/zstd")
+set(LIBC_SRC "external/_libc")
+set(ASYNCSAFE_SRC "external/_libc/async_safe")
+set(ANDROIDBASE_SRC "external/libbase")
+set(LIBLOG_SRC "external/logging/liblog")
+set(ARTBASE_SRC "external/art/libartbase")
+set(ARTPALETTE_SRC "external/art/libartpalette")
+set(DEXFILE_SRC "external/art/libdexfile")
+set(PROCINFO_SRC "external/libprocinfo")
+set(ZIPARCHIVE_SRC "external/libziparchive")
+set(ZSTD_SRC "external/zstd")
+set(LZMA_SRC "external/lzma")
+set(LIBIBERTY_SRC "external/libiberty")
+set(UNWINDSTACK_SRC "external/unwinding/libunwindstack")
+
+
+file(GLOB ZSTD_SRC_FILES "${ZSTD_SRC}/lib/*/*.c")
+add_library(zstd STATIC
+        "${ZSTD_SRC_FILES}")
+
+target_include_directories(zstd PUBLIC
+        "${ZSTD_SRC}/lib")
+
+
+add_library(liblog STATIC
+        "${LIBLOG_SRC}/include/log/log.h")
+
+set_target_properties(liblog PROPERTIES
+        LINKER_LANGUAGE C)
+
+target_include_directories(liblog PUBLIC
+        "${LIBLOG_SRC}/include")
+
+
+add_library(bionic_libc STATIC
+        "${LIBC_SRC}/platform/bionic/mte.h")
+
+set_target_properties(bionic_libc PROPERTIES
+        LINKER_LANGUAGE CXX)
+
+target_include_directories(bionic_libc PUBLIC
+        "${LIBC_SRC}"
+        "${LIBC_SRC}/platform")
 
 
 add_library(async_safe STATIC
-        "${ASYNCSAFE_SRC}/async_safe_log.cpp"
-        "${LIBC_SRC}/platform/bionic/macros.h"
-)
+        "${ASYNCSAFE_SRC}/async_safe_log.cpp")
 
 target_include_directories(async_safe PUBLIC
         "${ASYNCSAFE_SRC}/include")
 
 target_link_libraries(async_safe
-        log)
+        log bionic_libc)
 
+
+add_definitions(-DART_BASE_ADDRESS=0x70000000)
 
 add_library(androidbase STATIC
         "${ANDROIDBASE_SRC}/file.cpp"
@@ -54,11 +78,7 @@ add_library(androidbase STATIC
 )
 
 target_include_directories(androidbase PUBLIC
-        "${ANDROIDBASE_SRC}/include"
-        "${LOG_SRC}/include")
-
-target_link_libraries(androidbase
-        log)
+        "${ANDROIDBASE_SRC}/include")
 
 target_compile_options(androidbase PRIVATE
         -D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__ -Werror=unguarded-availability)
@@ -70,6 +90,9 @@ add_library(procinfo STATIC
 
 target_include_directories(procinfo PUBLIC
         "${PROCINFO_SRC}/include")
+
+target_compile_options(procinfo PRIVATE
+        -D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__ -Werror=unguarded-availability)
 
 target_link_libraries(procinfo
         androidbase)
@@ -85,12 +108,11 @@ add_library(ziparchive STATIC
 )
 
 # libziparchive requires cxx2a
-set_target_properties(ziparchive PROPERTIES CXX_STANDARD 20)
+# set_target_properties(ziparchive PROPERTIES CXX_STANDARD 20)
 
 target_include_directories(ziparchive
         PUBLIC "${ZIPARCHIVE_SRC}/include"
         PRIVATE "${ZIPARCHIVE_SRC}/incfs_support/include"
-        PRIVATE "${LOG_SRC}/include"
         PUBLIC "$<TARGET_PROPERTY:androidbase,INTERFACE_INCLUDE_DIRECTORIES>"
 )
 
@@ -98,10 +120,11 @@ target_compile_definitions(ziparchive PRIVATE ZLIB_CONST=const)
 
 target_compile_options(ziparchive PRIVATE -fPIC
         $<$<COMPILE_LANGUAGE:CXX>:-Wno-missing-field-initializers -Wconversion -Wno-sign-conversion -Wold-style-cast>
-        $<$<COMPILE_LANGUAGE:C>:-DZLIB_CONST -Wall -Werror -Wextra -D_FILE_OFFSET_BITS=64 -DINCFS_SUPPORT_DISABLED=1>)
+        $<$<COMPILE_LANGUAGE:C>:-DZLIB_CONST -Wall -Werror -Wextra -D_FILE_OFFSET_BITS=64 -DINCFS_SUPPORT_DISABLED=1>
+        -D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__ -Werror=unguarded-availability)
 
 target_link_libraries(ziparchive
-        androidbase z)
+        androidbase z liblog)
 
 
 add_library(dexfile STATIC
@@ -133,13 +156,15 @@ add_library(dexfile STATIC
         "${ARTBASE_SRC}/base/mem_map.cc"
         "${ARTBASE_SRC}/base/mem_map_unix.cc"
         "${ARTBASE_SRC}/base/zip_archive.cc"
-
-        "${ARTBASE_SRC}/gen/libartbase.operator_out.cc"
+        # "${ARTBASE_SRC}/gen/libartbase.operator_out.cc"
         # "${ARTBASE_SRC}/base/runtime_common.cc"
         # "${ARTBASE_SRC}/base/native_stack_dump.cc"
 
         # "generated/libdexfile.operator_out.cc"
 )
+
+target_compile_options(dexfile PRIVATE
+        -D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__ -Werror=unguarded-availability)
 
 target_include_directories(dexfile BEFORE
         PUBLIC "${DEXFILE_SRC}"
@@ -304,7 +329,6 @@ add_library(unwindstack STATIC
 target_include_directories(unwindstack BEFORE
         PUBLIC "${UNWINDSTACK_SRC}/include"
         PRIVATE "platform"
-        PRIVATE "${ZSTD_SRC}"
         PRIVATE "${LIBIBERTY_SRC}")
 
 target_compile_options(unwindstack PRIVATE -Wno-c99-designator -Wno-deprecated-declarations)
@@ -316,7 +340,7 @@ endif ()
 target_compile_definitions(unwindstack PRIVATE DEXFILE_SUPPORT=1)
 
 target_link_libraries(unwindstack
-        lzma androidbase dexfile procinfo async_safe)
+        lzma zstd androidbase dexfile procinfo async_safe bionic_libc)
 
 target_compile_options(unwindstack PRIVATE
         -D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__ -Werror=unguarded-availability)
