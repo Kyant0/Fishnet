@@ -1,4 +1,4 @@
-Subject: [PATCH] external
+Subject: [PATCH] fishnet_external
 ---
 Index: fishnet/src/main/cpp/external/libziparchive/include/ziparchive/zip_writer.h
 IDEA additional info:
