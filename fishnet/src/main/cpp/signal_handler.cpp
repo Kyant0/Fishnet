@@ -8,6 +8,7 @@
 #include "abort_message.h"
 #include "logcat.h"
 #include "process.h"
+#include "tasks.h"
 #include "thread.h"
 #include "property.h"
 #include "backtrace.h"
@@ -83,12 +84,14 @@ static void *fishnet_dispatch_thread(void *arg) {
     print_main_thread(pid, tid, uid, info, word_size, arch, &unwinder, regs, data.frames,
                       true, false);
 
+    print_tasks(pid);
+
     for (const pid_t &thread_id: tids) {
         if (thread_id == tid || thread_id == the_tid) {
             continue;
         }
         LOG_FISHNET("--- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---");
-        print_thread(pid, thread_id, word_size, arch, &thread_unwinder, false);
+        print_thread(thread_id, word_size, arch, &thread_unwinder, false);
     }
 
     dump_open_fds(pid);

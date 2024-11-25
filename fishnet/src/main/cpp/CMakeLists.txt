@@ -334,6 +334,7 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
         command_line.cpp
         process.cpp
         thread.cpp
+        tasks.cpp
         property.cpp
         registers.cpp
         backtrace.cpp

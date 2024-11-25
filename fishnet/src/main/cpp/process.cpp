@@ -59,6 +59,7 @@ uint64_t get_process_start_time(pid_t pid) {
         fclose(file);
         return -1;
     }
+    fclose(file);
 
     char state = '\0';
     int ppid = 0;

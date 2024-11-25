@@ -209,12 +209,12 @@ void print_main_thread(pid_t pid, pid_t tid, uid_t uid, const siginfo_t *info, i
     }
 }
 
-void print_thread(pid_t pid, pid_t tid, int word_size, const unwindstack::ArchEnum &arch,
-                  unwindstack::ThreadUnwinder *unwinder, bool dump_memory) {
+void print_thread(pid_t tid, int word_size, const unwindstack::ArchEnum &arch, unwindstack::ThreadUnwinder *unwinder,
+                  bool dump_memory) {
     std::unique_ptr<unwindstack::Regs> regs;
     unwinder->UnwindWithSignal(BIONIC_SIGNAL_BACKTRACE, tid, &regs);
     const std::string thread_name = get_thread_name(tid);
-    LOG_FISHNET("tid: %d, name: %s", pid, thread_name.c_str());
+    LOG_FISHNET("tid: %d, name: %s", tid, thread_name.c_str());
     if (regs) {
         print_thread_registers(arch, word_size, regs);
     }
