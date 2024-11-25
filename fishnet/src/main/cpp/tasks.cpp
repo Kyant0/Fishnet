@@ -298,6 +298,17 @@ void print_tasks(pid_t pid) {
     const long total_memory = get_total_system_memory();
     LOG_FISHNET("Total memory: %ld", total_memory);
 
+    /*
+top - 19:59:27 up  4:29,  1 user,  load average: 0.00, 0.00, 0.00
+Threads:   1 total,   0 running,   1 sleeping,   0 stopped,   0 zombie
+%Cpu(s):  0.0 us,  0.0 sy,  0.0 ni,100.0 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+MiB Mem :   7808.3 total,   7160.9 free,    664.2 used,    214.2 buff/cache
+MiB Swap:   2048.0 total,   2048.0 free,      0.0 used.   7144.1 avail Mem
+
+    PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND
+    174 message+  20   0    9532   5120   4488 S   0.0   0.1   0:00.20 dbus-daemon
+     */
+
     //    PID     PR  NI     VIRT      RES    SHR   S  %CPU  %MEM   TIME+
     //    12028   10  -10 14895796224  37724  23431 S    25  3683  8379685
     LOG_FISHNET("    PID     PR  NI     VIRT      RES    SHR   S  %%CPU  %%MEM   TIME+");
