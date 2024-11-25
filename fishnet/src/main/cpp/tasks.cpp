@@ -4,6 +4,7 @@
 #include <bits/sysconf.h>
 #include <dirent.h>
 #include <memory>
+#include <unistd.h>
 #include <vector>
 
 #include "log.h"
@@ -301,6 +302,8 @@ void print_tasks(pid_t pid) {
     //    12028   10  -10 14895796224  37724  23431 S    25  3683  8379685
     LOG_FISHNET("    PID     PR  NI     VIRT      RES    SHR   S  %%CPU  %%MEM   TIME+");
 
+    const int page_size_kb = getpagesize() / 1024;
+
     for (const ProcessStat &task: tasks) {
         double cpu_usage = 0.0;
         if (total_uptime > 0) {
@@ -310,11 +313,11 @@ void print_tasks(pid_t pid) {
         }
         double memory_usage = 0.0;
         if (total_memory > 0) {
-            memory_usage = (task.rss * 4.0) / total_memory * 100.0;  // Memory in KB, total_memory in KB
+            memory_usage = 100.0 * (task.rss * page_size_kb) / total_memory;  // Memory in KB, total_memory in KB
         }
         LOG_FISHNET("    %5d %4ld %4ld %7lu %6ld %6ld %c %5.1f %5.1f %8llu",
-                    task.pid, task.priority, task.nice, task.vsize, task.rss, task.shared, task.state,
-                    cpu_usage, memory_usage, task.starttime);
+                    task.pid, task.priority, task.nice, task.vsize, task.rss * page_size_kb,
+                    task.shared * page_size_kb, task.state, cpu_usage, memory_usage, task.starttime);
     }
 
     LOG_FISHNET("");
