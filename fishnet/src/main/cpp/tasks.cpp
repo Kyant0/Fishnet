@@ -292,9 +292,9 @@ void print_tasks(pid_t pid) {
     LOG_FISHNET("Threads: %zu total, %zu running, %zu sleeping, %zu stopped, %zu zombie",
                 total, running, sleeping, stopped, zombie);
 
-    uint64_t total_uptime = get_process_uptime(pid);
+    const uint64_t total_uptime = get_process_uptime(pid);
     LOG_FISHNET("Total uptime: %ld", total_uptime);
-    long total_memory = get_total_system_memory();
+    const long total_memory = get_total_system_memory();
     LOG_FISHNET("Total memory: %ld", total_memory);
 
     //    PID     PR  NI     VIRT      RES    SHR   S  %CPU  %MEM   TIME+
