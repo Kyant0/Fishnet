@@ -210,7 +210,6 @@ When you modified the c++ code in `fishnet` module, run the demo app twice to se
 |                      | [libartbase](https://android.googlesource.com/platform/art/+log/refs/heads/main/libartbase)                                       | 2024 Nov 22 16:37:17       |
 |                      | [libartpalette](https://android.googlesource.com/platform/art/+log/refs/heads/main/libartpalette)                                 | 2024 Aug 29 12:15:41       |
 |                      | [libdexfile](https://android.googlesource.com/platform/art/+log/refs/heads/main/libdexfile)                                       | 2024 Nov 18 10:53:22       |
-| system/core          | [system/core](https://android.googlesource.com/platform/system/core/+/f7b584086c464f04f764677df56c8a2644109523)                   | 2024 Nov 25 22:25:24       |
 | system/libbase       | [system/libbase](https://android.googlesource.com/platform/system/libbase/+/72bf9612eacb940beaefbabc116c9f5b293d5ad1)             | 2024 Nov 07 20:40:11       |
 | system/libprocinfo   | [system/libprocinfo](https://android.googlesource.com/platform/system/libprocinfo/+/b6b71fd97d7015a59175936a9b3824623470a1a7)     | 2024 Aug 14 22:08:40       |
 | system/libziparchive | [system/libziparchive](https://android.googlesource.com/platform/system/libziparchive/+/63f00d1ade29315dc0adac08fceae9984305205d) | 2024 Jun 04 23:06:47       |

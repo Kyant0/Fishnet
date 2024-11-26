@@ -6,10 +6,6 @@
 	path = fishnet/src/main/cpp/external/art
 	url = https://android.googlesource.com/platform/art
 	shallow = true
-[submodule "fishnet/src/main/cpp/external/core"]
-	path = fishnet/src/main/cpp/external/core
-	url = https://android.googlesource.com/platform/system/core
-	shallow = true
 [submodule "fishnet/src/main/cpp/external/libbase"]
 	path = fishnet/src/main/cpp/external/libbase
 	url = https://android.googlesource.com/platform/system/libbase
