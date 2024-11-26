@@ -27,13 +27,19 @@ set(LZMA_SRC "external/lzma")
 set(LIBIBERTY_SRC "external/libiberty")
 set(UNWINDSTACK_SRC "external/unwinding/libunwindstack")
 
+set(ZSTD_LEGACY_SUPPORT OFF)
+set(ZSTD_BUILD_PROGRAMS OFF)
+set(ZSTD_BUILD_CONTRIB OFF)
+set(ZSTD_BUILD_TESTS OFF)
 
-file(GLOB ZSTD_SRC_FILES "${ZSTD_SRC}/lib/*/*.c")
-add_library(zstd STATIC
-        "${ZSTD_SRC_FILES}")
+set(ZSTD_BUILD_STATIC ON)
+set(ZSTD_BUILD_SHARED OFF)
+set(ZSTD_BUILD_COMPRESSION OFF)
+set(ZSTD_BUILD_DECOMPRESSION ON)
+set(ZSTD_BUILD_DICTBUILDER OFF)
+set(ZSTD_BUILD_DEPRECATED OFF)
 
-target_include_directories(zstd PUBLIC
-        "${ZSTD_SRC}/lib")
+add_subdirectory("${ZSTD_SRC}/build/cmake" zstd)
 
 
 add_library(liblog STATIC
@@ -340,7 +346,7 @@ endif ()
 target_compile_definitions(unwindstack PRIVATE DEXFILE_SUPPORT=1)
 
 target_link_libraries(unwindstack
-        lzma zstd androidbase dexfile procinfo async_safe bionic_libc)
+        lzma libzstd_static androidbase dexfile procinfo async_safe bionic_libc)
 
 target_compile_options(unwindstack PRIVATE
         -D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__ -Werror=unguarded-availability)
