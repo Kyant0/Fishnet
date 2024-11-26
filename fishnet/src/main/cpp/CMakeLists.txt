@@ -279,8 +279,7 @@ add_library(unwindstack STATIC
         "${LIBIBERTY_SRC}/cplus-dem.c"
         "${LIBIBERTY_SRC}/d-demangle.c"
         "${LIBIBERTY_SRC}/rust-demangle.c"
-        "${LIBIBERTY_SRC}/safe-ctype.c"
-)
+        "${LIBIBERTY_SRC}/safe-ctype.c")
 
 target_include_directories(unwindstack BEFORE
         PUBLIC "${UNWINDSTACK_SRC}/include"
