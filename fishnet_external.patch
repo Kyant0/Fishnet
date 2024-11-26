@@ -1,0 +1,322 @@
+Subject: [PATCH] fishnet_external
+---
+Index: fishnet/src/main/cpp/external/libziparchive/include/ziparchive/zip_writer.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/fishnet/src/main/cpp/external/libziparchive/include/ziparchive/zip_writer.h b/fishnet/src/main/cpp/external/libziparchive/include/ziparchive/zip_writer.h
+--- a/fishnet/src/main/cpp/external/libziparchive/include/ziparchive/zip_writer.h	(revision 63f00d1ade29315dc0adac08fceae9984305205d)
++++ b/fishnet/src/main/cpp/external/libziparchive/include/ziparchive/zip_writer.h	(date 1732542536519)
+@@ -19,7 +19,7 @@
+ #include <cstdio>
+ #include <ctime>
+ 
+-#include <gtest/gtest_prod.h>
++// #include <gtest/gtest_prod.h>
+ #include <memory>
+ #include <string>
+ #include <string_view>
+@@ -191,5 +191,5 @@
+   std::unique_ptr<z_stream, void (*)(z_stream*)> z_stream_;
+   std::vector<uint8_t> buffer_;
+ 
+-  FRIEND_TEST(zipwriter, WriteToUnseekableFile);
++  // FRIEND_TEST(zipwriter, WriteToUnseekableFile);
+ };
+Index: fishnet/src/main/cpp/external/libbase/include/android-base/logging.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/fishnet/src/main/cpp/external/libbase/include/android-base/logging.h b/fishnet/src/main/cpp/external/libbase/include/android-base/logging.h
+--- a/fishnet/src/main/cpp/external/libbase/include/android-base/logging.h	(revision 72bf9612eacb940beaefbabc116c9f5b293d5ad1)
++++ b/fishnet/src/main/cpp/external/libbase/include/android-base/logging.h	(date 1732543773579)
+@@ -16,6 +16,8 @@
+ 
+ #pragma once
+ 
++#define NDEBUG 1
++
+ //
+ // Google-style C++ logging.
+ //
+Index: fishnet/src/main/cpp/external/unwinding/libunwindstack/AndroidUnwinder.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/fishnet/src/main/cpp/external/unwinding/libunwindstack/AndroidUnwinder.cpp b/fishnet/src/main/cpp/external/unwinding/libunwindstack/AndroidUnwinder.cpp
+--- a/fishnet/src/main/cpp/external/unwinding/libunwindstack/AndroidUnwinder.cpp	(revision c7b83a52e8dbe29735e74f0abee1fe565a7ced5b)
++++ b/fishnet/src/main/cpp/external/unwinding/libunwindstack/AndroidUnwinder.cpp	(date 1732547046364)
+@@ -38,7 +38,7 @@
+ #include <unwindstack/RegsGetLocal.h>
+ #include <unwindstack/Unwinder.h>
+ 
+-#if defined(__BIONIC__)
++#if defined(__BIONIC__) && 0
+ #include <bionic/reserved_signals.h>
+ static constexpr int kThreadUnwindSignal = BIONIC_SIGNAL_BACKTRACE;
+ #else
+Index: fishnet/src/main/cpp/external/art/libartbase/base/unix_file/fd_file.cc
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/fishnet/src/main/cpp/external/art/libartbase/base/unix_file/fd_file.cc b/fishnet/src/main/cpp/external/art/libartbase/base/unix_file/fd_file.cc
+--- a/fishnet/src/main/cpp/external/art/libartbase/base/unix_file/fd_file.cc	(revision 1d280b080a4eb3529a96a5e64f938a10b0dd331a)
++++ b/fishnet/src/main/cpp/external/art/libartbase/base/unix_file/fd_file.cc	(date 1732542316761)
+@@ -14,6 +14,8 @@
+  * limitations under the License.
+  */
+ 
++#define IS_FDSAN_AVAILABLE __builtin_available(android 29, *)
++
+ #include "fd_file.h"
+ 
+ #include <errno.h>
+@@ -141,8 +143,12 @@
+ 
+ #if defined(__BIONIC__)
+ static uint64_t GetFdFileOwnerTag(FdFile* fd_file) {
+-  return android_fdsan_create_owner_tag(ANDROID_FDSAN_OWNER_TYPE_ART_FDFILE,
+-                                        reinterpret_cast<uint64_t>(fd_file));
++  if (IS_FDSAN_AVAILABLE) {
++    return android_fdsan_create_owner_tag(ANDROID_FDSAN_OWNER_TYPE_ART_FDFILE,
++                                          reinterpret_cast<uint64_t>(fd_file));
++  } else {
++    return 0;
++  }
+ }
+ #endif
+ 
+@@ -159,8 +165,10 @@
+       file_path_(path),
+       read_only_mode_(read_only_mode) {
+ #if defined(__BIONIC__)
+-  if (fd >= 0) {
+-    android_fdsan_exchange_owner_tag(fd, 0, GetFdFileOwnerTag(this));
++  if (IS_FDSAN_AVAILABLE) {
++    if (fd >= 0) {
++      android_fdsan_exchange_owner_tag(fd, 0, GetFdFileOwnerTag(this));
++    }
+   }
+ #endif
+ }
+@@ -196,8 +204,10 @@
+       file_path_(std::move(other.file_path_)),
+       read_only_mode_(other.read_only_mode_) {
+ #if defined(__BIONIC__)
+-  if (fd_ >= 0) {
+-    android_fdsan_exchange_owner_tag(fd_, GetFdFileOwnerTag(&other), GetFdFileOwnerTag(this));
++  if (IS_FDSAN_AVAILABLE) {
++    if (fd_ >= 0) {
++      android_fdsan_exchange_owner_tag(fd_, GetFdFileOwnerTag(&other), GetFdFileOwnerTag(this));
++    }
+   }
+ #endif
+   other.guard_state_ = GuardState::kClosed;
+@@ -219,8 +229,10 @@
+   read_only_mode_ = other.read_only_mode_;
+ 
+ #if defined(__BIONIC__)
+-  if (fd_ >= 0) {
+-    android_fdsan_exchange_owner_tag(fd_, GetFdFileOwnerTag(&other), GetFdFileOwnerTag(this));
++  if (IS_FDSAN_AVAILABLE) {
++    if (fd_ >= 0) {
++      android_fdsan_exchange_owner_tag(fd_, GetFdFileOwnerTag(&other), GetFdFileOwnerTag(this));
++    }
+   }
+ #endif
+   other.guard_state_ = GuardState::kClosed;
+@@ -237,8 +249,10 @@
+   fd_ = kInvalidFd;
+   guard_state_ = GuardState::kNoCheck;
+ #if defined(__BIONIC__)
+-  if (tmp_fd >= 0) {
+-    android_fdsan_exchange_owner_tag(tmp_fd, GetFdFileOwnerTag(this), 0);
++  if (IS_FDSAN_AVAILABLE) {
++    if (tmp_fd >= 0) {
++      android_fdsan_exchange_owner_tag(tmp_fd, GetFdFileOwnerTag(this), 0);
++    }
+   }
+ #endif
+   return tmp_fd;
+@@ -253,8 +267,10 @@
+   fd_ = fd;
+ 
+ #if defined(__BIONIC__)
+-  if (fd_ >= 0) {
+-    android_fdsan_exchange_owner_tag(fd_, 0, GetFdFileOwnerTag(this));
++  if (IS_FDSAN_AVAILABLE) {
++    if (fd_ >= 0) {
++      android_fdsan_exchange_owner_tag(fd_, 0, GetFdFileOwnerTag(this));
++    }
+   }
+ #endif
+ 
+@@ -302,7 +318,9 @@
+   }
+ 
+ #if defined(__BIONIC__)
+-  android_fdsan_exchange_owner_tag(fd_, 0, GetFdFileOwnerTag(this));
++  if (IS_FDSAN_AVAILABLE) {
++    android_fdsan_exchange_owner_tag(fd_, 0, GetFdFileOwnerTag(this));
++  }
+ #endif
+ 
+   file_path_ = path;
+@@ -319,7 +337,12 @@
+ 
+ int FdFile::Close() {
+ #if defined(__BIONIC__)
+-  int result = android_fdsan_close_with_tag(fd_, GetFdFileOwnerTag(this));
++  int result;
++  if (IS_FDSAN_AVAILABLE) {
++    result = android_fdsan_close_with_tag(fd_, GetFdFileOwnerTag(this));
++  } else {
++    result = close(fd_);
++  }
+ #else
+   int result = close(fd_);
+ #endif
+Index: fishnet/src/main/cpp/external/libziparchive/zip_archive.cc
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/fishnet/src/main/cpp/external/libziparchive/zip_archive.cc b/fishnet/src/main/cpp/external/libziparchive/zip_archive.cc
+--- a/fishnet/src/main/cpp/external/libziparchive/zip_archive.cc	(revision 63f00d1ade29315dc0adac08fceae9984305205d)
++++ b/fishnet/src/main/cpp/external/libziparchive/zip_archive.cc	(date 1732542390990)
+@@ -18,6 +18,8 @@
+  * Read-only access to Zip archives, with minimal heap allocation.
+  */
+ 
++#define IS_FDSAN_AVAILABLE __builtin_available(android 29, *)
++
+ #define LOG_TAG "ziparchive"
+ 
+ #include "ziparchive/zip_archive.h"
+@@ -150,8 +152,10 @@
+ 
+ #if defined(__BIONIC__)
+ static uint64_t GetOwnerTag(const ZipArchive* archive) {
+-  return android_fdsan_create_owner_tag(ANDROID_FDSAN_OWNER_TYPE_ZIPARCHIVE,
+-                                        reinterpret_cast<uint64_t>(archive));
++  if (IS_FDSAN_AVAILABLE) {
++    return android_fdsan_create_owner_tag(ANDROID_FDSAN_OWNER_TYPE_ZIPARCHIVE,
++                                          reinterpret_cast<uint64_t>(archive));
++  }
+ }
+ #endif
+ 
+@@ -165,7 +169,9 @@
+ #if defined(__BIONIC__)
+   if (assume_ownership) {
+     CHECK(mapped_zip.GetFileDescriptor() >= 0 || !mapped_zip.GetBasePtr());
+-    android_fdsan_exchange_owner_tag(mapped_zip.GetFileDescriptor(), 0, GetOwnerTag(this));
++    if (IS_FDSAN_AVAILABLE) {
++      android_fdsan_exchange_owner_tag(mapped_zip.GetFileDescriptor(), 0, GetOwnerTag(this));
++    }
+   }
+ #endif
+ }
+@@ -181,7 +187,11 @@
+ ZipArchive::~ZipArchive() {
+   if (close_file && mapped_zip.GetFileDescriptor() >= 0) {
+ #if defined(__BIONIC__)
+-    android_fdsan_close_with_tag(mapped_zip.GetFileDescriptor(), GetOwnerTag(this));
++    if (IS_FDSAN_AVAILABLE) {
++      android_fdsan_close_with_tag(mapped_zip.GetFileDescriptor(), GetOwnerTag(this));
++    } else {
++      close(mapped_zip.GetFileDescriptor());
++    }
+ #else
+     close(mapped_zip.GetFileDescriptor());
+ #endif
+Index: fishnet/src/main/cpp/external/unwinding/libunwindstack/include/unwindstack/Maps.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/fishnet/src/main/cpp/external/unwinding/libunwindstack/include/unwindstack/Maps.h b/fishnet/src/main/cpp/external/unwinding/libunwindstack/include/unwindstack/Maps.h
+--- a/fishnet/src/main/cpp/external/unwinding/libunwindstack/include/unwindstack/Maps.h	(revision c7b83a52e8dbe29735e74f0abee1fe565a7ced5b)
++++ b/fishnet/src/main/cpp/external/unwinding/libunwindstack/include/unwindstack/Maps.h	(date 1732543225025)
+@@ -20,6 +20,7 @@
+ #include <sys/types.h>
+ #include <unistd.h>
+ 
++#include <functional>
+ #include <memory>
+ #include <string>
+ #include <vector>
+Index: fishnet/src/main/cpp/external/libbase/include/android-base/unique_fd.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/fishnet/src/main/cpp/external/libbase/include/android-base/unique_fd.h b/fishnet/src/main/cpp/external/libbase/include/android-base/unique_fd.h
+--- a/fishnet/src/main/cpp/external/libbase/include/android-base/unique_fd.h	(revision 72bf9612eacb940beaefbabc116c9f5b293d5ad1)
++++ b/fishnet/src/main/cpp/external/libbase/include/android-base/unique_fd.h	(date 1732543552901)
+@@ -16,6 +16,8 @@
+ 
+ #pragma once
+ 
++#define IS_FDSAN_AVAILABLE __builtin_available(android 29, *)
++
+ #include <dirent.h>
+ #include <errno.h>
+ #include <fcntl.h>
+@@ -153,19 +155,25 @@
+ struct DefaultCloser {
+ #if defined(__BIONIC__)
+   static void Tag(int fd, void* old_addr, void* new_addr) {
+-    if (android_fdsan_exchange_owner_tag) {
+-      uint64_t old_tag = android_fdsan_create_owner_tag(ANDROID_FDSAN_OWNER_TYPE_UNIQUE_FD,
+-                                                        reinterpret_cast<uint64_t>(old_addr));
+-      uint64_t new_tag = android_fdsan_create_owner_tag(ANDROID_FDSAN_OWNER_TYPE_UNIQUE_FD,
+-                                                        reinterpret_cast<uint64_t>(new_addr));
+-      android_fdsan_exchange_owner_tag(fd, old_tag, new_tag);
++    if (IS_FDSAN_AVAILABLE) {
++      if (android_fdsan_exchange_owner_tag) {
++        uint64_t old_tag = android_fdsan_create_owner_tag(ANDROID_FDSAN_OWNER_TYPE_UNIQUE_FD,
++                                                          reinterpret_cast<uint64_t>(old_addr));
++        uint64_t new_tag = android_fdsan_create_owner_tag(ANDROID_FDSAN_OWNER_TYPE_UNIQUE_FD,
++                                                          reinterpret_cast<uint64_t>(new_addr));
++        android_fdsan_exchange_owner_tag(fd, old_tag, new_tag);
++      }
+     }
+   }
+   static void Close(int fd, void* addr) {
+-    if (android_fdsan_close_with_tag) {
+-      uint64_t tag = android_fdsan_create_owner_tag(ANDROID_FDSAN_OWNER_TYPE_UNIQUE_FD,
+-                                                    reinterpret_cast<uint64_t>(addr));
+-      android_fdsan_close_with_tag(fd, tag);
++    if (IS_FDSAN_AVAILABLE) {
++      if (android_fdsan_close_with_tag) {
++        uint64_t tag = android_fdsan_create_owner_tag(ANDROID_FDSAN_OWNER_TYPE_UNIQUE_FD,
++                                                      reinterpret_cast<uint64_t>(addr));
++        android_fdsan_close_with_tag(fd, tag);
++      } else {
++        close(fd);
++      }
+     } else {
+       close(fd);
+     }
+Index: fishnet/src/main/cpp/external/art/libartbase/base/macros.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/fishnet/src/main/cpp/external/art/libartbase/base/macros.h b/fishnet/src/main/cpp/external/art/libartbase/base/macros.h
+--- a/fishnet/src/main/cpp/external/art/libartbase/base/macros.h	(revision 1d280b080a4eb3529a96a5e64f938a10b0dd331a)
++++ b/fishnet/src/main/cpp/external/art/libartbase/base/macros.h	(date 1732543393739)
+@@ -20,7 +20,7 @@
+ #include <stddef.h>  // for size_t
+ #include <unistd.h>  // for TEMP_FAILURE_RETRY
+ 
+-#include "android-base/format.h"
++// #include "android-base/format.h"
+ #include "android-base/macros.h"
+ #include "android-base/thread_annotations.h"
+ 
