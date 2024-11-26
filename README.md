@@ -287,7 +287,9 @@ git apply fishnet_external.patch
 
 ### Build the library
 
-You should build twice, the first time is expected to fail.
+You should build twice.
+The first time is expected to be failed, you should wait the `buildCMakeRelWithDebInfo` tasks to be finished,
+then build again.
 
 ### Run the demo app
 
