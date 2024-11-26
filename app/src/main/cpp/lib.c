@@ -7,8 +7,9 @@
 #include <pthread.h>
 #include <err.h>
 #include <signal.h>
-#include <fishnet/fishnet.h>
 #include <dlfcn.h>
+
+#include <fishnet/fishnet.h>
 
 void victim() {
     usleep(300000); // 300ms
@@ -113,6 +114,7 @@ JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved) {
     }
 
     Fishnet_init(true);
+
     return JNI_VERSION_1_6;
 }
 
