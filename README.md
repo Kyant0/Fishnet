@@ -184,13 +184,11 @@ TBD.
 ### Clone the repository
 
 ```shell
-git clone --recurse-submodules --shallow-submodules https://github.com/Kyant0/Fishnet.git
+git clone https://github.com/Kyant0/Fishnet.git
+cd Fishnet
+git submodule init
+git submodule update
 
-cd fishnet/src/main/cpp/external/libziparchive
-git fetch --depth=1 origin refs/heads/main:refs/heads/main
-git checkout main
-
-cd ../../../../../..
 git apply --directory disasm/src/main/cpp/external/capstone disasm_external.patch
 git apply fishnet_external.patch
 ```
