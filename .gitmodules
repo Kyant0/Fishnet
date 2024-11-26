@@ -1,0 +1,30 @@
+[submodule "disasm/src/main/cpp/external/capstone"]
+	path = disasm/src/main/cpp/external/capstone
+	url = https://github.com/capstone-engine/capstone.git
+[submodule "fishnet/src/main/cpp/external/art"]
+	path = fishnet/src/main/cpp/external/art
+	url = https://android.googlesource.com/platform/art
+[submodule "fishnet/src/main/cpp/external/core"]
+	path = fishnet/src/main/cpp/external/core
+	url = https://android.googlesource.com/platform/system/core
+[submodule "fishnet/src/main/cpp/external/libbase"]
+	path = fishnet/src/main/cpp/external/libbase
+	url = https://android.googlesource.com/platform/system/libbase
+[submodule "fishnet/src/main/cpp/external/libprocinfo"]
+	path = fishnet/src/main/cpp/external/libprocinfo
+	url = https://android.googlesource.com/platform/system/libprocinfo
+[submodule "fishnet/src/main/cpp/external/libziparchive"]
+	path = fishnet/src/main/cpp/external/libziparchive
+	url = https://android.googlesource.com/platform/system/libziparchive
+[submodule "fishnet/src/main/cpp/external/logging"]
+	path = fishnet/src/main/cpp/external/logging
+	url = https://android.googlesource.com/platform/system/logging
+[submodule "fishnet/src/main/cpp/external/lzma"]
+	path = fishnet/src/main/cpp/external/lzma
+	url = https://android.googlesource.com/platform/external/lzma
+[submodule "fishnet/src/main/cpp/external/unwinding"]
+	path = fishnet/src/main/cpp/external/unwinding
+	url = https://android.googlesource.com/platform/system/unwinding
+[submodule "fishnet/src/main/cpp/external/zstd"]
+	path = fishnet/src/main/cpp/external/zstd
+	url = https://android.googlesource.com/platform/external/zstd

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="$PROJECT_DIR$/disasm/src/main/cpp/external/capstone" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/fishnet/src/main/cpp/external/art" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/fishnet/src/main/cpp/external/core" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/fishnet/src/main/cpp/external/libbase" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/fishnet/src/main/cpp/external/libprocinfo" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/fishnet/src/main/cpp/external/libziparchive" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/fishnet/src/main/cpp/external/logging" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/fishnet/src/main/cpp/external/lzma" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/fishnet/src/main/cpp/external/unwinding" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/fishnet/src/main/cpp/external/zstd" vcs="Git" />
+  </component>
+</project>

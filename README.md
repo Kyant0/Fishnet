@@ -178,3 +178,27 @@ open files:
 ### ANR
 
 TBD.
+
+## Build
+
+### Clone the repository
+
+```shell
+git clone --recursive-submodules https://github.com/Kyant0/Fishnet.git
+
+cd fishnet/src/main/cpp/external/libziparchive
+git fetch --depth=1 origin refs/heads/main:refs/heads/main
+git checkout main
+
+cd ../../../../../..
+git apply --directory disasm/src/main/cpp/external/capstone disasm_external.patch
+git apply fishnet_external.patch
+```
+
+### Build the library
+
+You should build twice, the first time is expected to fail.
+
+### Run the demo app
+
+When you modified the c++ code in `fishnet` module, run the demo app twice to see the changes.
