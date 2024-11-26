@@ -28,6 +28,39 @@ set(LIBIBERTY_SRC "external/libiberty")
 set(UNWINDSTACK_SRC "external/unwinding/libunwindstack")
 
 
+if (ANDROID_ABI STREQUAL "x86")
+    set(UNWINDSTACK_ARCH "x86")
+elseif (ANDROID_ABI STREQUAL "x86_64")
+    set(UNWINDSTACK_ARCH "x86_64")
+elseif (ANDROID_ABI STREQUAL "armeabi-v7a")
+    set(UNWINDSTACK_ARCH "arm")
+elseif (ANDROID_ABI STREQUAL "arm64-v8a")
+    set(UNWINDSTACK_ARCH "arm64")
+elseif (ANDROID_ABI STREQUAL "riscv64")
+    set(UNWINDSTACK_ARCH "riscv64")
+else ()
+    message(FATAL_ERROR "Unsupported ANDROID_ABI: ${ANDROID_ABI}")
+endif ()
+
+if (UNWINDSTACK_ARCH STREQUAL "x86")
+    set(UNWINDSTACK_ARCH_SRC "${UNWINDSTACK_SRC}/AsmGetRegsX86.S")
+elseif (UNWINDSTACK_ARCH STREQUAL "x86_64")
+    set(UNWINDSTACK_ARCH_SRC "${UNWINDSTACK_SRC}/AsmGetRegsX86_64.S")
+else ()
+    set(UNWINDSTACK_ARCH_SRC "")
+endif ()
+
+if (UNWINDSTACK_ARCH STREQUAL "x86")
+    list(APPEND ART_COMPILE_C_FLAGS "-DART_ENABLE_CODEGEN_x86")
+elseif (UNWINDSTACK_ARCH STREQUAL "x86_64")
+    list(APPEND ART_COMPILE_C_FLAGS "-DART_ENABLE_CODEGEN_x86_64" "-DART_ENABLE_CODEGEN_x86")
+elseif (UNWINDSTACK_ARCH STREQUAL "arm")
+    list(APPEND ART_COMPILE_C_FLAGS "-DART_ENABLE_CODEGEN_arm")
+elseif (UNWINDSTACK_ARCH STREQUAL "arm64")
+    list(APPEND ART_COMPILE_C_FLAGS "-DART_ENABLE_CODEGEN_arm64" "-DART_ENABLE_CODEGEN_arm")
+endif ()
+
+
 set(ZSTD_LEGACY_SUPPORT OFF)
 set(ZSTD_BUILD_PROGRAMS OFF)
 set(ZSTD_BUILD_CONTRIB OFF)
@@ -81,8 +114,7 @@ add_library(androidbase STATIC
         "${ANDROIDBASE_SRC}/logging.cpp"
         "${ANDROIDBASE_SRC}/stringprintf.cpp"
         "${ANDROIDBASE_SRC}/strings.cpp"
-        "${ANDROIDBASE_SRC}/threads.cpp"
-)
+        "${ANDROIDBASE_SRC}/threads.cpp")
 
 target_include_directories(androidbase PUBLIC
         "${ANDROIDBASE_SRC}/include")
@@ -92,8 +124,7 @@ target_compile_options(androidbase PRIVATE
 
 
 add_library(procinfo STATIC
-        "${PROCINFO_SRC}/process.cpp"
-)
+        "${PROCINFO_SRC}/process.cpp")
 
 target_include_directories(procinfo PUBLIC
         "${PROCINFO_SRC}/include")
@@ -109,25 +140,18 @@ add_library(ziparchive STATIC
         "${ZIPARCHIVE_SRC}/zip_archive.cc"
         "${ZIPARCHIVE_SRC}/zip_archive_stream_entry.cc"
         "${ZIPARCHIVE_SRC}/zip_cd_entry_map.cc"
-        "${ZIPARCHIVE_SRC}/zip_error.cpp"
-        "${ZIPARCHIVE_SRC}/zip_writer.cc"
-        "${ZIPARCHIVE_SRC}/incfs_support/signal_handling.cpp"
-)
-
-# libziparchive requires cxx2a
-# set_target_properties(ziparchive PROPERTIES CXX_STANDARD 20)
+        "${ZIPARCHIVE_SRC}/zip_error.cpp")
 
 target_include_directories(ziparchive
         PUBLIC "${ZIPARCHIVE_SRC}/include"
-        PRIVATE "${ZIPARCHIVE_SRC}/incfs_support/include"
-        PUBLIC "$<TARGET_PROPERTY:androidbase,INTERFACE_INCLUDE_DIRECTORIES>"
-)
+        PRIVATE "${ZIPARCHIVE_SRC}/incfs_support/include")
 
-target_compile_definitions(ziparchive PRIVATE ZLIB_CONST=const)
+target_compile_definitions(ziparchive PRIVATE
+        ZLIB_CONST=const)
 
-target_compile_options(ziparchive PRIVATE -fPIC
+target_compile_options(ziparchive PRIVATE
         $<$<COMPILE_LANGUAGE:CXX>:-Wno-missing-field-initializers -Wconversion -Wno-sign-conversion -Wold-style-cast>
-        $<$<COMPILE_LANGUAGE:C>:-DZLIB_CONST -Wall -Werror -Wextra -D_FILE_OFFSET_BITS=64 -DINCFS_SUPPORT_DISABLED=1>
+        $<$<COMPILE_LANGUAGE:C>:-DZLIB_CONST -Werror -D_FILE_OFFSET_BITS=64 -DINCFS_SUPPORT_DISABLED=1>
         -D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__ -Werror=unguarded-availability)
 
 target_link_libraries(ziparchive
@@ -135,66 +159,42 @@ target_link_libraries(ziparchive
 
 
 add_library(dexfile STATIC
-        # "${DEXFILE_SRC}/dex/dex_file_verifier.cc"
-        # "${DEXFILE_SRC}/dex/art_dex_file_loader.cc"
+        "${DEXFILE_SRC}/dex/compact_dex_file.cc"
         "${DEXFILE_SRC}/dex/compact_offset_table.cc"
         "${DEXFILE_SRC}/dex/descriptors_names.cc"
         "${DEXFILE_SRC}/dex/dex_file.cc"
-        "${DEXFILE_SRC}/dex/standard_dex_file.cc"
-        "${DEXFILE_SRC}/dex/compact_dex_file.cc"
-        # "${DEXFILE_SRC}/dex/dex_file_exception_helpers.cc"
-        # "${DEXFILE_SRC}/dex/dex_file_layout.cc"
         "${DEXFILE_SRC}/dex/dex_file_loader.cc"
-        # "${DEXFILE_SRC}/dex/dex_file_tracking_registrar.cc"
         "${DEXFILE_SRC}/dex/dex_file_verifier.cc"
-        # "${DEXFILE_SRC}/dex/dex_instruction.cc"
         "${DEXFILE_SRC}/dex/modifiers.cc"
         "${DEXFILE_SRC}/dex/primitive.cc"
         "${DEXFILE_SRC}/dex/signature.cc"
-        # "${DEXFILE_SRC}/dex/type_lookup_table.cc"
+        "${DEXFILE_SRC}/dex/standard_dex_file.cc"
         "${DEXFILE_SRC}/dex/utf.cc"
         "${DEXFILE_SRC}/external/dex_file_ext.cc"
         "${DEXFILE_SRC}/external/dex_file_supp.cc"
-
         "${ARTBASE_SRC}/base/unix_file/fd_file.cc"
         "${ARTBASE_SRC}/base/logging.cc"
         "${ARTBASE_SRC}/base/utils.cc"
         "${ARTBASE_SRC}/base/file_magic.cc"
         "${ARTBASE_SRC}/base/mem_map.cc"
         "${ARTBASE_SRC}/base/mem_map_unix.cc"
-        "${ARTBASE_SRC}/base/zip_archive.cc"
-        # "${ARTBASE_SRC}/gen/libartbase.operator_out.cc"
-        # "${ARTBASE_SRC}/base/runtime_common.cc"
-        # "${ARTBASE_SRC}/base/native_stack_dump.cc"
-
-        # "generated/libdexfile.operator_out.cc"
-)
-
-target_compile_options(dexfile PRIVATE
-        -D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__ -Werror=unguarded-availability)
+        "${ARTBASE_SRC}/base/zip_archive.cc")
 
 target_include_directories(dexfile BEFORE
         PUBLIC "${DEXFILE_SRC}"
         PUBLIC "${DEXFILE_SRC}/external/include"
-        PUBLIC "libnativehelper/include_jni"
         PUBLIC "${ARTPALETTE_SRC}/include"
-        PRIVATE "${ARTBASE_SRC}"
-        PRIVATE "runtime"
-        # PUBLIC "${MDVM_NATIVE_SRC_ROOT_DIR}/libnativehelper/include_jni"
-        # PRIVATE "$<TARGET_PROPERTY:artbase,INTERFACE_INCLUDE_DIRECTORIES>"
-)
+        PRIVATE "${ARTBASE_SRC}")
 
-# check if we are targeting Android or Linux
-if (ANDROID)
-    target_compile_definitions(dexfile PUBLIC -DART_TARGET -DSTATIC_LIB=1 -DART_TARGET_ANDROID)
-else ()
-    target_compile_definitions(dexfile PUBLIC -DART_TARGET -DSTATIC_LIB=1 -DART_TARGET_LINUX)
-endif ()
+target_compile_definitions(dexfile PUBLIC
+        -DART_TARGET -DSTATIC_LIB=1 -DART_TARGET_ANDROID)
 
-target_compile_options(dexfile PRIVATE ${ART_COMPILE_C_FLAGS} -Wno-deprecated-declarations)
+target_compile_options(dexfile PRIVATE
+        ${ART_COMPILE_C_FLAGS} -Wno-deprecated-declarations
+        -D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__ -Werror=unguarded-availability)
 
 target_link_libraries(dexfile
-        androidbase unwindstack ziparchive)
+        androidbase ziparchive)
 
 
 add_library(lzma STATIC
@@ -234,61 +234,13 @@ add_library(lzma STATIC
         "${LZMA_SRC}/C/XzCrc64Opt.c"
         "${LZMA_SRC}/C/XzDec.c"
         "${LZMA_SRC}/C/XzEnc.c"
-        "${LZMA_SRC}/C/XzIn.c"
-)
-
-set_property(TARGET lzma PROPERTY CXX_STANDARD 20)
+        "${LZMA_SRC}/C/XzIn.c")
 
 target_include_directories(lzma PUBLIC "${LZMA_SRC}/C")
 
-target_compile_options(lzma PRIVATE -fPIC "-D_7ZIP_ST")
+target_compile_options(lzma PRIVATE
+        -D_Z7_ST -Wall -Werror -Wno-empty-body -Wno-enum-conversion -Wno-logical-op-parentheses -Wno-self-assign)
 
-
-if (DEFINED ANDROID_ABI)
-    if (ANDROID_ABI STREQUAL "x86")
-        set(UNWINDSTACK_ARCH "x86")
-    elseif (ANDROID_ABI STREQUAL "x86_64")
-        set(UNWINDSTACK_ARCH "x86_64")
-    elseif (ANDROID_ABI STREQUAL "armeabi-v7a")
-        set(UNWINDSTACK_ARCH "arm")
-    elseif (ANDROID_ABI STREQUAL "arm64-v8a")
-        set(UNWINDSTACK_ARCH "arm64")
-    elseif (ANDROID_ABI STREQUAL "riscv64")
-        set(UNWINDSTACK_ARCH "riscv64")
-    else ()
-        message(FATAL_ERROR "Unsupported ANDROID_ABI: ${ANDROID_ABI}")
-    endif ()
-else ()
-    if (CMAKE_SYSTEM_PROCESSOR STREQUAL "x86" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "i686")
-        set(UNWINDSTACK_ARCH "x86")
-    elseif (CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "amd64")
-        set(UNWINDSTACK_ARCH "x86_64")
-    elseif (CMAKE_SYSTEM_PROCESSOR STREQUAL "armv7l" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "armv7-a")
-        set(UNWINDSTACK_ARCH "arm")
-    elseif (CMAKE_SYSTEM_PROCESSOR STREQUAL "aarch64" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "armv8-a")
-        set(UNWINDSTACK_ARCH "arm64")
-    else ()
-        message(FATAL_ERROR "Unsupported CMAKE_SYSTEM_PROCESSOR: ${CMAKE_SYSTEM_PROCESSOR}")
-    endif ()
-endif ()
-
-if (UNWINDSTACK_ARCH STREQUAL "x86")
-    set(UNWINDSTACK_ARCH_SRC "${UNWINDSTACK_SRC}/AsmGetRegsX86.S")
-elseif (UNWINDSTACK_ARCH STREQUAL "x86_64")
-    set(UNWINDSTACK_ARCH_SRC "${UNWINDSTACK_SRC}/AsmGetRegsX86_64.S")
-else ()
-    set(UNWINDSTACK_ARCH_SRC "")
-endif ()
-
-if (UNWINDSTACK_ARCH STREQUAL "x86")
-    list(APPEND ART_COMPILE_C_FLAGS "-DART_ENABLE_CODEGEN_x86")
-elseif (UNWINDSTACK_ARCH STREQUAL "x86_64")
-    list(APPEND ART_COMPILE_C_FLAGS "-DART_ENABLE_CODEGEN_x86_64" "-DART_ENABLE_CODEGEN_x86")
-elseif (UNWINDSTACK_ARCH STREQUAL "arm")
-    list(APPEND ART_COMPILE_C_FLAGS "-DART_ENABLE_CODEGEN_arm")
-elseif (UNWINDSTACK_ARCH STREQUAL "arm64")
-    list(APPEND ART_COMPILE_C_FLAGS "-DART_ENABLE_CODEGEN_arm64" "-DART_ENABLE_CODEGEN_arm")
-endif ()
 
 add_library(unwindstack STATIC
         "${UNWINDSTACK_SRC}/AndroidUnwinder.cpp"
@@ -320,12 +272,9 @@ add_library(unwindstack STATIC
         "${UNWINDSTACK_SRC}/ThreadEntry.cpp"
         "${UNWINDSTACK_SRC}/ThreadUnwinder.cpp"
         "${UNWINDSTACK_SRC}/Unwinder.cpp"
-
+        "${UNWINDSTACK_ARCH_SRC}"
         "${UNWINDSTACK_SRC}/DexFile.cpp"
         "${UNWINDSTACK_SRC}/LogAndroid.cpp"
-
-        "${UNWINDSTACK_ARCH_SRC}"
-
         "${LIBIBERTY_SRC}/cp-demangle.c"
         "${LIBIBERTY_SRC}/cplus-dem.c"
         "${LIBIBERTY_SRC}/d-demangle.c"
@@ -339,19 +288,14 @@ target_include_directories(unwindstack BEFORE
         PRIVATE "${LIBIBERTY_SRC}"
         PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/external/_compat")
 
-target_compile_options(unwindstack PRIVATE -Wno-c99-designator -Wno-deprecated-declarations)
-# for clang
-if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    target_compile_options(unwindstack PRIVATE -Wexit-time-destructors -fno-c++-static-destructors)
-endif ()
-
-target_compile_definitions(unwindstack PRIVATE DEXFILE_SUPPORT=1)
+target_compile_options(unwindstack PRIVATE
+        -Wno-deprecated-volatile -Wno-reorder-init-list
+        -Wexit-time-destructors -fno-c++-static-destructors
+        -DDEXFILE_SUPPORT
+        -D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__ -Werror=unguarded-availability)
 
 target_link_libraries(unwindstack
         lzma libzstd_static androidbase dexfile procinfo async_safe bionic_libc)
-
-target_compile_options(unwindstack PRIVATE
-        -D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__ -Werror=unguarded-availability)
 
 
 add_library(${CMAKE_PROJECT_NAME} SHARED
