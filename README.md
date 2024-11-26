@@ -40,31 +40,29 @@ contentResolver.openFileDescriptor(Uri.fromFile(logFile), "rw", null)?.use { pfd
 }
 ```
 
-3. Create `fishnet.h` in your `cpp` directory, add the following code,
+3. Copy the `so` files to the `${CMAKE_SOURCE_DIR}/libs/fishnet/${ANDROID_ABI}` directories.
+   Copy the `include` directory to the `${CMAKE_SOURCE_DIR}/libs/fishnet` directory.
 
-```c
-#ifndef FISHNET_H
-#define FISHNET_H
+4. In your `CMakeLists.txt`, add the following code,
 
-#define FISHNET_EXPORT __attribute__((visibility("default")))
+```cmake
+add_library(fishnet SHARED IMPORTED)
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+set(FISHNET_DIR ${CMAKE_SOURCE_DIR}/libs/fishnet)
 
-FISHNET_EXPORT void Fishnet_init(bool enabled);
+set_target_properties(fishnet PROPERTIES
+        IMPORTED_LOCATION "${FISHNET_DIR}/${ANDROID_ABI}/libcom.kyant.fishnet.so"
+        INTERFACE_INCLUDE_DIRECTORIES "${FISHNET_DIR}/include")
 
-#ifdef __cplusplus
-}
-#endif
-
-#endif //FISHNET_H
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE
+        fishnet)
 ```
 
-4. In your `main.c` add the following code,
+5. In your `main.c` add the following code,
 
 ```c
-#include "fishnet.h"
+#include <jni.h>
+#include <fishnet/fishnet.h>
 
 JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved) {
     JNIEnv *env;
@@ -85,7 +83,7 @@ JNIEXPORT void JNI_OnUnload(JavaVM *vm, void *reserved) {
 }
 ```
 
-5. All done, build your project and make a simple crash to test,
+6. All done, build your project and make a simple crash to test,
    the log file will be generated in the path you specified.
 
 ## Example logs
