@@ -203,41 +203,20 @@ When you modified the c++ code in `fishnet` module, run the demo app twice to se
 
 ## Submodule maintain info
 
-- [Capstone](https://github.com/capstone-engine/capstone/commit/e46838ed974948b4446c7c478508409e0000aeaa)
-
-- [platform/art](https://android.googlesource.com/platform/art/+/54cd7bf45839805d7f0f2708a6c9a65c70ca154a)
-  2024 Nov 25 21:04:05
-- -> [platform/art/libartbase](https://android.googlesource.com/platform/art/+log/refs/heads/main/libartbase)
-  2024 Nov 22 16:37:17
-- -> [platform/art/libartpalette](https://android.googlesource.com/platform/art/+log/refs/heads/main/libartpalette)
-  2024 Aug 29 12:15:41
-- -> [platform/art/libdexfile](https://android.googlesource.com/platform/art/+log/refs/heads/main/libdexfile)
-  2024 Nov 18 10:53:22
-
-- [platform/system/core](https://android.googlesource.com/platform/system/core/+/f7b584086c464f04f764677df56c8a2644109523)
-  2024 Nov 25 22:25:24
-
-- [platform/system/libbase](https://android.googlesource.com/platform/system/libbase/+/72bf9612eacb940beaefbabc116c9f5b293d5ad1)
-  2024 Nov 07 20:40:11
-
-- [platform/system/libprocinfo](https://android.googlesource.com/platform/system/libprocinfo/+/b6b71fd97d7015a59175936a9b3824623470a1a7)
-  2024 Aug 14 22:08:40
-
-- [platform/system/libziparchive](https://android.googlesource.com/platform/system/libziparchive/+/63f00d1ade29315dc0adac08fceae9984305205d)
-  2024 Jun 04 23:06:47
-
-- [platform/system/logging](https://android.googlesource.com/platform/system/logging/+/b34720941c1a18249615ebed5a25d05ff12bfad1)
-  2024 Sep 16 16:54:16
-- -> [platform/system/logging/liblog](https://android.googlesource.com/platform/system/logging/+log/refs/heads/main/liblog)
-  2024 Sep 11 14:28:59
-
-- [platform/system/unwinding](https://android.googlesource.com/platform/system/unwinding/+/c7b83a52e8dbe29735e74f0abee1fe565a7ced5b)
-  2024 Sep 12 14:09:02 -0700
-- -> [platform/system/unwinding/libunwindstack](https://android.googlesource.com/platform/system/unwinding/+log/refs/heads/main/libunwindstack)
-  2024 Sep 12 14:09:02 -0700
-
-- [platform/external/lzma](https://android.googlesource.com/platform/external/lzma/+/1c87526f4839d9276d0dfdcaceea8a6c8dcd100d)
-  2024 Sep 09 13:20:46
-
-- [platform/external/zstd](https://android.googlesource.com/platform/external/zstd/+/d06a29da1edcc46177e774010cc2ef6158366b52)
-  2024 Jul 11 02:24:39
+| Repository                    | Link                                                                                                                                       | Update time                |
+|-------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|----------------------------|
+| capstone                      | [capstone-engine/capstone](https://github.com/capstone-engine/capstone/commit/e46838ed974948b4446c7c478508409e0000aeaa)                    | -                          |
+| platform/art                  | [platform/art](https://android.googlesource.com/platform/art/+/54cd7bf45839805d7f0f2708a6c9a65c70ca154a)                                   | 2024 Nov 25 21:04:05       |
+|                               | [libartbase](https://android.googlesource.com/platform/art/+log/refs/heads/main/libartbase)                                                | 2024 Nov 22 16:37:17       |
+|                               | [libartpalette](https://android.googlesource.com/platform/art/+log/refs/heads/main/libartpalette)                                          | 2024 Aug 29 12:15:41       |
+|                               | [libdexfile](https://android.googlesource.com/platform/art/+log/refs/heads/main/libdexfile)                                                | 2024 Nov 18 10:53:22       |
+| platform/system/core          | [platform/system/core](https://android.googlesource.com/platform/system/core/+/f7b584086c464f04f764677df56c8a2644109523)                   | 2024 Nov 25 22:25:24       |
+| platform/system/libbase       | [platform/system/libbase](https://android.googlesource.com/platform/system/libbase/+/72bf9612eacb940beaefbabc116c9f5b293d5ad1)             | 2024 Nov 07 20:40:11       |
+| platform/system/libprocinfo   | [platform/system/libprocinfo](https://android.googlesource.com/platform/system/libprocinfo/+/b6b71fd97d7015a59175936a9b3824623470a1a7)     | 2024 Aug 14 22:08:40       |
+| platform/system/libziparchive | [platform/system/libziparchive](https://android.googlesource.com/platform/system/libziparchive/+/63f00d1ade29315dc0adac08fceae9984305205d) | 2024 Jun 04 23:06:47       |
+| platform/system/logging       | [platform/system/logging](https://android.googlesource.com/platform/system/logging/+/b34720941c1a18249615ebed5a25d05ff12bfad1)             | 2024 Sep 16 16:54:16       |
+|                               | [liblog](https://android.googlesource.com/platform/system/logging/+log/refs/heads/main/liblog)                                             | 2024 Sep 11 14:28:59       |
+| platform/system/unwinding     | [platform/system/unwinding](https://android.googlesource.com/platform/system/unwinding/+/c7b83a52e8dbe29735e74f0abee1fe565a7ced5b)         | 2024 Sep 12 14:09:02 -0700 |
+|                               | [libunwindstack](https://android.googlesource.com/platform/system/unwinding/+log/refs/heads/main/libunwindstack)                           | 2024 Sep 12 14:09:02 -0700 |
+| platform/external/lzma        | [platform/external/lzma](https://android.googlesource.com/platform/external/lzma/+/1c87526f4839d9276d0dfdcaceea8a6c8dcd100d)               | 2024 Sep 09 13:20:46       |
+| platform/external/zstd        | [platform/external/zstd](https://android.googlesource.com/platform/external/zstd/+/d06a29da1edcc46177e774010cc2ef6158366b52)               | 2024 Jul 11 02:24:39       |
