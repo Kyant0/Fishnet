@@ -9,7 +9,7 @@ set(CMAKE_CXX_STANDARD 23)
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -fvisibility=hidden -flto -fdata-sections -ffunction-sections -fomit-frame-pointer")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fvisibility=hidden -flto -fdata-sections -ffunction-sections -fomit-frame-pointer")
-set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -flto -Wl,--exclude-libs,ALL -Wl,--gc-sections -Wl,-s -Wl,--pack-dyn-relocs=android -Wl,--build-id=none -Wl,-z,max-page-size=16384")
+set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -flto -Wl,--exclude-libs,ALL -Wl,--gc-sections -Wl,-s -Wl,--build-id=none -Wl,-z,max-page-size=16384")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-exceptions -fno-rtti")
 
@@ -336,7 +336,8 @@ add_library(unwindstack STATIC
 target_include_directories(unwindstack BEFORE
         PUBLIC "${UNWINDSTACK_SRC}/include"
         PRIVATE "platform"
-        PRIVATE "${LIBIBERTY_SRC}")
+        PRIVATE "${LIBIBERTY_SRC}"
+        PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/external/_compat")
 
 target_compile_options(unwindstack PRIVATE -Wno-c99-designator -Wno-deprecated-declarations)
 # for clang

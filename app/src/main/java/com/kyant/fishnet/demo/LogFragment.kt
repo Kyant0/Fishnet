@@ -3,6 +3,7 @@
 package com.kyant.fishnet.demo
 
 import android.app.Fragment
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -29,7 +30,11 @@ class LogFragment : Fragment() {
 
     private fun getLog(): String {
         return try {
-            val logFile = File(context.filesDir, "fishnet.log")
+            val logFile = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                File(context.filesDir, "fishnet.log")
+            } else {
+                File(activity.filesDir, "fishnet.log")
+            }
             logFile.readText().takeIf { it.isNotEmpty() }
         } catch (_: Exception) {
             null

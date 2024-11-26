@@ -19,13 +19,19 @@ class MaterialButton @JvmOverloads constructor(
         background = resources.getDrawable(R.color.button, context.theme)
         val value = TypedValue()
         context.theme.resolveAttribute(android.R.attr.selectableItemBackground, value, true)
-        foreground = resources.getDrawable(value.resourceId, context.theme)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            foreground = resources.getDrawable(value.resourceId, context.theme)
+        }
         val horizontalPadding = (16 * resources.displayMetrics.density).roundToInt()
         val verticalPadding = (10 * resources.displayMetrics.density).roundToInt()
         setPadding(horizontalPadding, verticalPadding, horizontalPadding, verticalPadding)
         gravity = Gravity.CENTER
         context.theme.resolveAttribute(android.R.attr.textColorPrimary, value, true)
-        setTextColor(resources.getColor(value.resourceId, context.theme))
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            setTextColor(resources.getColor(value.resourceId, context.theme))
+        } else {
+            setTextColor(resources.getColor(value.resourceId))
+        }
         textSize = 15f
         typeface = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             Typeface.create(Typeface.DEFAULT_BOLD, 500, false)

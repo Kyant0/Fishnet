@@ -3,6 +3,7 @@
 package com.kyant.fishnet.demo
 
 import android.app.Fragment
+import android.os.Build
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.text.Spanned
@@ -45,7 +46,11 @@ class DisAsmFragment : Fragment() {
                 val disasm = DisAsm.disasm(bytes, address)
                 SpannableStringBuilder().apply {
                     val lowEmphasizedColor = disasmTextView.textColors.defaultColor and 0x00FFFFFF or 0x80000000.toInt()
-                    val highlightedColor = context.resources.getColor(R.color.primary, context.theme)
+                    val highlightedColor = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        context.resources.getColor(R.color.primary, context.theme)
+                    } else {
+                        activity.resources.getColor(R.color.primary)
+                    }
                     var start: Int
                     val callMnemonics = setOf(
                         // ARM64

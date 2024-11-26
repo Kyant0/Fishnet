@@ -3,6 +3,7 @@
 #include <sys/mman.h>
 
 #include "abi.h"
+#include "human_readable.h"
 #include "log.h"
 #include "clock.h"
 #include "abort_message.h"
@@ -26,9 +27,7 @@ struct debugger_thread_info {
 static void *thread_stack = nullptr;
 
 static void *fishnet_dispatch_thread(void *arg) {
-    const debugger_thread_info *thread_info = (const debugger_thread_info *) arg;
-
-    LOGE("fishnet_dispatch_thread started");
+    const auto *thread_info = (const debugger_thread_info *) arg;
 
     const pid_t pid = getpid();
     const pid_t tid = thread_info->crashing_tid;
@@ -36,6 +35,8 @@ static void *fishnet_dispatch_thread(void *arg) {
     const uid_t uid = getuid();
     const siginfo_t *info = thread_info->siginfo;
     void *context = thread_info->ucontext;
+
+    LOGE("fishnet_dispatch_thread started, signal %s, code %s", get_signame(info), get_sigcode(info));
 
     std::shared_ptr<unwindstack::Memory> process_memory = unwindstack::Memory::CreateProcessMemoryCached(pid);
     unwindstack::AndroidLocalUnwinder unwinder(process_memory);
@@ -103,14 +104,20 @@ static void *fishnet_dispatch_thread(void *arg) {
     return nullptr;
 }
 
-static volatile bool is_entered = false;
+static pthread_mutex_t fishnet_mutex;
+static bool is_entered = false;
 
 __attribute__((optnone))
 static void fishnet_signal_handler(int signal_number, siginfo_t *info, void *context) {
+    char a[4096] = {0};
+    pthread_mutex_lock(&fishnet_mutex);
     if (is_entered) {
+        pthread_mutex_unlock(&fishnet_mutex);
         return;
     }
     is_entered = true;
+    pthread_mutex_unlock(&fishnet_mutex);
+    pthread_mutex_destroy(&fishnet_mutex);
 
     debugger_thread_info thread_info = {
             .crashing_tid = gettid(),
@@ -188,7 +195,7 @@ void init_signal_handler(bool enabled) {
     action.sa_flags = SA_SIGINFO | SA_ONSTACK;
     register_handlers(&action);
 
-    set_aborter();
+    // set_aborter();
 
     sigset_t sig_sets;
     sigemptyset(&sig_sets);
