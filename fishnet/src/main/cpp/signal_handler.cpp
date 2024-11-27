@@ -104,20 +104,14 @@ static void *fishnet_dispatch_thread(void *arg) {
     return nullptr;
 }
 
-static pthread_mutex_t fishnet_mutex;
 static bool is_entered = false;
 
 __attribute__((optnone))
 static void fishnet_signal_handler(int signal_number, siginfo_t *info, void *context) {
-    char a[4096] = {0};
-    pthread_mutex_lock(&fishnet_mutex);
     if (is_entered) {
-        pthread_mutex_unlock(&fishnet_mutex);
         return;
     }
     is_entered = true;
-    pthread_mutex_unlock(&fishnet_mutex);
-    pthread_mutex_destroy(&fishnet_mutex);
 
     debugger_thread_info thread_info = {
             .crashing_tid = gettid(),
@@ -195,7 +189,7 @@ void init_signal_handler(bool enabled) {
     action.sa_flags = SA_SIGINFO | SA_ONSTACK;
     register_handlers(&action);
 
-    // set_aborter();
+    set_aborter();
 
     sigset_t sig_sets;
     sigemptyset(&sig_sets);
