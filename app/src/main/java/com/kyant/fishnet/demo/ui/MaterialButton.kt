@@ -1,4 +1,4 @@
-package com.kyant.fishnet.demo
+package com.kyant.fishnet.demo.ui
 
 import android.content.Context
 import android.graphics.Outline
@@ -10,6 +10,7 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewOutlineProvider
 import android.widget.TextView
+import com.kyant.fishnet.demo.R
 import kotlin.math.roundToInt
 
 class MaterialButton @JvmOverloads constructor(

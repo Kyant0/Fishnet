@@ -20,7 +20,7 @@
             android:textFontWeight="500"
             android:textSize="15sp" />
 
-        <com.kyant.fishnet.demo.MaterialCard
+        <com.kyant.fishnet.demo.ui.MaterialCard
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
@@ -39,9 +39,9 @@
                 android:textSize="14sp"
                 android:typeface="monospace" />
 
-        </com.kyant.fishnet.demo.MaterialCard>
+        </com.kyant.fishnet.demo.ui.MaterialCard>
 
-        <com.kyant.fishnet.demo.MaterialCard
+        <com.kyant.fishnet.demo.ui.MaterialCard
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
@@ -60,9 +60,9 @@
                 android:textSize="14sp"
                 android:typeface="monospace" />
 
-        </com.kyant.fishnet.demo.MaterialCard>
+        </com.kyant.fishnet.demo.ui.MaterialCard>
 
-        <com.kyant.fishnet.demo.MaterialButton
+        <com.kyant.fishnet.demo.ui.MaterialButton
             android:id="@+id/btn_disasm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -81,7 +81,7 @@
             android:textFontWeight="500"
             android:textSize="15sp" />
 
-        <com.kyant.fishnet.demo.MaterialCard
+        <com.kyant.fishnet.demo.ui.MaterialCard
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
@@ -93,20 +93,18 @@
                 android:layout_height="wrap_content"
                 android:clipToPadding="false">
 
-                <TextView
+                <com.kyant.fishnet.demo.ui.MonospacedText
                     android:id="@+id/tv_disasm"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/jetbrains_mono"
                     android:padding="16dp"
                     android:textColor="@color/text"
                     android:textIsSelectable="true"
-                    android:textSize="12sp"
-                    android:typeface="monospace" />
+                    android:textSize="12sp" />
 
             </HorizontalScrollView>
 
-        </com.kyant.fishnet.demo.MaterialCard>
+        </com.kyant.fishnet.demo.ui.MaterialCard>
 
     </LinearLayout>
 
