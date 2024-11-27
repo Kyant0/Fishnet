@@ -6,5 +6,6 @@
     <color name="button">#D9E2FF</color>
     <color name="card">#FEFBFF</color>
     <color name="tab">#FDD7FA</color>
+    <color name="tab_selected_text">@android:color/black</color>
     <color name="tab_container">#FFFFFF</color>
 </resources>
