@@ -15,7 +15,7 @@ class FishnetApp : Application() {
         }
 
         contentResolver.openFileDescriptor(Uri.fromFile(logFile), "rw", null)?.use { pfd ->
-            if (!Fishnet.init(pfd.detachFd())) {
+            if (!Fishnet.init(this, pfd.detachFd())) {
                 throw RuntimeException("Failed to initialize Fishnet")
             }
         }

@@ -13,6 +13,7 @@ set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -flto -Wl,--exclude-
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-exceptions -fno-rtti")
 
+
 set(LIBC_SRC "external/_libc")
 set(ASYNCSAFE_SRC "external/_libc/async_safe")
 set(ANDROIDBASE_SRC "external/libbase")

@@ -42,9 +42,12 @@ void dump_thread_backtrace(const std::vector<unwindstack::FrameData> &frames) {
 }
 
 void print_backtrace(unwindstack::ArchEnum arch, const std::vector<unwindstack::FrameData> &frames) {
+    LOG_FISHNET("");
+    LOG_FISHNET("%zu total frames", frames.size());
+    LOG_FISHNET("backtrace:");
     bool is_first_frame = true;
     for (const auto &frame: frames) {
-        LOG_FISHNET("    %s", unwindstack::Unwinder::FormatFrame(arch, frame, true).c_str());
+        LOG_FISHNET("  %s", unwindstack::Unwinder::FormatFrame(arch, frame, false).c_str());
 
         if (is_first_frame) {
             is_first_frame = false;
@@ -71,16 +74,16 @@ void print_backtrace(unwindstack::ArchEnum arch, const std::vector<unwindstack::
 
             std::string hexdump;
             for (size_t i = 0; i < size; i++) {
-                hexdump += StringPrintf("%02x ", bytes[i]);
+                hexdump += StringPrintf("%02x", bytes[i]);
+                if (i + 1 < size) {
+                    if ((i + 1) % 16 == 0) {
+                        hexdump += "\n                             ";
+                    } else if ((i + 1) % 8 == 0) {
+                        hexdump += ' ';
+                    }
+                }
             }
-            LOG_FISHNET("                   bytes here: %s", hexdump.c_str());
+            LOG_FISHNET("                 bytes here: %s", hexdump.c_str());
         }
     }
-}
-
-void print_thread_backtrace(unwindstack::ArchEnum arch, const std::vector<unwindstack::FrameData> &frames) {
-    LOG_FISHNET("");
-    LOG_FISHNET("%zu total frames", frames.size());
-    LOG_FISHNET("backtrace:");
-    print_backtrace(arch, frames);
 }

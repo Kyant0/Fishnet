@@ -12,11 +12,22 @@
 
 #define LOG_FISHNET_LN(...) log_fishnet(false, __VA_ARGS__)
 
+struct ApkInfo {
+    const char *package_name;
+    const char *version_name;
+    uint64_t version_code;
+    const char *cert;
+};
+
 void set_log_fd(int fd);
 
 void write_log_to_fd();
 
 void close_log_fd();
+
+void set_apk_info(const ApkInfo &info);
+
+const ApkInfo &get_apk_info();
 
 __attribute__((__format__(printf, 1, 2)))
 std::string StringPrintf(const char *fmt, ...);

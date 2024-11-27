@@ -6,6 +6,8 @@
 
 static int log_fd = -1;
 
+static ApkInfo apk_info{};
+
 static std::string log_buffer{};
 
 void set_log_fd(int fd) {
@@ -24,6 +26,14 @@ void close_log_fd() {
         close(log_fd);
         log_fd = -1;
     }
+}
+
+void set_apk_info(const ApkInfo &info) {
+    apk_info = info;
+}
+
+const ApkInfo &get_apk_info() {
+    return apk_info;
 }
 
 void StringAppendV(std::string *dst, const char *format, va_list ap) {

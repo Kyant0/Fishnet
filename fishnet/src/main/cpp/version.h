@@ -1,0 +1,6 @@
+#ifndef FISHNET_VERSION_H
+#define FISHNET_VERSION_H
+
+#define FISHNET_VERSION "v1.0.0"
+
+#endif //FISHNET_VERSION_H

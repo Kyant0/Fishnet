@@ -9,4 +9,8 @@ uint64_t get_process_uptime(pid_t pid);
 
 void get_process_tids(pid_t pid, std::vector<pid_t> &tids);
 
+void print_process_status(pid_t pid);
+
+void print_memory_info();
+
 #endif //FISHNET_PROCESS_H

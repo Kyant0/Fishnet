@@ -177,7 +177,7 @@ void print_main_thread(pid_t pid, pid_t tid, uid_t uid, const siginfo_t *info, i
         LOG_FISHNET("      in this process. The stack trace below is the first system call or context");
         LOG_FISHNET("      switch that was executed after the memory corruption happened.");
     }
-    print_thread_backtrace(arch, frames);
+    print_backtrace(arch, frames);
 
     if (has_fault_addr) {
         print_tag_dump(fault_addr, arch, unwinder->GetProcessMemory());
@@ -216,7 +216,7 @@ void print_thread(pid_t tid, int word_size, const unwindstack::ArchEnum &arch, u
     if (regs) {
         print_thread_registers(arch, word_size, regs);
     }
-    print_thread_backtrace(arch, unwinder->ConsumeFrames());
+    print_backtrace(arch, unwinder->ConsumeFrames());
     if (dump_memory) {
         unwindstack::Maps *maps = unwinder->GetMaps();
         unwindstack::Memory *memory = unwinder->GetProcessMemory().get();

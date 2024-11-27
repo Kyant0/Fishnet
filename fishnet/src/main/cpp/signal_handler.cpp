@@ -15,6 +15,7 @@
 #include "backtrace.h"
 #include "fd.h"
 #include "anr.h"
+#include "version.h"
 
 static struct sigaction old_actions[NSIG];
 
@@ -66,10 +67,23 @@ static void *fishnet_dispatch_thread(void *arg) {
 
     dump_thread_backtrace(data.frames);
 
-    LOG_FISHNET("*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***");
-    LOG_FISHNET("Build fingerprint: '%s'", get_property("ro.build.fingerprint", "unknown").c_str());
-    LOG_FISHNET("Revision: '%s'", get_property("ro.revision", "unknown").c_str());
-    LOG_FISHNET("ABI: '%s'", abi_string(arch));
+    const ApkInfo log_info = get_apk_info();
+
+    LOG_FISHNET("****** Fishnet crash report %s ******", FISHNET_VERSION);
+    LOG_FISHNET("");
+    LOG_FISHNET("APK info:");
+    LOG_FISHNET("    Package: '%s'", log_info.package_name);
+    LOG_FISHNET("    Version: '%s' (%lu)", log_info.version_name, log_info.version_code);
+    LOG_FISHNET("    Cert: '%s'", log_info.cert);
+    LOG_FISHNET("");
+    LOG_FISHNET("Device info:");
+    LOG_FISHNET("    Build fingerprint: '%s'", get_property("ro.build.fingerprint", "unknown").c_str());
+    LOG_FISHNET("    Revision: '%s'", get_property("ro.revision", "unknown").c_str());
+    LOG_FISHNET("    Security patch: '%s'", get_property("ro.build.version.security_patch", "unknown").c_str());
+    LOG_FISHNET("    Build date: '%s'", get_property("ro.system.build.date", "unknown").c_str());
+    LOG_FISHNET("    ABI: '%s'", abi_string(arch));
+    LOG_FISHNET("    Debuggable: %s", get_bool_property("ro.debuggable", false) ? "yes" : "no");
+    LOG_FISHNET("");
     LOG_FISHNET("Timestamp: %s", get_timestamp().c_str());
     LOG_FISHNET("Process uptime: %lus", get_process_uptime(pid));
 
@@ -84,6 +98,10 @@ static void *fishnet_dispatch_thread(void *arg) {
 
     print_main_thread(pid, tid, uid, info, word_size, arch, &unwinder, regs, data.frames,
                       true, false);
+
+    print_memory_info();
+
+    print_process_status(pid);
 
     print_tasks(pid);
 
