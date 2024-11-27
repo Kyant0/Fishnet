@@ -1,6 +1,7 @@
 <resources>
 
     <style name="Theme.Fishnet" parent="android:Theme.Material.Light">
+        <item name="android:colorAccent">@color/primary</item>
         <item name="android:windowBackground">@color/background</item>
     </style>
 </resources>

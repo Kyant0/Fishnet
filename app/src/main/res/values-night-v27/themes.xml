@@ -8,6 +8,7 @@
         <item name="android:windowLightNavigationBar">false</item>
         <item name="android:enforceStatusBarContrast" tools:targetApi="q">false</item>
         <item name="android:enforceNavigationBarContrast" tools:targetApi="q">false</item>
+        <item name="android:colorAccent">@color/primary</item>
         <item name="android:windowBackground">@color/background</item>
     </style>
 </resources>

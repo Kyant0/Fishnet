@@ -4,6 +4,7 @@
     <style name="Theme.Fishnet" parent="android:Theme.Material">
         <item name="android:statusBarColor">?android:colorPrimary</item>
         <item name="android:windowLightStatusBar">false</item>
+        <item name="android:colorAccent">@color/primary</item>
         <item name="android:windowBackground">@color/background</item>
     </style>
 </resources>
