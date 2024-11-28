@@ -1,9 +1,12 @@
 #include "signal_handler.h"
 
 #include <sys/mman.h>
+#include <sys/sysinfo.h>
+#include <sys/utsname.h>
 
 #include "abi.h"
 #include "human_readable.h"
+#include "duration.h"
 #include "log.h"
 #include "clock.h"
 #include "abort_message.h"
@@ -70,6 +73,20 @@ static void *fishnet_dispatch_thread(void *arg) {
 
     const ApkInfo log_info = get_apk_info();
 
+    struct utsname name_buffer;
+    if (uname(&name_buffer) != 0) {
+        LOGE("uname failed: %s", strerror(errno));
+    }
+
+    std::string kernel_version = name_buffer.release;
+    kernel_version += ' ';
+    kernel_version += name_buffer.version;
+
+    struct sysinfo s_info;
+    if (sysinfo(&s_info) != 0) {
+        LOGE("sysinfo failed: %s", strerror(errno));
+    }
+
     LOG_FISHNET("****** Fishnet crash report %s ******", FISHNET_VERSION);
     LOG_FISHNET("");
     LOG_FISHNET("APK info:");
@@ -82,12 +99,15 @@ static void *fishnet_dispatch_thread(void *arg) {
     LOG_FISHNET("    Revision: '%s'", get_property("ro.revision", "unknown").c_str());
     LOG_FISHNET("    Security patch: '%s'", get_property("ro.build.version.security_patch", "unknown").c_str());
     LOG_FISHNET("    Build date: '%s'", get_property("ro.system.build.date", "unknown").c_str());
+    LOG_FISHNET("    Kernel version: '%s'", kernel_version.c_str());
     LOG_FISHNET("    ABI: '%s'", abi_string(arch));
+    LOG_FISHNET("    Locale: '%s'", get_property("ro.product.locale", "unknown").c_str());
     LOG_FISHNET("    Debuggable: %s", get_bool_property("ro.debuggable", false) ? "yes" : "no");
-    LOG_FISHNET("    Rooted (guess): %s", is_rooted() ? "yes" : "no");
+    LOG_FISHNET("    Rooted (guessed): %s", is_rooted() ? "yes" : "no");
+    LOG_FISHNET("    System uptime: %s", seconds_to_human_readable_time(s_info.uptime).c_str());
     LOG_FISHNET("");
     LOG_FISHNET("Timestamp: %s", get_timestamp().c_str());
-    LOG_FISHNET("Process uptime: %lus", get_process_uptime(pid));
+    LOG_FISHNET("Process uptime: %s", seconds_to_human_readable_time(get_process_uptime(pid)).c_str());
 
     // only print this info if the page size is not 4k or has been in 16k mode
     const size_t page_size = getpagesize();
