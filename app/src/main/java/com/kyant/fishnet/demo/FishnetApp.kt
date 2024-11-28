@@ -24,6 +24,7 @@ class FishnetApp : Application() {
 
         JavaExceptionHandler.init(
             this,
+            File(filesDir, "java_crashes").apply { mkdirs() },
             Intent(this, JavaCrashReporterActivity::class.java).apply {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
             }

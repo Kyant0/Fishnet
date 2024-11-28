@@ -9,11 +9,13 @@ import kotlin.system.exitProcess
 object JavaExceptionHandler {
     private var handler: Thread.UncaughtExceptionHandler? = null
     private var intent: Intent? = null
+    private var path: File? = null
 
-    fun init(context: Context, intent: Intent, launchWhenStart: Boolean = false): Boolean {
+    fun init(context: Context, path: File, intent: Intent, launchWhenStart: Boolean = false): Boolean {
         this.intent = intent
+        this.path = path
         if (launchWhenStart) {
-            val crashReports = File(context.filesDir, "java_crashes").apply { mkdirs() }.listFiles()
+            val crashReports = path.listFiles()
             if (!crashReports.isNullOrEmpty()) {
                 context.startActivity(intent)
                 return true
@@ -39,8 +41,13 @@ object JavaExceptionHandler {
             }
             "  🧵Thread: ${t.toLogString()})\n    $stackTrace"
         }.joinToString("\n\n")
+        val text = Fishnet.dump(
+            "  🧵Crashing thread: ${Thread.currentThread().toLogString()}\n" +
+                    crashingThreadStackTrace + "\n\n" +
+                    stackTraces
+        )
 
-        val crashReports = File(context.filesDir, "java_crashes").apply { mkdirs() }.listFiles()
+        val crashReports = path?.listFiles()
         if (crashReports != null &&
             crashReports.size > 1 &&
             run {
@@ -54,14 +61,8 @@ object JavaExceptionHandler {
             exitProcess(0)
         }
 
-        val crashReport = File(context.filesDir, "java_crashes/${System.currentTimeMillis()}.txt")
-        crashReport.writeText(
-            Fishnet.dump(
-                "  🧵Crashing thread: ${Thread.currentThread().toLogString()}\n" +
-                        crashingThreadStackTrace + "\n\n" +
-                        stackTraces
-            )
-        )
+        val crashReport = File(path, "${System.currentTimeMillis()}.txt")
+        crashReport.writeText(text)
         context.startActivity(intent)
         exitProcess(0)
     }
