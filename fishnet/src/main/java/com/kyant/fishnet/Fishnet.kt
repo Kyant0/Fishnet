@@ -35,6 +35,10 @@ object Fishnet {
         return nativeInit(fd, packageName, versionName, versionCode, cert)
     }
 
+    fun dump(javaStackTraces: String): String {
+        return nativeDump(javaStackTraces)
+    }
+
     private external fun nativeInit(
         fd: Int,
         packageName: String,
@@ -42,6 +46,8 @@ object Fishnet {
         versionCode: Long,
         cert: String
     ): Boolean
+
+    private external fun nativeDump(javaStackTraces: String): String
 
     init {
         System.loadLibrary("com.kyant.fishnet")

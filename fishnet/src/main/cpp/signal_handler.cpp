@@ -17,8 +17,9 @@
 #include "property.h"
 #include "backtrace.h"
 #include "fd.h"
-#include "anr.h"
 #include "root.h"
+#include "anr.h"
+#include "dump.h"
 #include "version.h"
 
 static struct sigaction old_actions[NSIG];

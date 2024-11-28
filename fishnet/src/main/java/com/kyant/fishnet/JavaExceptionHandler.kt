@@ -30,11 +30,16 @@ object JavaExceptionHandler {
 
     private fun processThrowable(context: Context, e: Throwable) {
         e.printStackTrace()
-        val crashingThreadStackTrace = "$e\n    " +
-                e.stackTrace.joinToString("\n    ") { "at $it" }
+
+        val crashingThreadStackTrace = "     💥 $e\n    " +
+                e.stackTrace.withIndex().joinToString("\n    ") { (i, e) ->
+                    "#${i.toString().padStart(2, '0')} $e"
+                }
         val stackTraces = Thread.getAllStackTraces().map { (t, s) ->
-            val stackTrace = s.joinToString("\n    ") { "at $it" }
-            "Thread: $t\n    $stackTrace"
+            val stackTrace = s.withIndex().joinToString("\n    ") { (i, e) ->
+                "#${i.toString().padStart(2, '0')} $e"
+            }
+            "  🧵Thread: ${t.toLogString()})\n    $stackTrace"
         }.joinToString("\n\n")
 
         val crashReports = File(context.filesDir, "java_crashes").apply { mkdirs() }.listFiles()
@@ -53,9 +58,11 @@ object JavaExceptionHandler {
 
         val crashReport = File(context.filesDir, "java_crashes/${System.currentTimeMillis()}.txt")
         crashReport.writeText(
-            "Crashing thread (${Thread.currentThread().name}):\n" +
-                    crashingThreadStackTrace + "\n\n" +
-                    stackTraces
+            Fishnet.dump(
+                "  🧵Crashing thread: ${Thread.currentThread().toLogString()}\n" +
+                        crashingThreadStackTrace + "\n\n" +
+                        stackTraces
+            )
         )
         context.startActivity(
             Intent(context, JavaCrashReporterActivity::class.java).apply {
@@ -63,5 +70,9 @@ object JavaExceptionHandler {
             }
         )
         exitProcess(0)
+    }
+
+    private fun Thread.toLogString(): String {
+        return "$name (id: $id, priority: $priority, state: $state)"
     }
 }

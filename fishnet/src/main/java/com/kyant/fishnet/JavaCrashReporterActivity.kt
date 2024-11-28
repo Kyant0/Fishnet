@@ -19,7 +19,7 @@ class JavaCrashReporterActivity : Activity() {
         if (!javaCrashes.isNullOrEmpty()) {
             setContentView(R.layout.activity_java_crash_reporter)
 
-            findViewById<TextView>(R.id.tv_log).text = javaCrashes.firstOrNull()?.take(50000).orEmpty()
+            findViewById<TextView>(R.id.tv_log).text = javaCrashes.lastOrNull()?.take(200000).orEmpty()
 
             findViewById<View>(R.id.btn_delete_log).setOnClickListener {
                 File(filesDir, "java_crashes").deleteRecursively()

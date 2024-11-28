@@ -19,6 +19,10 @@ struct ApkInfo {
     const char *cert;
 };
 
+void start_dump();
+
+std::string end_dump();
+
 void set_log_fd(int fd);
 
 void write_log_to_fd();

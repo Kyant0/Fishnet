@@ -3,6 +3,8 @@
 
 #include "unwindstack/AndroidUnwinder.h"
 
+void print_main_thread_header(pid_t pid, pid_t tid, uid_t uid);
+
 void print_main_thread(pid_t pid, pid_t tid, uid_t uid, const siginfo_t *info, int word_size,
                        const unwindstack::ArchEnum &arch, unwindstack::AndroidUnwinder *unwinder,
                        const std::unique_ptr<unwindstack::Regs> &regs,

@@ -4,11 +4,27 @@
 
 #define ENABLE_LOG 0
 
+static bool is_dumping = false;
+
 static int log_fd = -1;
 
 static ApkInfo apk_info{};
 
 static std::string log_buffer{};
+static std::string dump_buffer{};
+static std::string *current_buffer = &log_buffer;
+
+void start_dump() {
+    is_dumping = true;
+    dump_buffer.clear();
+    current_buffer = &dump_buffer;
+}
+
+std::string end_dump() {
+    is_dumping = false;
+    current_buffer = &log_buffer;
+    return dump_buffer;
+}
 
 void set_log_fd(int fd) {
     log_fd = fd;
@@ -96,14 +112,14 @@ void log_fishnet(bool linebreak, const char *fmt, ...) {
     va_list args;
     va_start(args, fmt);
 #if ENABLE_LOG
-    const size_t next_start = log_buffer.size();
+    const size_t next_start = current_buffer->size();
 #endif
-    StringAppendV(&log_buffer, strdup(fmt), args);
+    StringAppendV(current_buffer, strdup(fmt), args);
     va_end(args);
 #if ENABLE_LOG
-    __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "%s", log_buffer.c_str() + next_start);
+    __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "%s", current_buffer->c_str() + next_start);
 #endif
     if (linebreak) {
-        log_buffer.append("\n");
+        current_buffer->append("\n");
     }
 }

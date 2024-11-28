@@ -100,7 +100,7 @@ static std::string describe_pac_enabled_keys(long value) {
     return describe_end(value, desc);
 }
 
-static void print_main_thread_header(pid_t pid, pid_t tid, uid_t uid) {
+void print_main_thread_header(pid_t pid, pid_t tid, uid_t uid) {
     const std::vector<std::string> command_line = get_command_line(pid);
     if (!command_line.empty()) {
         if (command_line.size() == 1) {
@@ -118,7 +118,7 @@ static void print_main_thread_header(pid_t pid, pid_t tid, uid_t uid) {
     }
     const std::string process_name = get_process_name(pid);
     const std::string thread_name = get_thread_name(tid);
-    LOG_FISHNET("pid: %d, tid: %d, uid: %d, name: %s  >>> %s <<<",
+    LOG_FISHNET("💥 pid: %d, tid: %d, uid: %d, name: %s  >>> %s <<<",
                 pid, tid, uid, thread_name.c_str(), process_name.c_str());
     // Only supported on aarch64 for now.
 #if defined(__aarch64__)
@@ -212,7 +212,7 @@ void print_thread(pid_t tid, int word_size, const unwindstack::ArchEnum &arch, u
     std::unique_ptr<unwindstack::Regs> regs;
     unwinder->UnwindWithSignal(SIGRTMIN, tid, &regs);
     const std::string thread_name = get_thread_name(tid);
-    LOG_FISHNET("tid: %d, name: %s", tid, thread_name.c_str());
+    LOG_FISHNET("🧵 tid: %d, name: %s", tid, thread_name.c_str());
     if (regs) {
         print_thread_registers(arch, word_size, regs);
     }
