@@ -323,6 +323,7 @@ MiB Swap:   2048.0 total,   2048.0 free,      0.0 used.   7144.1 avail Mem
 
     const int page_size_kb = getpagesize() / 1024;
     const double hz = (double) HZ;
+    const double sys_uptime = get_uptime_from_clock();
 
     for (const ProcessStat &task: tasks) {
         double cpu_usage = 0.0;
@@ -337,7 +338,7 @@ MiB Swap:   2048.0 total,   2048.0 free,      0.0 used.   7144.1 avail Mem
         LOG_FISHNET("    %5d %4ld %3ld %11lu %6ld %6ld %c %5.1f %5.1f %9s %s",
                     task.pid, task.priority, task.nice, task.vsize, task.rss * page_size_kb,
                     task.shared * page_size_kb, task.state, cpu_usage, memory_usage,
-                    seconds_to_human_readable_time(get_uptime_from_clock() - task.starttime / hz).c_str(),
+                    seconds_to_human_readable_time(sys_uptime - task.starttime / hz).c_str(),
                     task.comm);
     }
 
