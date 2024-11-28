@@ -15,7 +15,7 @@ class CrashFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         view.findViewById<View>(R.id.btn_test_java_crash).setOnClickListener {
-            throw RuntimeException("Java Crash")
+            javaCrash()
         }
         view.findViewById<View>(R.id.btn_test_anr).setOnClickListener {
             Thread.sleep(10000)
@@ -30,6 +30,15 @@ class CrashFragment : Fragment() {
         view.findViewById<View>(R.id.btn_test_fdsan_crash).setOnClickListener {
             nativeFdsanCrash()
         }
+    }
+
+    private fun javaCrash() {
+        val thread = object : Thread() {
+            override fun run() {
+                throw RuntimeException("Java crash")
+            }
+        }
+        thread.start()
     }
 
     private external fun nativeCrash(type: String)

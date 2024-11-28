@@ -3,6 +3,7 @@ package com.kyant.fishnet.demo
 import android.app.Application
 import android.net.Uri
 import com.kyant.fishnet.Fishnet
+import com.kyant.fishnet.JavaExceptionHandler
 import java.io.File
 
 class FishnetApp : Application() {
@@ -19,6 +20,8 @@ class FishnetApp : Application() {
                 throw RuntimeException("Failed to initialize Fishnet")
             }
         }
+
+        JavaExceptionHandler.init(this)
 
         System.loadLibrary("com.kyant.fishnet.demo")
     }
