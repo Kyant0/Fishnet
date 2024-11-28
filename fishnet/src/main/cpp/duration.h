@@ -14,7 +14,7 @@ static std::string seconds_to_human_readable_time(uint64_t total_seconds) {
         result += (hours < 10 ? "0" : "") + std::to_string(hours) + ":";
     }
 
-    result += (minutes < 10 ? "0" : "") + std::to_string(minutes) + ":";
+    result += (minutes < 10 ? "0" : "") + std::to_string(minutes) + ".";
 
     result += (seconds < 10 ? "0" : "") + std::to_string(seconds);
 

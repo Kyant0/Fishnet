@@ -6,13 +6,16 @@
 #include <memory>
 #include <unistd.h>
 #include <vector>
+#include <asm-generic/param.h>
 
 #include "log.h"
 #include "process.h"
+#include "duration.h"
 
 struct ProcessStat {
-    // proc_pid_stat(5)
+    // https://man7.org/linux/man-pages/man5/proc_pid_stat.5.html
     int pid;
+    char comm[16];
     char state;
     int ppid;
     int pgrp;
@@ -64,7 +67,7 @@ struct ProcessStat {
     unsigned long env_end;
     int exit_code;
 
-    // proc_pid_statm(5)
+    // https://man7.org/linux/man-pages/man5/proc_pid_statm.5.html
     unsigned long size;
     unsigned long resident;
     unsigned long shared;
@@ -75,6 +78,8 @@ struct ProcessStat {
 };
 
 static constexpr const char *stat_pattern =
+        "%d "    // pid
+        "(%15[^)]) " // comm
         "%c "    // state
         "%d "    // ppid
         "%d "    // pgrp
@@ -114,7 +119,7 @@ static constexpr const char *stat_pattern =
         "%d "    // processor
         "%u "    // rt_priority
         "%u "    // policy
-        "%llu "   // delayacct_blkio_ticks
+        "%llu "  // delayacct_blkio_ticks
         "%lu "   // guest_time
         "%ld "   // cguest_time
         "%lu "   // start_data
@@ -124,7 +129,7 @@ static constexpr const char *stat_pattern =
         "%lu "   // arg_end
         "%lu "   // env_start
         "%lu "   // env_end
-        "%d"    // exit_code
+        "%d"     // exit_code
 ;
 
 static constexpr const char *statm_pattern = "%lu %lu %lu %lu %lu %lu %lu";
@@ -151,6 +156,14 @@ static long get_total_system_memory() {
     return total_memory;
 }
 
+double get_uptime_from_clock() {
+    struct timespec ts;
+    if (clock_gettime(CLOCK_BOOTTIME, &ts) == -1) {
+        return -1;
+    }
+    return ts.tv_sec + ts.tv_nsec / 1e9;
+}
+
 static std::unique_ptr<ProcessStat> get_task_info(pid_t pid, pid_t tid) {
     char path[33];
     snprintf(path, sizeof(path), "/proc/%d/task/%d/stat", pid, tid);
@@ -164,9 +177,10 @@ static std::unique_ptr<ProcessStat> get_task_info(pid_t pid, pid_t tid) {
     }
     fclose(file);
 
-    const char *end_of_comm = strrchr(stat, ')');
     std::unique_ptr<ProcessStat> process = std::make_unique<ProcessStat>();
-    int result = sscanf(end_of_comm + 2, stat_pattern,
+    int result = sscanf(stat, stat_pattern,
+                        &process->pid,
+                        process->comm,
                         &process->state,
                         &process->ppid,
                         &process->pgrp,
@@ -218,7 +232,7 @@ static std::unique_ptr<ProcessStat> get_task_info(pid_t pid, pid_t tid) {
                         &process->env_end,
                         &process->exit_code);
 
-    if (result < 50) {
+    if (result < 52) {
         return nullptr;
     }
 
@@ -247,7 +261,6 @@ static std::unique_ptr<ProcessStat> get_task_info(pid_t pid, pid_t tid) {
         return nullptr;
     }
 
-    process->pid = tid;
     return process;
 }
 
@@ -294,7 +307,6 @@ void print_tasks(pid_t pid) {
                 total, running, sleeping, stopped, zombie);
 
     const uint64_t total_uptime = get_process_uptime(pid);
-    LOG_FISHNET("Total uptime: %ld", total_uptime);
     const long total_memory = get_total_system_memory();
     LOG_FISHNET("Total memory: %ld", total_memory);
 
@@ -309,9 +321,9 @@ MiB Swap:   2048.0 total,   2048.0 free,      0.0 used.   7144.1 avail Mem
     174 message+  20   0    9532   5120   4488 S   0.0   0.1   0:00.20 dbus-daemon
      */
 
-    //    PID     PR  NI     VIRT      RES    SHR   S  %CPU  %MEM   TIME+
-    //    12028   10  -10 14895796224  37724  23431 S    25  3683  8379685
-    LOG_FISHNET("    PID     PR  NI     VIRT      RES    SHR   S  %%CPU  %%MEM   TIME+");
+    //     PID    PR   NI     VIRT     RES     SHR  S  %CPU  %MEM     TIME+    COMMAND
+    //    14709   10  -10 14582484992 173924 102800 S  17.2   1.5     00.08 nt.fishnet.demo
+    LOG_FISHNET("     PID    PR   NI     VIRT     RES     SHR  S  %%CPU  %%MEM     TIME+    COMMAND");
 
     const int page_size_kb = getpagesize() / 1024;
 
@@ -326,9 +338,11 @@ MiB Swap:   2048.0 total,   2048.0 free,      0.0 used.   7144.1 avail Mem
         if (total_memory > 0) {
             memory_usage = 100.0 * (task.rss * page_size_kb) / total_memory;  // Memory in KB, total_memory in KB
         }
-        LOG_FISHNET("    %5d %4ld %4ld %7lu %6ld %6ld %c %5.1f %5.1f %8llu",
+        LOG_FISHNET("    %5d %4ld %4ld %7lu %6ld %6ld %c %5.1f %5.1f %9s %s",
                     task.pid, task.priority, task.nice, task.vsize, task.rss * page_size_kb,
-                    task.shared * page_size_kb, task.state, cpu_usage, memory_usage, task.starttime);
+                    task.shared * page_size_kb, task.state, cpu_usage, memory_usage,
+                    seconds_to_human_readable_time(get_uptime_from_clock() - task.starttime / HZ).c_str(),
+                    task.comm);
     }
 
     LOG_FISHNET("");
