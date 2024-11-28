@@ -1,12 +1,9 @@
 #include "tasks.h"
 
 #include <algorithm>
-#include <bits/sysconf.h>
 #include <dirent.h>
-#include <memory>
+#include <sys/param.h>
 #include <unistd.h>
-#include <vector>
-#include <asm-generic/param.h>
 
 #include "log.h"
 #include "process.h"
@@ -308,7 +305,6 @@ void print_tasks(pid_t pid) {
 
     const uint64_t total_uptime = get_process_uptime(pid);
     const long total_memory = get_total_system_memory();
-    LOG_FISHNET("Total memory: %ld", total_memory);
 
     /*
 top - 19:59:27 up  4:29,  1 user,  load average: 0.00, 0.00, 0.00
@@ -321,27 +317,27 @@ MiB Swap:   2048.0 total,   2048.0 free,      0.0 used.   7144.1 avail Mem
     174 message+  20   0    9532   5120   4488 S   0.0   0.1   0:00.20 dbus-daemon
      */
 
-    //     PID    PR   NI     VIRT     RES     SHR  S  %CPU  %MEM     TIME+    COMMAND
-    //    14709   10  -10 14582484992 173924 102800 S  17.2   1.5     00.08 nt.fishnet.demo
-    LOG_FISHNET("     PID    PR   NI     VIRT     RES     SHR  S  %%CPU  %%MEM     TIME+    COMMAND");
+    //      PID   PR  NI        VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND
+    //    12345 -100 -20 12345678901 123456 123456 S 100.0 100.0 123:56:89 123456789012345
+    LOG_FISHNET("      PID   PR  NI        VIRT    RES    SHR S  %%CPU  %%MEM     TIME+ COMMAND");
 
     const int page_size_kb = getpagesize() / 1024;
+    const double hz = (double) HZ;
 
     for (const ProcessStat &task: tasks) {
         double cpu_usage = 0.0;
         if (total_uptime > 0) {
-            const double total_time = (task.utime + task.stime + task.cutime + task.cstime) /
-                                      (double) sysconf(_SC_CLK_TCK);  // in seconds
+            const double total_time = (task.utime + task.stime + task.cutime + task.cstime) / hz;
             cpu_usage = (total_time / total_uptime) * 100;
         }
         double memory_usage = 0.0;
         if (total_memory > 0) {
-            memory_usage = 100.0 * (task.rss * page_size_kb) / total_memory;  // Memory in KB, total_memory in KB
+            memory_usage = 100.0 * (task.rss * page_size_kb) / total_memory;
         }
-        LOG_FISHNET("    %5d %4ld %4ld %7lu %6ld %6ld %c %5.1f %5.1f %9s %s",
+        LOG_FISHNET("    %5d %4ld %3ld %11lu %6ld %6ld %c %5.1f %5.1f %9s %s",
                     task.pid, task.priority, task.nice, task.vsize, task.rss * page_size_kb,
                     task.shared * page_size_kb, task.state, cpu_usage, memory_usage,
-                    seconds_to_human_readable_time(get_uptime_from_clock() - task.starttime / HZ).c_str(),
+                    seconds_to_human_readable_time(get_uptime_from_clock() - task.starttime / hz).c_str(),
                     task.comm);
     }
 
