@@ -15,21 +15,20 @@
             android:layout_height="wrap_content"
             android:clipToPadding="false">
 
-            <TextView
+            <com.kyant.fishnet.demo.ui.MonospacedText
                 android:id="@+id/tv_log"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="16dp"
-                android:textColor="?android:textColorPrimary"
+                android:textColor="@color/text"
                 android:textIsSelectable="true"
-                android:textSize="12sp"
-                android:typeface="monospace" />
+                android:textSize="12sp" />
 
         </HorizontalScrollView>
 
     </ScrollView>
 
-    <Button
+    <com.kyant.fishnet.demo.ui.MaterialButton
         android:id="@+id/btn_delete_log"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

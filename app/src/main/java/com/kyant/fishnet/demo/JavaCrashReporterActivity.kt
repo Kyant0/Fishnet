@@ -1,4 +1,4 @@
-package com.kyant.fishnet
+package com.kyant.fishnet.demo
 
 import android.app.Activity
 import android.os.Bundle

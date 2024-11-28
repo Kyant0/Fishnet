@@ -24,7 +24,7 @@
         </activity>
 
         <activity
-            android:name="com.kyant.fishnet.JavaCrashReporterActivity"
+            android:name=".JavaCrashReporterActivity"
             android:label="Java crash reporter" />
     </application>
 

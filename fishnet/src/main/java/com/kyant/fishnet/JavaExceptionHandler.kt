@@ -8,16 +8,14 @@ import kotlin.system.exitProcess
 
 object JavaExceptionHandler {
     private var handler: Thread.UncaughtExceptionHandler? = null
+    private var intent: Intent? = null
 
-    fun init(context: Context, launchWhenStart: Boolean = false): Boolean {
+    fun init(context: Context, intent: Intent, launchWhenStart: Boolean = false): Boolean {
+        this.intent = intent
         if (launchWhenStart) {
             val crashReports = File(context.filesDir, "java_crashes").apply { mkdirs() }.listFiles()
             if (!crashReports.isNullOrEmpty()) {
-                context.startActivity(
-                    Intent(context, JavaCrashReporterActivity::class.java).apply {
-                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                    }
-                )
+                context.startActivity(intent)
                 return true
             }
         }
@@ -64,11 +62,7 @@ object JavaExceptionHandler {
                         stackTraces
             )
         )
-        context.startActivity(
-            Intent(context, JavaCrashReporterActivity::class.java).apply {
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-            }
-        )
+        context.startActivity(intent)
         exitProcess(0)
     }
 

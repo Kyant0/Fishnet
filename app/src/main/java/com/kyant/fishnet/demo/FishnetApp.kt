@@ -1,6 +1,7 @@
 package com.kyant.fishnet.demo
 
 import android.app.Application
+import android.content.Intent
 import android.net.Uri
 import com.kyant.fishnet.Fishnet
 import com.kyant.fishnet.JavaExceptionHandler
@@ -21,7 +22,12 @@ class FishnetApp : Application() {
             }
         }
 
-        JavaExceptionHandler.init(this)
+        JavaExceptionHandler.init(
+            this,
+            Intent(this, JavaCrashReporterActivity::class.java).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            }
+        )
 
         System.loadLibrary("com.kyant.fishnet.demo")
     }

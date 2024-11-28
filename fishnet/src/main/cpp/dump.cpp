@@ -93,6 +93,7 @@ char *fishnet_dump_with_java(const char *java_stack_traces) {
     if (java_stack_traces != nullptr) {
         LOG_FISHNET("Java stack traces:");
         LOG_FISHNET("%s", java_stack_traces);
+        LOG_FISHNET("");
     }
 
     print_memory_info();
