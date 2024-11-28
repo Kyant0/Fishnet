@@ -39,7 +39,7 @@ object JavaExceptionHandler {
             val stackTrace = s.withIndex().joinToString("\n    ") { (i, e) ->
                 "#${i.toString().padStart(2, '0')} $e"
             }
-            "  🧵Thread: ${t.toLogString()})\n    $stackTrace"
+            "  🧵Thread: ${t.toLogString()}\n    $stackTrace"
         }.joinToString("\n\n")
         val text = Fishnet.dump(
             "  🧵Crashing thread: ${Thread.currentThread().toLogString()}\n" +
