@@ -154,11 +154,11 @@ static long get_total_system_memory() {
 }
 
 double get_uptime_from_clock() {
-    struct timespec ts;
+    struct timespec ts{};
     if (clock_gettime(CLOCK_BOOTTIME, &ts) == -1) {
         return -1;
     }
-    return ts.tv_sec + ts.tv_nsec / 1e9;
+    return (double) (ts.tv_sec + ts.tv_nsec) / 1e9;
 }
 
 static std::unique_ptr<ProcessStat> get_task_info(pid_t pid, pid_t tid) {
@@ -322,18 +322,18 @@ MiB Swap:   2048.0 total,   2048.0 free,      0.0 used.   7144.1 avail Mem
     LOG_FISHNET("      PID   PR  NI        VIRT    RES    SHR S  %%CPU  %%MEM     TIME+ COMMAND");
 
     const int page_size_kb = getpagesize() / 1024;
-    const double hz = (double) HZ;
+    const auto hz = (double) HZ;
     const double sys_uptime = get_uptime_from_clock();
 
     for (const ProcessStat &task: tasks) {
         double cpu_usage = 0.0;
         if (total_uptime > 0) {
-            const double total_time = (task.utime + task.stime + task.cutime + task.cstime) / hz;
-            cpu_usage = (total_time / total_uptime) * 100;
+            const double total_time = (double) (task.utime + task.stime + task.cutime + task.cstime) / hz;
+            cpu_usage = (total_time / (double) total_uptime) * 100;
         }
         double memory_usage = 0.0;
         if (total_memory > 0) {
-            memory_usage = 100.0 * (task.rss * page_size_kb) / total_memory;
+            memory_usage = 100.0 * (double) (task.rss * page_size_kb) / (double) total_memory;
         }
         LOG_FISHNET("    %5d %4ld %3ld %11lu %6ld %6ld %c %5.1f %5.1f %9s %s",
                     task.pid, task.priority, task.nice, task.vsize, task.rss * page_size_kb,

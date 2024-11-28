@@ -1,7 +1,7 @@
 #include "root.h"
 
-#include <stdlib.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstring>
 #include <sys/fcntl.h>
 #include <sys/syscall.h>
 #include <unistd.h>

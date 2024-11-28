@@ -71,7 +71,7 @@ static void *fishnet_dispatch_thread(void *arg) {
 
     const ApkInfo log_info = get_apk_info();
 
-    struct utsname name_buffer;
+    struct utsname name_buffer{};
     if (uname(&name_buffer) != 0) {
         LOGE("uname failed: %s", strerror(errno));
     }
@@ -80,7 +80,7 @@ static void *fishnet_dispatch_thread(void *arg) {
     kernel_version += ' ';
     kernel_version += name_buffer.version;
 
-    struct sysinfo s_info;
+    struct sysinfo s_info{};
     if (sysinfo(&s_info) != 0) {
         LOGE("sysinfo failed: %s", strerror(errno));
     }
