@@ -15,6 +15,7 @@
 #include "backtrace.h"
 #include "fd.h"
 #include "anr.h"
+#include "root.h"
 #include "version.h"
 
 static struct sigaction old_actions[NSIG];
@@ -83,6 +84,7 @@ static void *fishnet_dispatch_thread(void *arg) {
     LOG_FISHNET("    Build date: '%s'", get_property("ro.system.build.date", "unknown").c_str());
     LOG_FISHNET("    ABI: '%s'", abi_string(arch));
     LOG_FISHNET("    Debuggable: %s", get_bool_property("ro.debuggable", false) ? "yes" : "no");
+    LOG_FISHNET("    Rooted (guess): %s", is_rooted() ? "yes" : "no");
     LOG_FISHNET("");
     LOG_FISHNET("Timestamp: %s", get_timestamp().c_str());
     LOG_FISHNET("Process uptime: %lus", get_process_uptime(pid));

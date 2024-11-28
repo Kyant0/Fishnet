@@ -316,6 +316,7 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
         backtrace.cpp
         memory.cpp
         fd.cpp
+        root.cpp
         anr.cpp
         signal_handler.cpp)
 
