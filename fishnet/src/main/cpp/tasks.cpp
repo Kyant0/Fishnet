@@ -141,7 +141,7 @@ static long get_total_system_memory() {
     long total_memory = 0;
 
     constexpr char mem_total[] = "MemTotal:";
-    while (fgets(line, sizeof(line), file)) {
+    while (fgets(line, sizeof(line), file) != nullptr) {
         if (strncmp(line, mem_total, 9) == 0) {
             if (sscanf(line + 9, "%ld", &total_memory) == 1) {
                 break;
@@ -168,7 +168,7 @@ static std::unique_ptr<ProcessStat> get_task_info(pid_t pid, pid_t tid) {
     if (!file) return nullptr;
 
     char stat[512];
-    if (!fgets(stat, sizeof(stat), file)) {
+    if (fgets(stat, sizeof(stat), file) == nullptr) {
         fclose(file);
         return nullptr;
     }
@@ -239,7 +239,7 @@ static std::unique_ptr<ProcessStat> get_task_info(pid_t pid, pid_t tid) {
         return nullptr;
     }
 
-    if (!fgets(stat, sizeof(stat), file)) {
+    if (fgets(stat, sizeof(stat), file) == nullptr) {
         fclose(file);
         return nullptr;
     }

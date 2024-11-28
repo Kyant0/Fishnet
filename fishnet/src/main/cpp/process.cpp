@@ -57,7 +57,7 @@ uint64_t get_process_start_time(pid_t pid) {
     ;
 
     char stat[512];
-    if (!fgets(stat, sizeof(stat), file)) {
+    if (fgets(stat, sizeof(stat), file) == nullptr) {
         fclose(file);
         return -1;
     }
@@ -108,7 +108,7 @@ void print_process_status(pid_t pid) {
     LOG_FISHNET("Process status for pid %d:", pid);
     std::string status;
     char line[256];
-    while (fgets(line, sizeof(line), file)) {
+    while (fgets(line, sizeof(line), file) != nullptr) {
         status += "    ";
         status += line;
     }
@@ -124,7 +124,7 @@ void print_memory_info() {
     LOG_FISHNET("Memory info:");
     std::string status;
     char line[256];
-    while (fgets(line, sizeof(line), file)) {
+    while (fgets(line, sizeof(line), file) != nullptr) {
         status += "    ";
         status += line;
     }

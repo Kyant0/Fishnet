@@ -69,8 +69,6 @@ static void *fishnet_dispatch_thread(void *arg) {
     dump_logcat(pid);
     try_read_abort_message_from_logcat();
 
-    dump_thread_backtrace(data.frames);
-
     const ApkInfo log_info = get_apk_info();
 
     struct utsname name_buffer;
