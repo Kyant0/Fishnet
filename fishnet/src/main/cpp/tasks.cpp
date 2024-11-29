@@ -261,7 +261,7 @@ static std::unique_ptr<ProcessStat> get_task_info(pid_t pid, pid_t tid) {
     return process;
 }
 
-void print_tasks(pid_t pid) {
+void print_tasks(LogRecord &record, pid_t pid) {
     char task_dir[19];
     snprintf(task_dir, sizeof(task_dir), "/proc/%d/task", pid);
 

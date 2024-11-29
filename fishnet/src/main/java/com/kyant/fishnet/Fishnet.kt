@@ -6,7 +6,7 @@ import android.os.Build
 
 object Fishnet {
     @Suppress("DEPRECATION")
-    fun init(context: Context, fd: Int): Boolean {
+    fun init(context: Context, path: String): Boolean {
         val packageName = context.packageName
         val packageInfo =
             context.packageManager.getPackageInfo(
@@ -32,22 +32,22 @@ object Fishnet {
         } else {
             packageInfo.signatures?.joinToString { it.toChars().take(8).joinToString("") } ?: "???"
         }
-        return nativeInit(fd, packageName, versionName, versionCode, cert)
+        return nativeInit(path, packageName, versionName, versionCode, cert)
     }
 
-    fun dump(javaStackTraces: String): String {
-        return nativeDump(javaStackTraces)
+    fun dumpJavaCrash(javaStackTraces: String) {
+        nativeDumpJavaCrash(javaStackTraces)
     }
 
     private external fun nativeInit(
-        fd: Int,
+        path: String,
         packageName: String,
         versionName: String,
         versionCode: Long,
         cert: String
     ): Boolean
 
-    private external fun nativeDump(javaStackTraces: String): String
+    private external fun nativeDumpJavaCrash(javaStackTraces: String)
 
     init {
         System.loadLibrary("com.kyant.fishnet")

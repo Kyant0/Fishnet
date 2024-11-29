@@ -4,7 +4,6 @@
 #include <sys/mman.h>
 
 #include "abi.h"
-#include "log.h"
 
 // Number of bytes per MTE granule.
 constexpr size_t kTagGranuleSize = 16;
@@ -92,7 +91,7 @@ ssize_t dump_memory(void *out, size_t len, uint8_t *tags, size_t tags_len, uint6
     return (ssize_t) bytes;
 }
 
-void print_tag_dump(uint64_t fault_addr, unwindstack::ArchEnum arch,
+void print_tag_dump(LogRecord &record, uint64_t fault_addr, unwindstack::ArchEnum arch,
                     std::shared_ptr<unwindstack::Memory> &process_memory) {
     if (arch != unwindstack::ARCH_ARM64) {
         return;
@@ -175,12 +174,12 @@ void print_tag_dump(uint64_t fault_addr, unwindstack::ArchEnum arch,
     }
 }
 
-void print_thread_memory_dump(int word_size, const std::unique_ptr<unwindstack::Regs> &regs, unwindstack::Maps *maps,
-                              unwindstack::Memory *memory) {
+void print_thread_memory_dump(LogRecord &record, int word_size, const std::unique_ptr<unwindstack::Regs> &regs,
+                              unwindstack::Maps *maps, unwindstack::Memory *memory) {
     static constexpr size_t bytes_per_line = 16;
     static_assert(bytes_per_line == kTagGranuleSize);
 
-    regs->IterateRegisters([&word_size, maps, memory](const char *name, uint64_t value) {
+    regs->IterateRegisters([&record, word_size, maps, memory](const char *name, uint64_t value) {
         const std::shared_ptr<unwindstack::MapInfo> map_info = maps->Find(untag_address(value));
         std::string mapping_name;
         if (map_info) {
@@ -248,7 +247,7 @@ void print_thread_memory_dump(int word_size, const std::unique_ptr<unwindstack::
     });
 }
 
-void print_memory_maps(uint64_t fault_addr, int word_size, unwindstack::Maps *maps,
+void print_memory_maps(LogRecord &record, uint64_t fault_addr, int word_size, unwindstack::Maps *maps,
                        std::shared_ptr<unwindstack::Memory> &process_memory) {
     const auto format_pointer = [word_size](uint64_t ptr) -> std::string {
         if (word_size == 8) {

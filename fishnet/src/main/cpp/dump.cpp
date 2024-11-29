@@ -7,8 +7,6 @@
 #include "abi.h"
 #include "human_readable.h"
 #include "duration.h"
-#include "log.h"
-#include "clock.h"
 #include "logcat.h"
 #include "process.h"
 #include "tasks.h"
@@ -21,13 +19,13 @@
 #include "dump.h"
 #include "version.h"
 
-char *fishnet_dump_with_java(const char *java_stack_traces, bool dump_main_thread) {
+void fishnet_dump_with_java(const char *java_stack_traces, bool dump_main_thread) {
     const pid_t pid = getpid();
     const pid_t tid = gettid();
     const uid_t uid = getuid();
 
     LOGE("fishnet_dump started");
-    start_dump();
+    FISHNET_RECORD(dump_main_thread ? Java : ANR);
 
     const unwindstack::ArchEnum arch = unwindstack::Regs::CurrentArch();
     const int word_size = pointer_width(arch);
@@ -75,7 +73,7 @@ char *fishnet_dump_with_java(const char *java_stack_traces, bool dump_main_threa
     LOG_FISHNET("    Rooted (guessed): %s", is_rooted() ? "yes" : "no");
     LOG_FISHNET("    System uptime: %s", seconds_to_human_readable_time(s_info.uptime).c_str());
     LOG_FISHNET("");
-    LOG_FISHNET("Timestamp: %s", get_timestamp().c_str());
+    LOG_FISHNET("Timestamp: %s", record.timestamp.c_str());
     LOG_FISHNET("Process uptime: %s", seconds_to_human_readable_time(get_process_uptime(pid)).c_str());
 
     // only print this info if the page size is not 4k or has been in 16k mode
@@ -88,7 +86,7 @@ char *fishnet_dump_with_java(const char *java_stack_traces, bool dump_main_threa
     }
 
     if (dump_main_thread) {
-        print_main_thread_header(pid, tid, uid);
+        print_main_thread_header(record, pid, tid, uid);
         LOG_FISHNET("");
     }
 
@@ -98,23 +96,23 @@ char *fishnet_dump_with_java(const char *java_stack_traces, bool dump_main_threa
         LOG_FISHNET("");
     }
 
-    print_memory_info();
+    print_memory_info(record);
 
-    print_process_status(pid);
+    print_process_status(record, pid);
 
-    print_tasks(pid);
+    print_tasks(record, pid);
 
     for (const pid_t &thread_id: tids) {
         if (!dump_main_thread && thread_id == pid) {
             continue;
         }
         LOG_FISHNET("--- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---");
-        print_thread(thread_id, word_size, arch, &thread_unwinder, false);
+        print_thread(record, thread_id, word_size, arch, &thread_unwinder, false);
     }
 
-    dump_open_fds(pid);
+    dump_open_fds(record, pid);
 
-    print_logs();
+    print_logs(record);
 
-    return strdup(end_dump().c_str());
+    FISHNET_WRITE();
 }

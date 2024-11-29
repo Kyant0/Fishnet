@@ -3,6 +3,8 @@
 
 #include <sys/types.h>
 
-void dump_open_fds(pid_t pid);
+#include "log.h"
+
+void dump_open_fds(LogRecord &record, pid_t pid);
 
 #endif //FISHNET_FD_H

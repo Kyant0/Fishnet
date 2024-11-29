@@ -1,8 +1,7 @@
 #include "backtrace.h"
 
-#include "log.h"
-
-void print_backtrace(unwindstack::ArchEnum arch, const std::vector<unwindstack::FrameData> &frames) {
+void print_backtrace(LogRecord &record, unwindstack::ArchEnum arch,
+                     const std::vector<unwindstack::FrameData> &frames) {
     LOG_FISHNET("");
     LOG_FISHNET("backtrace:");
     for (const auto &frame: frames) {
@@ -10,7 +9,8 @@ void print_backtrace(unwindstack::ArchEnum arch, const std::vector<unwindstack::
     }
 }
 
-void print_backtrace_with_bytes(unwindstack::ArchEnum arch, const std::vector<unwindstack::FrameData> &frames) {
+void print_backtrace_with_bytes(LogRecord &record, unwindstack::ArchEnum arch,
+                                const std::vector<unwindstack::FrameData> &frames) {
     LOG_FISHNET("");
     LOG_FISHNET("backtrace:");
     bool is_first_frame = true;

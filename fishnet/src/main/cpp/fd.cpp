@@ -6,8 +6,6 @@
 #include <vector>
 #include <unistd.h>
 
-#include "log.h"
-
 struct FD {
     int32_t fd;
     std::string path;
@@ -15,7 +13,7 @@ struct FD {
     uint64_t tag;
 };
 
-void dump_open_fds(pid_t pid) {
+void dump_open_fds(LogRecord &record, pid_t pid) {
     char fd_dir[17];
     snprintf(fd_dir, sizeof(fd_dir), "/proc/%d/fd", pid);
 

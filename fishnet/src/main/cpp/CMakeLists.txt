@@ -300,9 +300,9 @@ target_link_libraries(unwindstack
 
 add_library(${CMAKE_PROJECT_NAME} SHARED
         fishnet.cpp
+        log.cpp
         abi.cpp
         human_readable.cpp
-        log.cpp
         cause.cpp
         clock.cpp
         abort_message.cpp

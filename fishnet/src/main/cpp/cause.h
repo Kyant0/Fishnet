@@ -3,7 +3,9 @@
 
 #include "unwindstack/Unwinder.h"
 
-void dump_probable_cause(const siginfo_t *info, unwindstack::Maps *maps,
+#include "log.h"
+
+void dump_probable_cause(LogRecord &record, const siginfo_t *info, unwindstack::Maps *maps,
                          const std::unique_ptr<unwindstack::Regs> &regs);
 
 #endif //FISHNET_CAUSE_H

@@ -3,9 +3,8 @@
 #include <cinttypes>
 #include <unordered_set>
 
-#include "log.h"
-
-static void print_register_row(int word_size, const std::vector<std::pair<std::string, uint64_t>> &row) {
+static void print_register_row(LogRecord &record, int word_size,
+                               const std::vector<std::pair<std::string, uint64_t>> &row) {
     std::string output = "  ";
     for (const auto &[name, value]: row) {
         output += StringPrintf("  %-3s %0*" PRIx64, name.c_str(), 2 * word_size, (uint64_t) value);
@@ -13,7 +12,8 @@ static void print_register_row(int word_size, const std::vector<std::pair<std::s
     LOG_FISHNET("%s", output.c_str());
 }
 
-void print_thread_registers(unwindstack::ArchEnum arch, int word_size, const std::unique_ptr<unwindstack::Regs> &regs) {
+void print_thread_registers(LogRecord &record, unwindstack::ArchEnum arch, int word_size,
+                            const std::unique_ptr<unwindstack::Regs> &regs) {
     static constexpr size_t column_count = 4;
     std::vector<std::pair<std::string, uint64_t>> current_row;
     std::vector<std::pair<std::string, uint64_t>> special_row;
@@ -53,14 +53,14 @@ void print_thread_registers(unwindstack::ArchEnum arch, int word_size, const std
 
         row->emplace_back(name, value);
         if (current_row.size() == column_count) {
-            print_register_row(word_size, current_row);
+            print_register_row(record, word_size, current_row);
             current_row.clear();
         }
     });
 
     if (!current_row.empty()) {
-        print_register_row(word_size, current_row);
+        print_register_row(record, word_size, current_row);
     }
 
-    print_register_row(word_size, special_row);
+    print_register_row(record, word_size, special_row);
 }

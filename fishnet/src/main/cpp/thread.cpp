@@ -7,7 +7,6 @@
 
 #include "abi.h"
 #include "human_readable.h"
-#include "log.h"
 #include "cause.h"
 #include "abort_message.h"
 #include "command_line.h"
@@ -100,7 +99,7 @@ static std::string describe_pac_enabled_keys(long value) {
     return describe_end(value, desc);
 }
 
-void print_main_thread_header(pid_t pid, pid_t tid, uid_t uid) {
+void print_main_thread_header(LogRecord &record, pid_t pid, pid_t tid, uid_t uid) {
     const std::vector<std::string> command_line = get_command_line(pid);
     if (!command_line.empty()) {
         if (command_line.size() == 1) {
@@ -135,14 +134,14 @@ void print_main_thread_header(pid_t pid, pid_t tid, uid_t uid) {
 #endif
 }
 
-void print_main_thread(pid_t pid, pid_t tid, uid_t uid, const siginfo_t *info, int word_size,
+void print_main_thread(LogRecord &record, pid_t pid, pid_t tid, uid_t uid, const siginfo_t *info, int word_size,
                        const unwindstack::ArchEnum &arch, unwindstack::AndroidUnwinder *unwinder,
                        const std::unique_ptr<unwindstack::Regs> &regs,
                        const std::vector<unwindstack::FrameData> &frames,
                        bool dump_memory, bool dump_memory_maps) {
     const bool has_fault_addr = signal_has_si_addr(info);
     const auto fault_addr = (uintptr_t) info->si_addr;
-    print_main_thread_header(pid, tid, uid);
+    print_main_thread_header(record, pid, tid, uid);
 
     std::string sender_desc;
     if (signal_has_sender(info, pid)) {
@@ -167,20 +166,20 @@ void print_main_thread(pid_t pid, pid_t tid, uid_t uid, const siginfo_t *info, i
     is_mte_crash = is_async_mte_crash || (info->si_signo == SIGSEGV && info->si_code == SEGV_MTESERR);
 #endif
 
-    dump_probable_cause(info, unwinder->GetMaps(), regs);
+    dump_probable_cause(record, info, unwinder->GetMaps(), regs);
 
-    dump_abort_message();
+    dump_abort_message(record);
 
-    print_thread_registers(arch, word_size, regs);
+    print_thread_registers(record, arch, word_size, regs);
     if (is_async_mte_crash) {
         LOG_FISHNET("Note: This crash is a delayed async MTE crash. Memory corruption has occurred");
         LOG_FISHNET("      in this process. The stack trace below is the first system call or context");
         LOG_FISHNET("      switch that was executed after the memory corruption happened.");
     }
-    print_backtrace_with_bytes(arch, frames);
+    print_backtrace_with_bytes(record, arch, frames);
 
     if (has_fault_addr) {
-        print_tag_dump(fault_addr, arch, unwinder->GetProcessMemory());
+        print_tag_dump(record, fault_addr, arch, unwinder->GetProcessMemory());
     }
 
     if (is_mte_crash) {
@@ -192,7 +191,7 @@ void print_main_thread(pid_t pid, pid_t tid, uid_t uid, const siginfo_t *info, i
     if (dump_memory) {
         unwindstack::Maps *maps = unwinder->GetMaps();
         unwindstack::Memory *memory = unwinder->GetProcessMemory().get();
-        print_thread_memory_dump(word_size, regs, maps, memory);
+        print_thread_memory_dump(record, word_size, regs, maps, memory);
 
         LOG_FISHNET("");
     }
@@ -200,28 +199,28 @@ void print_main_thread(pid_t pid, pid_t tid, uid_t uid, const siginfo_t *info, i
     if (dump_memory_maps) {
         // No memory maps to print.
         if (unwinder->GetMaps()->Total() > 0) {
-            print_memory_maps(fault_addr, word_size, unwinder->GetMaps(), unwinder->GetProcessMemory());
+            print_memory_maps(record, fault_addr, word_size, unwinder->GetMaps(), unwinder->GetProcessMemory());
         } else {
             LOG_FISHNET("No memory maps found");
         }
     }
 }
 
-void print_thread(pid_t tid, int word_size, const unwindstack::ArchEnum &arch, unwindstack::ThreadUnwinder *unwinder,
-                  bool dump_memory) {
+void print_thread(LogRecord &record, pid_t tid, int word_size, const unwindstack::ArchEnum &arch,
+                  unwindstack::ThreadUnwinder *unwinder, bool dump_memory) {
     std::unique_ptr<unwindstack::Regs> regs;
     unwinder->UnwindWithSignal(SIGRTMIN, tid, &regs);
     const std::string thread_name = get_thread_name(tid);
     LOG_FISHNET("🧵 tid: %d, name: %s", tid, thread_name.c_str());
     if (regs) {
-        print_thread_registers(arch, word_size, regs);
+        print_thread_registers(record, arch, word_size, regs);
     }
-    print_backtrace(arch, unwinder->ConsumeFrames());
+    print_backtrace(record, arch, unwinder->ConsumeFrames());
     if (dump_memory) {
         unwindstack::Maps *maps = unwinder->GetMaps();
         unwindstack::Memory *memory = unwinder->GetProcessMemory().get();
         if (regs) {
-            print_thread_memory_dump(word_size, regs, maps, memory);
+            print_thread_memory_dump(record, word_size, regs, maps, memory);
         }
     }
 }

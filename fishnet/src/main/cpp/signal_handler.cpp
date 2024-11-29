@@ -7,8 +7,6 @@
 #include "abi.h"
 #include "human_readable.h"
 #include "duration.h"
-#include "log.h"
-#include "clock.h"
 #include "abort_message.h"
 #include "logcat.h"
 #include "process.h"
@@ -43,12 +41,13 @@ static void *fishnet_dispatch_thread(void *arg) {
 
     LOGE("fishnet_dispatch_thread started, signal %s, code %s", get_signame(info), get_sigcode(info));
 
+    FISHNET_RECORD(Native);
+
     std::shared_ptr<unwindstack::Memory> process_memory = unwindstack::Memory::CreateProcessMemoryCached(pid);
     unwindstack::AndroidLocalUnwinder unwinder(process_memory);
     unwindstack::ErrorData error{};
     if (!unwinder.Initialize(error)) {
         LOGE("failed to init unwinder object: %s", unwindstack::GetErrorCodeString(error.code));
-        close_log_fd();
         return nullptr;
     }
 
@@ -104,7 +103,7 @@ static void *fishnet_dispatch_thread(void *arg) {
     LOG_FISHNET("    Rooted (guessed): %s", is_rooted() ? "yes" : "no");
     LOG_FISHNET("    System uptime: %s", seconds_to_human_readable_time(s_info.uptime).c_str());
     LOG_FISHNET("");
-    LOG_FISHNET("Timestamp: %s", get_timestamp().c_str());
+    LOG_FISHNET("Timestamp: %s", record.timestamp.c_str());
     LOG_FISHNET("Process uptime: %s", seconds_to_human_readable_time(get_process_uptime(pid)).c_str());
 
     // only print this info if the page size is not 4k or has been in 16k mode
@@ -116,28 +115,28 @@ static void *fishnet_dispatch_thread(void *arg) {
         LOG_FISHNET("Has been in 16kb mode: yes");
     }
 
-    print_main_thread(pid, tid, uid, info, word_size, arch, &unwinder, regs, data.frames,
+    print_main_thread(record, pid, tid, uid, info, word_size, arch, &unwinder, regs, data.frames,
                       true, false);
 
-    print_memory_info();
+    print_memory_info(record);
 
-    print_process_status(pid);
+    print_process_status(record, pid);
 
-    print_tasks(pid);
+    print_tasks(record, pid);
 
     for (const pid_t &thread_id: tids) {
         if (thread_id == tid || thread_id == the_tid) {
             continue;
         }
         LOG_FISHNET("--- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---");
-        print_thread(thread_id, word_size, arch, &thread_unwinder, false);
+        print_thread(record, thread_id, word_size, arch, &thread_unwinder, false);
     }
 
-    dump_open_fds(pid);
+    dump_open_fds(record, pid);
 
-    print_logs();
+    print_logs(record);
 
-    write_log_to_fd();
+    FISHNET_WRITE();
 
     return nullptr;
 }
@@ -180,8 +179,6 @@ static void fishnet_signal_handler(int signal_number, siginfo_t *info, void *con
     }
 
     resend:
-    close_log_fd();
-
     if (old_actions[signal_number].sa_flags & SA_SIGINFO) {
         if (old_actions[signal_number].sa_sigaction) {
             old_actions[signal_number].sa_sigaction(signal_number, info, context);

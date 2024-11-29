@@ -3,6 +3,8 @@
 
 #include <sys/types.h>
 
-void print_tasks(pid_t pid);
+#include "log.h"
+
+void print_tasks(LogRecord &record, pid_t pid);
 
 #endif //FISHNET_TASKS_H

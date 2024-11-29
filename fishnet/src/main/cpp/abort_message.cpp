@@ -1,7 +1,6 @@
 #include "abort_message.h"
 
 #include "android-base/logging.h"
-#include "log.h"
 
 static char *abort_message = nullptr;
 
@@ -87,7 +86,7 @@ void get_scudo_message_if_needed(const unwindstack::ArchEnum &arch, const std::u
     }
 }
 
-void dump_abort_message() {
+void dump_abort_message(LogRecord &record) {
     if (abort_message) {
         LOG_FISHNET("Abort message: '%s'", abort_message);
     }

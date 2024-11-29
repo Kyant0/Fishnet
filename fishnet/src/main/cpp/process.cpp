@@ -5,8 +5,6 @@
 #include <dirent.h>
 #include <sys/sysinfo.h>
 
-#include "log.h"
-
 std::string get_process_name(pid_t pid) {
     char process_name[256];
     char path[22];
@@ -99,7 +97,7 @@ void get_process_tids(pid_t pid, std::vector<pid_t> &tids) {
     closedir(dir);
 }
 
-void print_process_status(pid_t pid) {
+void print_process_status(LogRecord &record, pid_t pid) {
     char path[21];
     snprintf(path, sizeof(path), "/proc/%d/status", pid);
     FILE *file = fopen(path, "r");
@@ -117,7 +115,7 @@ void print_process_status(pid_t pid) {
     LOG_FISHNET("%s", status.c_str());
 }
 
-void print_memory_info() {
+void print_memory_info(LogRecord &record) {
     FILE *file = fopen("/proc/meminfo", "r");
     if (!file) return;
 

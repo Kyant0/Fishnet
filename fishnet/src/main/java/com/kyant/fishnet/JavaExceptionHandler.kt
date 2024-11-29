@@ -2,27 +2,16 @@ package com.kyant.fishnet
 
 import android.content.Context
 import android.content.Intent
-import android.widget.Toast
-import java.io.File
 import kotlin.system.exitProcess
 
 object JavaExceptionHandler {
     private var handler: Thread.UncaughtExceptionHandler? = null
     private var intent: Intent? = null
-    private var path: File? = null
     private var mainThread: Thread? = null
 
-    fun init(context: Context, path: File, intent: Intent, launchWhenStart: Boolean = false): Boolean {
+    fun init(context: Context, intent: Intent?): Boolean {
         this.intent = intent
-        this.path = path
         mainThread = Thread.currentThread()
-        if (launchWhenStart) {
-            val crashReports = path.listFiles()
-            if (!crashReports.isNullOrEmpty()) {
-                context.startActivity(intent)
-                return true
-            }
-        }
         if (handler == null) {
             handler = Thread.UncaughtExceptionHandler { _, e -> processThrowable(context, e) }
         }
@@ -54,29 +43,15 @@ object JavaExceptionHandler {
             }
             "  🧵Thread: ${t.toLogString()}\n    $stackTrace"
         }.joinToString("\n\n")
-        val text = Fishnet.dump(
+        Fishnet.dumpJavaCrash(
             "  🧵Crashing thread: ${Thread.currentThread().toLogString()}\n" +
                     crashingThreadStackTrace + "\n\n" +
                     stackTraces
         )
 
-        val crashReports = path?.listFiles()
-        if (crashReports != null &&
-            crashReports.size > 1 &&
-            run {
-                val last = crashReports.last()
-                val secondLast = crashReports[crashReports.size - 2]
-                last.readText() == secondLast.readText() &&
-                        last.lastModified() - secondLast.lastModified() < 10_000L
-            }
-        ) {
-            Toast.makeText(context, "Crash loop detected", Toast.LENGTH_LONG).show()
-            exitProcess(0)
+        if (intent != null) {
+            context.startActivity(intent)
         }
-
-        val crashReport = File(path, "${System.currentTimeMillis()}.txt")
-        crashReport.writeText(text)
-        context.startActivity(intent)
         exitProcess(0)
     }
 

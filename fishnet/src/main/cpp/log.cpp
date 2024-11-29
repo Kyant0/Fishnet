@@ -2,46 +2,16 @@
 
 #include <unistd.h>
 
+#include "clock.h"
+
 #define ENABLE_LOG 0
 
-static bool is_dumping = false;
-
-static int log_fd = -1;
+static std::string log_path{};
 
 static ApkInfo apk_info{};
 
-static std::string log_buffer{};
-static std::string dump_buffer{};
-static std::string *current_buffer = &log_buffer;
-
-void start_dump() {
-    is_dumping = true;
-    dump_buffer.clear();
-    current_buffer = &dump_buffer;
-}
-
-std::string end_dump() {
-    is_dumping = false;
-    current_buffer = &log_buffer;
-    return dump_buffer;
-}
-
-void set_log_fd(int fd) {
-    log_fd = fd;
-}
-
-void write_log_to_fd() {
-    if (log_fd != -1) {
-        ftruncate(log_fd, 0);
-        write(log_fd, log_buffer.c_str(), log_buffer.size());
-    }
-}
-
-void close_log_fd() {
-    if (log_fd != -1) {
-        close(log_fd);
-        log_fd = -1;
-    }
+void set_log_path(const char *path) {
+    log_path = path;
 }
 
 void set_apk_info(const ApkInfo &info) {
@@ -50,6 +20,40 @@ void set_apk_info(const ApkInfo &info) {
 
 const ApkInfo &get_apk_info() {
     return apk_info;
+}
+
+LogRecord start_recording(LogType type) {
+    return {
+            .type = type,
+            .timestamp = get_timestamp(),
+    };
+}
+
+static std::string log_type_to_string(LogType type) {
+    switch (type) {
+        case None:
+            return "none";
+        case Native:
+            return "native";
+        case Java:
+            return "java";
+        case ANR:
+            return "anr";
+    }
+    return "unknown";
+}
+
+void write_log(const LogRecord &record) {
+    if (log_path.empty()) {
+        return;
+    }
+    std::string path = log_path + '/' + log_type_to_string(record.type) + '_' + record.timestamp + ".log";
+    FILE *file = fopen(path.c_str(), "w");
+    if (file == nullptr) {
+        return;
+    }
+    fwrite(record.content.c_str(), 1, record.content.size(), file);
+    fclose(file);
 }
 
 void StringAppendV(std::string *dst, const char *format, va_list ap) {
@@ -108,18 +112,18 @@ void StringAppendF(std::string *dst, const char *format, ...) {
     va_end(ap);
 }
 
-void log_fishnet(bool linebreak, const char *fmt, ...) {
+void log_fishnet(LogRecord &record, bool linebreak, const char *fmt, ...) {
     va_list args;
     va_start(args, fmt);
 #if ENABLE_LOG
-    const size_t next_start = current_buffer->size();
+    const size_t next_start = record.buffer.size();
 #endif
-    StringAppendV(current_buffer, strdup(fmt), args);
+    StringAppendV(&record.content, strdup(fmt), args);
     va_end(args);
 #if ENABLE_LOG
-    __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "%s", current_buffer->c_str() + next_start);
+    __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "%s", record.buffer.c_str() + next_start);
 #endif
     if (linebreak) {
-        current_buffer->append("\n");
+        record.content += '\n';
     }
 }

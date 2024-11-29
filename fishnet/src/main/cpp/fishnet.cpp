@@ -9,10 +9,12 @@
 
 extern "C" {
 JNIEXPORT jboolean JNICALL
-Java_com_kyant_fishnet_Fishnet_nativeInit(JNIEnv *env, jobject, jint fd,
+Java_com_kyant_fishnet_Fishnet_nativeInit(JNIEnv *env, jobject, jstring path,
                                           jstring packageName, jstring versionName, jlong versionCode,
                                           jstring cert) {
-    set_log_fd(fd);
+    const char *log_path = env->GetStringUTFChars(path, nullptr);
+    set_log_path(log_path);
+    env->ReleaseStringUTFChars(path, log_path);
 
     const char *package_name = env->GetStringUTFChars(packageName, nullptr);
     const char *version_name = env->GetStringUTFChars(versionName, nullptr);
@@ -27,17 +29,15 @@ Java_com_kyant_fishnet_Fishnet_nativeInit(JNIEnv *env, jobject, jint fd,
     env->ReleaseStringUTFChars(packageName, package_name);
     env->ReleaseStringUTFChars(versionName, version_name);
     env->ReleaseStringUTFChars(cert, cert_str);
+
     return true;
 }
 
-JNIEXPORT jstring JNICALL
-Java_com_kyant_fishnet_Fishnet_nativeDump(JNIEnv *env, jobject, jstring java_stack_traces) {
+JNIEXPORT void JNICALL
+Java_com_kyant_fishnet_Fishnet_nativeDumpJavaCrash(JNIEnv *env, jobject, jstring java_stack_traces) {
     const char *stack_traces = env->GetStringUTFChars(java_stack_traces, nullptr);
-    char *dump = fishnet_dump_with_java(stack_traces, true);
+    fishnet_dump_with_java(stack_traces, true);
     env->ReleaseStringUTFChars(java_stack_traces, stack_traces);
-    jstring result = env->NewStringUTF(dump);
-    free(dump);
-    return result;
 }
 
 void Fishnet_init(JavaVM *vm, JNIEnv *env, bool enabled) {

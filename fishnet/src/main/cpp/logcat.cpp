@@ -2,8 +2,6 @@
 
 #include <vector>
 
-#include "log.h"
-
 static std::vector<std::string> logs{};
 
 void dump_logcat(pid_t pid) {
@@ -21,7 +19,7 @@ void dump_logcat(pid_t pid) {
     }
 }
 
-void print_logs() {
+void print_logs(LogRecord &record) {
     LOG_FISHNET("");
     LOG_FISHNET("log main:");
 

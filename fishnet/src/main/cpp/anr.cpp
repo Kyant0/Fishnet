@@ -137,8 +137,7 @@ void *dump_java_threads_thread(void *arg) {
     }
 
     const char *thread_dump_chars = env->GetStringUTFChars(thread_dump, nullptr);
-    char *dump = fishnet_dump_with_java(thread_dump_chars, false);
-    free(dump);
+    fishnet_dump_with_java(thread_dump_chars, false);
     env->ReleaseStringUTFChars(thread_dump, thread_dump_chars);
 
     g_vm->DetachCurrentThread();

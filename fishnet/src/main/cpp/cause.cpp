@@ -4,7 +4,6 @@
 #include <sys/mman.h>
 
 #include "abi.h"
-#include "log.h"
 
 static std::optional<std::string> get_stack_overflow_cause(uint64_t fault_addr, uint64_t sp, unwindstack::Maps *maps) {
     // Under stack MTE the stack pointer and/or the fault address can be tagged.
@@ -41,7 +40,7 @@ static std::optional<std::string> get_stack_overflow_cause(uint64_t fault_addr, 
     return {};
 }
 
-void dump_probable_cause(const siginfo_t *info, unwindstack::Maps *maps,
+void dump_probable_cause(LogRecord &record, const siginfo_t *info, unwindstack::Maps *maps,
                          const std::unique_ptr<unwindstack::Regs> &regs) {
     const auto fault_addr = (const uint64_t) (info->si_addr);
 
