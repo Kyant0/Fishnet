@@ -53,13 +53,12 @@ JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved) {
 
 JNIEXPORT void JNI_OnUnload(JavaVM *vm, void *reserved) {
     JNIEnv *env;
-
-    deinit_signal_handler();
-    deinit_anr_signal_handler();
-
     if (vm->GetEnv((void **) &env, JNI_VERSION_1_6) != JNI_OK) {
         return;
     }
+
+    deinit_signal_handler();
+    deinit_anr_signal_handler();
 }
 
 }
