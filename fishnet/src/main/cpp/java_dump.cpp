@@ -24,7 +24,6 @@ void fishnet_dump_with_java(const char *java_stack_traces, bool dump_main_thread
     const pid_t tid = gettid();
     const uid_t uid = getuid();
 
-    LOGE("fishnet_dump started");
     FISHNET_RECORD(dump_main_thread ? Java : ANR);
 
     const unwindstack::ArchEnum arch = unwindstack::Regs::CurrentArch();
@@ -41,18 +40,14 @@ void fishnet_dump_with_java(const char *java_stack_traces, bool dump_main_thread
     const ApkInfo log_info = get_apk_info();
 
     struct utsname name_buffer{};
-    if (uname(&name_buffer) != 0) {
-        LOGE("uname failed: %s", strerror(errno));
-    }
+    uname(&name_buffer);
 
     std::string kernel_version = name_buffer.release;
     kernel_version += ' ';
     kernel_version += name_buffer.version;
 
     struct sysinfo s_info{};
-    if (sysinfo(&s_info) != 0) {
-        LOGE("sysinfo failed: %s", strerror(errno));
-    }
+    sysinfo(&s_info);
 
     LOG_FISHNET("****** Fishnet crash report %s ******", FISHNET_VERSION);
     LOG_FISHNET("");

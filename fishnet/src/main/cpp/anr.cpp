@@ -11,8 +11,6 @@
 #include "log.h"
 #include "java_dump.h"
 
-#define MAX_BUFFER_SIZE 64
-
 static JavaVM *g_vm = nullptr;
 static jclass exception_handler_class = nullptr;
 
@@ -52,59 +50,39 @@ void deinit_anr_signal_handler() {
     g_vm = nullptr;
 }
 
-static bool is_number_str(const char *str, size_t max_len) {
-    if (str == nullptr || strlen(str) > max_len) {
-        return false;
-    }
-
-    for (size_t i = 0; str[i] != '\0'; i++) {
-        if (!isdigit(str[i])) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
 int get_signal_catcher_tid(pid_t myPid) {
-    char processPath[MAX_BUFFER_SIZE];
-    size_t size = snprintf(processPath, sizeof(processPath), "/proc/%d/task", myPid);
-    if (size >= MAX_BUFFER_SIZE) {
-        return -1;
-    }
-    DIR *processDir = opendir(processPath);
+    char task[19];
+    snprintf(task, sizeof(task), "/proc/%d/task", myPid);
+    DIR *processDir = opendir(task);
     if (!processDir) {
         return -1;
     }
 
     int tid = -1;
-    char filePath[MAX_BUFFER_SIZE];
-    char threadName[MAX_BUFFER_SIZE];
-    dirent *child = readdir(processDir);
-    while (child != nullptr) {
-        if (is_number_str(child->d_name, MAX_BUFFER_SIZE - 1)) {
-            size = snprintf(filePath, sizeof(filePath), "%s/%s/comm", processPath, child->d_name);
-            if (size >= MAX_BUFFER_SIZE) {
-                continue;
-            }
-            int fd = open(filePath, O_RDONLY);
-            size = read(fd, threadName, MAX_BUFFER_SIZE);
-            close(fd);
-            threadName[size - 1] = '\0';
-            if (strcmp(threadName, "Signal Catcher") == 0) {
-                tid = atoi(child->d_name);
-                break;
-            }
+    char path[32];
+    char name[16];
+    const dirent *child;
+    constexpr char signal_catcher[] = "Signal Catcher";
+    while ((child = readdir(processDir)) != nullptr) {
+        snprintf(path, sizeof(path), "%s/%s/comm", task, child->d_name);
+        const int fd = open(path, O_RDONLY);
+        ssize_t size = read(fd, name, sizeof(name));
+        close(fd);
+        if (size <= 0) {
+            continue;
         }
-        child = readdir(processDir);
+
+        name[size - 1] = '\0';
+        if (strcmp(name, signal_catcher) == 0) {
+            tid = atoi(child->d_name);
+            break;
+        }
     }
     closedir(processDir);
     return tid;
 }
 
 void *dump_java_threads_thread(void *arg) {
-    LOGE("dump_java_threads_thread started");
-
     JNIEnv *env;
     jint status = g_vm->GetEnv((void **) &env, JNI_VERSION_1_6);
 
@@ -132,15 +110,15 @@ void *dump_java_threads_thread(void *arg) {
 }
 
 void anr_signal_handler(int signal_number, siginfo_t *info, void *context) {
-    const int fromPid1 = info->_si_pad[3];
-    const int fromPid2 = info->_si_pad[4];
+    const int from_pid_1 = info->_si_pad[3];
+    const int from_pid_2 = info->_si_pad[4];
     const int pid = getpid();
-    LOGE("Receive ANR signal, fromPid1: %d, fromPid2: %d, pid: %d", fromPid1, fromPid2, pid);
 
-    if (fromPid1 != pid && fromPid2 != pid) {
+    LOGE("Received ANR signal from_pid_1: %d, from_pid_2: %d, pid: %d", from_pid_1, from_pid_2, pid);
+
+    if (from_pid_1 != pid && from_pid_2 != pid) {
         pthread_t thread_id;
         if (pthread_create(&thread_id, nullptr, dump_java_threads_thread, nullptr) != 0) {
-            LOGE("pthread_create failed");
             goto resend;
         }
         pthread_join(thread_id, nullptr);
@@ -148,5 +126,7 @@ void anr_signal_handler(int signal_number, siginfo_t *info, void *context) {
 
     resend:
     const int sc_tid = get_signal_catcher_tid(pid);
-    syscall(SYS_tgkill, pid, sc_tid, SIGQUIT);
+    if (sc_tid != -1) {
+        syscall(SYS_tgkill, pid, sc_tid, SIGQUIT);
+    }
 }

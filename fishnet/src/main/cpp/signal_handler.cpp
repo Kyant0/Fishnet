@@ -39,8 +39,6 @@ static void *fishnet_dispatch_thread(void *arg) {
     const siginfo_t *info = thread_info->siginfo;
     void *context = thread_info->ucontext;
 
-    LOGE("fishnet_dispatch_thread started, signal %s, code %s", get_signame(info), get_sigcode(info));
-
     FISHNET_RECORD(Native);
 
     std::shared_ptr<unwindstack::Memory> process_memory = unwindstack::Memory::CreateProcessMemoryCached(pid);
@@ -71,18 +69,14 @@ static void *fishnet_dispatch_thread(void *arg) {
     const ApkInfo log_info = get_apk_info();
 
     struct utsname name_buffer{};
-    if (uname(&name_buffer) != 0) {
-        LOGE("uname failed: %s", strerror(errno));
-    }
+    uname(&name_buffer);
 
     std::string kernel_version = name_buffer.release;
     kernel_version += ' ';
     kernel_version += name_buffer.version;
 
     struct sysinfo s_info{};
-    if (sysinfo(&s_info) != 0) {
-        LOGE("sysinfo failed: %s", strerror(errno));
-    }
+    sysinfo(&s_info);
 
     LOG_FISHNET("****** Fishnet crash report %s ******", FISHNET_VERSION);
     LOG_FISHNET("");
@@ -152,6 +146,8 @@ static void fishnet_signal_handler(int signal_number, siginfo_t *info, void *con
     }
     is_entered = true;
 
+    LOGE("Received signal %s, code %s", get_signame(info), get_sigcode(info));
+
     debugger_thread_info thread_info = {
             .crashing_tid = gettid(),
             .siginfo = info,
@@ -161,24 +157,18 @@ static void fishnet_signal_handler(int signal_number, siginfo_t *info, void *con
     pthread_t thread_id;
     pthread_attr_t thread_attr;
     if (pthread_attr_init(&thread_attr) != 0) {
-        LOGE("pthread_attr_init failed");
         goto resend;
     }
     if (pthread_attr_setstack(&thread_attr, thread_stack, 8 * getpagesize()) != 0) {
         LOGE("pthread_attr_setstack failed");
-        if (munmap(thread_stack, 10 * getpagesize()) != 0) {
-            LOGE("munmap failed");
-        }
+        munmap(thread_stack, 10 * getpagesize());
         goto resend;
     }
     if (pthread_create(&thread_id, &thread_attr, fishnet_dispatch_thread, &thread_info) != 0) {
-        LOGE("pthread_create failed");
         goto resend;
     }
     pthread_join(thread_id, nullptr);
-    if (munmap(thread_stack, 10 * getpagesize()) != 0) {
-        LOGE("munmap failed");
-    }
+    munmap(thread_stack, 10 * getpagesize());
 
     resend:
     if (old_actions[signal_number].sa_flags & SA_SIGINFO) {
