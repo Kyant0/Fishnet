@@ -1,11 +1,11 @@
 #include "fishnet/fishnet.h"
 
-#include <jni.h>
 #include <malloc.h>
 
 #include "log.h"
 #include "signal_handler.h"
 #include "dump.h"
+#include "anr.h"
 
 extern "C" {
 JNIEXPORT jboolean JNICALL
@@ -33,14 +33,20 @@ Java_com_kyant_fishnet_Fishnet_nativeInit(JNIEnv *env, jobject, jint fd,
 JNIEXPORT jstring JNICALL
 Java_com_kyant_fishnet_Fishnet_nativeDump(JNIEnv *env, jobject, jstring java_stack_traces) {
     const char *stack_traces = env->GetStringUTFChars(java_stack_traces, nullptr);
-    char *dump = fishnet_dump_with_java(stack_traces);
+    char *dump = fishnet_dump_with_java(stack_traces, true);
     env->ReleaseStringUTFChars(java_stack_traces, stack_traces);
     jstring result = env->NewStringUTF(dump);
     free(dump);
     return result;
 }
 
-void Fishnet_init(bool enabled) {
+void Fishnet_init(JavaVM *vm, JNIEnv *env, bool enabled) {
     init_signal_handler(enabled);
+    init_anr_signal_handler(vm, env);
+}
+
+void Fishnet_deinit() {
+    deinit_signal_handler();
+    deinit_anr_signal_handler();
 }
 }

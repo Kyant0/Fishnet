@@ -10,10 +10,12 @@ object JavaExceptionHandler {
     private var handler: Thread.UncaughtExceptionHandler? = null
     private var intent: Intent? = null
     private var path: File? = null
+    private var mainThread: Thread? = null
 
     fun init(context: Context, path: File, intent: Intent, launchWhenStart: Boolean = false): Boolean {
         this.intent = intent
         this.path = path
+        mainThread = Thread.currentThread()
         if (launchWhenStart) {
             val crashReports = path.listFiles()
             if (!crashReports.isNullOrEmpty()) {
@@ -26,6 +28,17 @@ object JavaExceptionHandler {
         }
         Thread.setDefaultUncaughtExceptionHandler(handler)
         return false
+    }
+
+    @JvmStatic
+    fun dumpJavaThreads(): String {
+        val stackTraces = Thread.getAllStackTraces().map { (t, s) ->
+            val stackTrace = s.withIndex().joinToString("\n    ") { (i, e) ->
+                "#${i.toString().padStart(2, '0')} $e"
+            }
+            "  🧵Thread: ${t.toLogString()}\n    $stackTrace"
+        }
+        return stackTraces.joinToString("\n\n")
     }
 
     private fun processThrowable(context: Context, e: Throwable) {

@@ -21,7 +21,7 @@
 #include "dump.h"
 #include "version.h"
 
-char *fishnet_dump_with_java(const char *java_stack_traces) {
+char *fishnet_dump_with_java(const char *java_stack_traces, bool dump_main_thread) {
     const pid_t pid = getpid();
     const pid_t tid = gettid();
     const uid_t uid = getuid();
@@ -87,8 +87,10 @@ char *fishnet_dump_with_java(const char *java_stack_traces) {
         LOG_FISHNET("Has been in 16kb mode: yes");
     }
 
-    print_main_thread_header(pid, tid, uid);
-    LOG_FISHNET("");
+    if (dump_main_thread) {
+        print_main_thread_header(pid, tid, uid);
+        LOG_FISHNET("");
+    }
 
     if (java_stack_traces != nullptr) {
         LOG_FISHNET("Java stack traces:");
@@ -103,6 +105,9 @@ char *fishnet_dump_with_java(const char *java_stack_traces) {
     print_tasks(pid);
 
     for (const pid_t &thread_id: tids) {
+        if (!dump_main_thread && thread_id == pid) {
+            continue;
+        }
         LOG_FISHNET("--- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---");
         print_thread(thread_id, word_size, arch, &thread_unwinder, false);
     }

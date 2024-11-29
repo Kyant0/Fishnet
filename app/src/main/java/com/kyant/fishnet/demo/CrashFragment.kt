@@ -18,7 +18,7 @@ class CrashFragment : Fragment() {
             javaCrash()
         }
         view.findViewById<View>(R.id.btn_test_anr).setOnClickListener {
-            Thread.sleep(10000)
+            Thread.sleep(15000)
         }
 
         view.findViewById<View>(R.id.btn_test_native_crash).setOnClickListener {

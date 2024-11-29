@@ -1,13 +1,17 @@
 #ifndef FISHNET_H
 #define FISHNET_H
 
-#define FISHNET_EXPORT __attribute__((visibility("default")))
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-FISHNET_EXPORT void Fishnet_init(bool enabled);
+#include <jni.h>
+
+#define FISHNET_EXPORT __attribute__((visibility("default")))
+
+FISHNET_EXPORT void Fishnet_init(JavaVM *vm, JNIEnv *env, bool enabled);
+
+FISHNET_EXPORT void Fishnet_deinit();
 
 #ifdef __cplusplus
 }

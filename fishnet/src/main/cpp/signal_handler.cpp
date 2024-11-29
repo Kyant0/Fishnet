@@ -18,7 +18,6 @@
 #include "backtrace.h"
 #include "fd.h"
 #include "root.h"
-#include "anr.h"
 #include "dump.h"
 #include "version.h"
 
@@ -229,15 +228,10 @@ void init_signal_handler(bool enabled) {
     register_handlers(&action);
 
     set_aborter();
+}
 
-    sigset_t sig_sets;
-    sigemptyset(&sig_sets);
-    sigaddset(&sig_sets, SIGQUIT);
-    pthread_sigmask(SIG_UNBLOCK, &sig_sets, nullptr);
-
-    struct sigaction sigAction{};
-    sigfillset(&sigAction.sa_mask);
-    sigAction.sa_flags = SA_RESTART | SA_ONSTACK | SA_SIGINFO;
-    sigAction.sa_sigaction = anr_signal_handler;
-    sigaction(SIGQUIT, &sigAction, nullptr);
+void deinit_signal_handler() {
+    for (int i = 0; i < NSIG; i++) {
+        sigaction(i, old_actions + i, nullptr);
+    }
 }

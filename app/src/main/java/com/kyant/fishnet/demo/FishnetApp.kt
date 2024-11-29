@@ -1,6 +1,7 @@
 package com.kyant.fishnet.demo
 
 import android.app.Application
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import com.kyant.fishnet.Fishnet
@@ -10,6 +11,11 @@ import java.io.File
 class FishnetApp : Application() {
     override fun onCreate() {
         super.onCreate()
+        System.loadLibrary("com.kyant.fishnet.demo")
+    }
+
+    override fun attachBaseContext(base: Context?) {
+        super.attachBaseContext(base)
 
         val logFile = File(filesDir, "fishnet.log")
         if (!logFile.exists()) {
@@ -29,7 +35,5 @@ class FishnetApp : Application() {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
             }
         )
-
-        System.loadLibrary("com.kyant.fishnet.demo")
     }
 }
