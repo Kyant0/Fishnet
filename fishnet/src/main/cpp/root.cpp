@@ -14,9 +14,8 @@ bool is_rooted() {
     const char *p = strtok(path, ":");
     char su_path[256];
     do {
-        sprintf(su_path, "%s/su", p);
+        snprintf(su_path, sizeof(su_path), "%s/su", p);
         if (access(su_path, F_OK) == 0) {
-            LOGE("Found su at %s", su_path);
             return true;
         }
     } while ((p = strtok(nullptr, ":")) != nullptr);
