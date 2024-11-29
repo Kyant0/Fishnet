@@ -20,7 +20,7 @@ object JavaExceptionHandler {
     }
 
     @JvmStatic
-    fun dumpJavaThreads(): String {
+    private fun dumpJavaThreads(): String {
         val stackTraces = Thread.getAllStackTraces().map { (t, s) ->
             val stackTrace = s.withIndex().joinToString("\n    ") { (i, e) ->
                 "#${i.toString().padStart(2, '0')} $e"
