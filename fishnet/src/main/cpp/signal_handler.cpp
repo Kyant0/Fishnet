@@ -45,7 +45,7 @@ static void *fishnet_dispatch_thread(void *arg) {
     unwindstack::AndroidLocalUnwinder unwinder(process_memory);
     unwindstack::ErrorData error{};
     if (!unwinder.Initialize(error)) {
-        LOGE("failed to init unwinder object: %s", unwindstack::GetErrorCodeString(error.code));
+        LOGE("Failed to init unwinder: %s", unwindstack::GetErrorCodeString(error.code));
         return nullptr;
     }
 
@@ -56,7 +56,10 @@ static void *fishnet_dispatch_thread(void *arg) {
     unwinder.Unwind(regs.get(), data);
 
     unwindstack::ThreadUnwinder thread_unwinder(128);
-    thread_unwinder.Init();
+    if (!thread_unwinder.Init()) {
+        LOGE("Failed to init thread unwinder");
+        return nullptr;
+    }
 
     std::vector<pid_t> tids;
     get_process_tids(pid, tids);
@@ -198,12 +201,12 @@ void init_signal_handler() {
     const void *thread_stack_allocation = mmap(nullptr, getpagesize() * (thread_stack_pages + 2),
                                                PROT_NONE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
     if (thread_stack_allocation == MAP_FAILED) {
-        LOGE("failed to allocate fishnet thread stack");
+        LOGE("Failed to allocate thread stack");
     }
 
     char *stack = (char *) thread_stack_allocation + getpagesize();
     if (mprotect(stack, getpagesize() * thread_stack_pages, PROT_READ | PROT_WRITE) != 0) {
-        LOGE("failed to mprotect fishnet thread stack");
+        LOGE("Failed to mprotect thread stack");
     }
     thread_stack = stack;
 

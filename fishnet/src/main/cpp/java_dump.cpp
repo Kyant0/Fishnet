@@ -30,7 +30,10 @@ void fishnet_dump_with_java(const char *java_stack_traces, bool dump_main_thread
     const int word_size = pointer_width(arch);
 
     unwindstack::ThreadUnwinder thread_unwinder(128);
-    thread_unwinder.Init();
+    if (!thread_unwinder.Init()) {
+        LOGE("Failed to init thread unwinder");
+        return;
+    }
 
     std::vector<pid_t> tids;
     get_process_tids(pid, tids);
