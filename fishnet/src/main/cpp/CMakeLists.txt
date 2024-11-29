@@ -321,9 +321,6 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
         java_dump.cpp
         signal_handler.cpp)
 
-target_include_directories(${CMAKE_PROJECT_NAME}
-        PUBLIC "${CMAKE_SOURCE_DIR}/include")
-
 target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
         -D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__ -Werror=unguarded-availability)
 

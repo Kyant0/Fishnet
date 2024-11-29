@@ -9,8 +9,6 @@
 #include <signal.h>
 #include <dlfcn.h>
 
-#include <fishnet/fishnet.h>
-
 void victim() {
     usleep(300000); // 300ms
     int fd = dup(STDOUT_FILENO);
@@ -105,25 +103,4 @@ Java_com_kyant_fishnet_demo_CrashFragment_jniAbort(JNIEnv *env, jobject obj) {
 JNIEXPORT void JNICALL
 Java_com_kyant_fishnet_demo_CrashFragment_nativeFdsanCrash(JNIEnv *env, jobject obj) {
     fdsanCrash();
-}
-
-JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved) {
-    JNIEnv *env;
-    if ((*vm)->GetEnv(vm, (void **) &env, JNI_VERSION_1_6) != JNI_OK) {
-        return JNI_ERR;
-    }
-
-    Fishnet_init(vm, env, true);
-
-    return JNI_VERSION_1_6;
-}
-
-JNIEXPORT void JNI_OnUnload(JavaVM *vm, void *reserved) {
-    JNIEnv *env;
-
-    Fishnet_deinit();
-
-    if ((*vm)->GetEnv(vm, (void **) &env, JNI_VERSION_1_6) != JNI_OK) {
-        return;
-    }
 }

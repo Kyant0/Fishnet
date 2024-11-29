@@ -42,53 +42,7 @@ class App : Application() {
 }
 ```
 
-3. Copy the `so` files to the `${CMAKE_SOURCE_DIR}/libs/fishnet/${ANDROID_ABI}` directories.
-   Copy the `include` directory to the `${CMAKE_SOURCE_DIR}/libs/fishnet` directory.
-
-4. In your `CMakeLists.txt`, add the following code,
-
-```cmake
-add_library(fishnet SHARED IMPORTED)
-
-set(FISHNET_DIR ${CMAKE_SOURCE_DIR}/libs/fishnet)
-
-set_target_properties(fishnet PROPERTIES
-        IMPORTED_LOCATION "${FISHNET_DIR}/${ANDROID_ABI}/libcom.kyant.fishnet.so"
-        INTERFACE_INCLUDE_DIRECTORIES "${FISHNET_DIR}/include")
-
-target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE
-        fishnet)
-```
-
-5. In your `main.c` add the following code,
-
-```c
-#include <jni.h>
-#include <fishnet/fishnet.h>
-
-JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved) {
-    JNIEnv *env;
-    if ((*vm)->GetEnv(vm, (void **) &env, JNI_VERSION_1_6) != JNI_OK) {
-        return JNI_ERR;
-    }
-
-    Fishnet_init(vm, env, true);
-
-    return JNI_VERSION_1_6;
-}
-
-JNIEXPORT void JNI_OnUnload(JavaVM *vm, void *reserved) {
-    JNIEnv *env;
-
-    Fishnet_deinit();
-
-    if ((*vm)->GetEnv(vm, (void **) &env, JNI_VERSION_1_6) != JNI_OK) {
-        return;
-    }
-}
-```
-
-6. All done, build your project and make a simple crash to test,
+3. All done, build your project and make a simple crash to test,
    the log file will be generated in the path you specified.
 
 ## Example logs
@@ -108,17 +62,6 @@ git submodule update
 git apply --directory disasm/src/main/cpp/external/capstone disasm_external.patch
 git apply fishnet_external.patch
 ```
-
-### Build the library
-
-You should build twice.
-The first time is expected to be failed,
-you should wait the `buildCMakeDebug` or `buildCMakeRelWithDebInfo` tasks to be finished,
-then build again.
-
-### Run the demo app
-
-When you modified the c++ code in `fishnet` module, run the demo app twice to see the changes.
 
 ## Submodule maintain info
 

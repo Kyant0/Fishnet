@@ -203,9 +203,7 @@ static void register_handlers(struct sigaction *action) {
     sigaction(SIGTRAP, action, old_actions + SIGTRAP);
 }
 
-void init_signal_handler(bool enabled) {
-    if (!enabled) return;
-
+void init_signal_handler() {
     const size_t thread_stack_pages = 8;
     const void *thread_stack_allocation = mmap(nullptr, getpagesize() * (thread_stack_pages + 2),
                                                PROT_NONE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);

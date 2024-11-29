@@ -1,5 +1,3 @@
-#include "fishnet/fishnet.h"
-
 #include <malloc.h>
 
 #include "log.h"
@@ -8,6 +6,7 @@
 #include "anr.h"
 
 extern "C" {
+
 JNIEXPORT jboolean JNICALL
 Java_com_kyant_fishnet_Fishnet_nativeInit(JNIEnv *env, jobject, jstring path,
                                           jstring packageName, jstring versionName, jlong versionCode,
@@ -40,13 +39,27 @@ Java_com_kyant_fishnet_Fishnet_nativeDumpJavaCrash(JNIEnv *env, jobject, jstring
     env->ReleaseStringUTFChars(java_stack_traces, stack_traces);
 }
 
-void Fishnet_init(JavaVM *vm, JNIEnv *env, bool enabled) {
-    init_signal_handler(enabled);
+JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved) {
+    JNIEnv *env;
+    if (vm->GetEnv((void **) &env, JNI_VERSION_1_6) != JNI_OK) {
+        return JNI_ERR;
+    }
+
+    init_signal_handler();
     init_anr_signal_handler(vm, env);
+
+    return JNI_VERSION_1_6;
 }
 
-void Fishnet_deinit() {
+JNIEXPORT void JNI_OnUnload(JavaVM *vm, void *reserved) {
+    JNIEnv *env;
+
     deinit_signal_handler();
     deinit_anr_signal_handler();
+
+    if (vm->GetEnv((void **) &env, JNI_VERSION_1_6) != JNI_OK) {
+        return;
+    }
 }
+
 }
