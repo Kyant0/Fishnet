@@ -17,20 +17,6 @@ static JavaVM *g_vm = nullptr;
 static jclass exception_handler_class = nullptr;
 
 void init_anr_signal_handler(JavaVM *vm, JNIEnv *env) {
-    g_vm = vm;
-
-    jclass _exception_handler_class = env->FindClass("com/kyant/fishnet/JavaExceptionHandler");
-    if (_exception_handler_class == nullptr) {
-        LOGE("FindClass failed");
-        return;
-    }
-
-    exception_handler_class = (jclass) env->NewGlobalRef(_exception_handler_class);
-    if (exception_handler_class == nullptr) {
-        LOGE("NewGlobalRef failed");
-        return;
-    }
-
     sigset_t sig_sets;
     sigemptyset(&sig_sets);
     sigaddset(&sig_sets, SIGQUIT);
@@ -41,6 +27,12 @@ void init_anr_signal_handler(JavaVM *vm, JNIEnv *env) {
     sigAction.sa_flags = SA_RESTART | SA_ONSTACK | SA_SIGINFO;
     sigAction.sa_sigaction = anr_signal_handler;
     sigaction(SIGQUIT, &sigAction, nullptr);
+
+    g_vm = vm;
+
+    jclass _exception_handler_class = env->FindClass("com/kyant/fishnet/JavaExceptionHandler");
+    exception_handler_class = (jclass) env->NewGlobalRef(_exception_handler_class);
+    env->DeleteLocalRef(_exception_handler_class);
 }
 
 void deinit_anr_signal_handler() {
@@ -48,6 +40,14 @@ void deinit_anr_signal_handler() {
     sigemptyset(&sig_sets);
     sigaddset(&sig_sets, SIGQUIT);
     pthread_sigmask(SIG_BLOCK, &sig_sets, nullptr);
+
+    JNIEnv *env;
+    if (g_vm->GetEnv((void **) &env, JNI_VERSION_1_6) != JNI_OK) {
+        g_vm = nullptr;
+        return;
+    }
+
+    env->DeleteGlobalRef(exception_handler_class);
 
     g_vm = nullptr;
 }
@@ -105,36 +105,22 @@ int get_signal_catcher_tid(pid_t myPid) {
 void *dump_java_threads_thread(void *arg) {
     LOGE("dump_java_threads_thread started");
 
-    if (g_vm == nullptr) {
-        LOGE("JavaVM is null");
-        return nullptr;
-    }
-
     JNIEnv *env;
     jint status = g_vm->GetEnv((void **) &env, JNI_VERSION_1_6);
 
     if (status == JNI_EDETACHED) {
         status = g_vm->AttachCurrentThread(&env, nullptr);
         if (status != JNI_OK) {
-            LOGE("AttachCurrentThread failed: %d", status);
             return nullptr;
         }
     } else if (status != JNI_OK) {
-        LOGE("GetEnv failed: %d", status);
         return nullptr;
     }
 
-    jmethodID dump_method = env->GetStaticMethodID(exception_handler_class, "dumpJavaThreads", "()Ljava/lang/String;");
-    if (dump_method == nullptr) {
-        LOGE("GetMethodID failed");
-        return nullptr;
-    }
-
-    jstring thread_dump = (jstring) env->CallStaticObjectMethod(exception_handler_class, dump_method);
-    if (thread_dump == nullptr) {
-        LOGE("CallObjectMethod failed");
-        return nullptr;
-    }
+    const jmethodID dump_method = env->GetStaticMethodID(exception_handler_class, "dumpJavaThreads",
+                                                         "()Ljava/lang/String;");
+    const jstring thread_dump = (jstring) env->CallStaticObjectMethod(exception_handler_class,
+                                                                      dump_method);
 
     const char *thread_dump_chars = env->GetStringUTFChars(thread_dump, nullptr);
     fishnet_dump_with_java(thread_dump_chars, false);
