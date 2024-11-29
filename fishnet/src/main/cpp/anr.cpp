@@ -9,7 +9,7 @@
 #include <unistd.h>
 
 #include "log.h"
-#include "dump.h"
+#include "java_dump.h"
 
 #define MAX_BUFFER_SIZE 64
 

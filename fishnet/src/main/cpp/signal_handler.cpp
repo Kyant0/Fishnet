@@ -16,7 +16,7 @@
 #include "backtrace.h"
 #include "fd.h"
 #include "root.h"
-#include "dump.h"
+#include "java_dump.h"
 #include "version.h"
 
 static struct sigaction old_actions[NSIG];
@@ -85,6 +85,8 @@ static void *fishnet_dispatch_thread(void *arg) {
     }
 
     LOG_FISHNET("****** Fishnet crash report %s ******", FISHNET_VERSION);
+    LOG_FISHNET("");
+    LOG_FISHNET("Log type: Native");
     LOG_FISHNET("");
     LOG_FISHNET("APK info:");
     LOG_FISHNET("    Package: '%s'", log_info.package_name);

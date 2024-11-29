@@ -4,7 +4,7 @@
 
 #include "log.h"
 #include "signal_handler.h"
-#include "dump.h"
+#include "java_dump.h"
 #include "anr.h"
 
 extern "C" {

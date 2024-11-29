@@ -1,4 +1,4 @@
-#include "dump.h"
+#include "java_dump.h"
 
 #include <sys/mman.h>
 #include <sys/sysinfo.h>
@@ -16,7 +16,7 @@
 #include "fd.h"
 #include "root.h"
 #include "anr.h"
-#include "dump.h"
+#include "java_dump.h"
 #include "version.h"
 
 void fishnet_dump_with_java(const char *java_stack_traces, bool dump_main_thread) {
@@ -56,6 +56,8 @@ void fishnet_dump_with_java(const char *java_stack_traces, bool dump_main_thread
 
     LOG_FISHNET("****** Fishnet crash report %s ******", FISHNET_VERSION);
     LOG_FISHNET("");
+    LOG_FISHNET("Log type: %s", dump_main_thread ? "Java" : "ANR");
+    LOG_FISHNET("");
     LOG_FISHNET("APK info:");
     LOG_FISHNET("    Package: '%s'", log_info.package_name);
     LOG_FISHNET("    Version: '%s' (%lu)", log_info.version_name, log_info.version_code);
@@ -87,8 +89,8 @@ void fishnet_dump_with_java(const char *java_stack_traces, bool dump_main_thread
 
     if (dump_main_thread) {
         print_main_thread_header(record, pid, tid, uid);
-        LOG_FISHNET("");
     }
+    LOG_FISHNET("");
 
     if (java_stack_traces != nullptr) {
         LOG_FISHNET("Java stack traces:");

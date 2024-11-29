@@ -318,7 +318,7 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
         fd.cpp
         root.cpp
         anr.cpp
-        dump.cpp
+        java_dump.cpp
         signal_handler.cpp)
 
 target_include_directories(${CMAKE_PROJECT_NAME}
