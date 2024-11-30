@@ -16,12 +16,12 @@ class MainActivity : Activity() {
         checkNotNull(actionBar).apply {
             navigationMode = ActionBar.NAVIGATION_MODE_TABS
             newTab().apply {
-                text = "Crash"
-                setTabListener(TabListener(CrashFragment()))
+                text = "Test"
+                setTabListener(TabListener(CrashingTestFragment()))
                 addTab(this)
             }
             newTab().apply {
-                text = "Log"
+                text = "Logs"
                 setTabListener(TabListener(LogFragment()))
                 addTab(this)
             }

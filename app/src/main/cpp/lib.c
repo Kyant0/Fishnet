@@ -77,7 +77,7 @@ void *crash_thread_function(void *arg) {
 }
 
 JNIEXPORT void JNICALL
-Java_com_kyant_fishnet_demo_CrashFragment_nativeCrash(JNIEnv *env, jobject obj, jstring type) {
+Java_com_kyant_fishnet_demo_CrashingTestFragment_nativeCrash(JNIEnv *env, jobject obj, jstring type) {
     const char *type_str = (*env)->GetStringUTFChars(env, type, nullptr);
     pthread_t crash_thread;
 
@@ -87,7 +87,7 @@ Java_com_kyant_fishnet_demo_CrashFragment_nativeCrash(JNIEnv *env, jobject obj, 
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_kyant_fishnet_demo_CrashFragment_jniAbort(JNIEnv *env, jobject obj) {
+Java_com_kyant_fishnet_demo_CrashingTestFragment_jniAbort(JNIEnv *env, jobject obj) {
     if (false) {
         char invalid_utf8[] = {(char) 0xC3, (char) 0x28, (char) 0x00}; // 0xC3 followed by 0x28 is not valid UTF-8
         return (*env)->NewStringUTF(env, invalid_utf8);
@@ -101,6 +101,6 @@ Java_com_kyant_fishnet_demo_CrashFragment_jniAbort(JNIEnv *env, jobject obj) {
 }
 
 JNIEXPORT void JNICALL
-Java_com_kyant_fishnet_demo_CrashFragment_nativeFdsanCrash(JNIEnv *env, jobject obj) {
+Java_com_kyant_fishnet_demo_CrashingTestFragment_nativeFdsanCrash(JNIEnv *env, jobject obj) {
     fdsanCrash();
 }
