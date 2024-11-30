@@ -3,27 +3,50 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <HorizontalScrollView
-            android:layout_width="wrap_content"
+        <com.kyant.fishnet.demo.ui.MaterialSpinnerContainer
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:clipToPadding="false">
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginVertical="4dp">
 
-            <com.kyant.fishnet.demo.ui.MonospacedText
-                android:id="@+id/tv_log"
+            <Spinner
+                android:id="@+id/spinner_logs"
+                android:layout_width="match_parent"
+                android:layout_height="36dp"
+                android:foreground="?android:selectableItemBackground" />
+
+        </com.kyant.fishnet.demo.ui.MaterialSpinnerContainer>
+
+        <ScrollView
+            android:id="@+id/scroll_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <HorizontalScrollView
+                android:id="@+id/horizontal_scroll_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="16dp"
-                android:textColor="@color/text"
-                android:textIsSelectable="true"
-                android:textSize="12sp" />
+                android:clipToPadding="false">
 
-        </HorizontalScrollView>
+                <com.kyant.fishnet.demo.ui.MonospacedText
+                    android:id="@+id/tv_log"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp"
+                    android:textColor="@color/text"
+                    android:textIsSelectable="true"
+                    android:textSize="12sp" />
 
-    </ScrollView>
+            </HorizontalScrollView>
+
+        </ScrollView>
+
+    </LinearLayout>
 
     <ProgressBar
         android:id="@+id/progress_bar"
