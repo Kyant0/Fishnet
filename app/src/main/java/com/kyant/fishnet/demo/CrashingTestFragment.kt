@@ -59,7 +59,5 @@ class CrashingTestFragment : Fragment() {
 
     private external fun nativeCrash(type: String)
 
-    private external fun jniAbort(): String
-
     private external fun nativeFdsanCrash()
 }

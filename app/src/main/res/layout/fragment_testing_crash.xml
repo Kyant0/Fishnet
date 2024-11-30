@@ -32,7 +32,7 @@
                 android:background="?android:selectableItemBackground"
                 android:gravity="center_vertical"
                 android:paddingHorizontal="24dp"
-                android:text="Test Java crash"
+                android:text="RuntimeException"
                 android:textColor="@color/text"
                 android:textSize="20dp" />
 
@@ -43,7 +43,7 @@
                 android:background="?android:selectableItemBackground"
                 android:gravity="center_vertical"
                 android:paddingHorizontal="24dp"
-                android:text="Test Java thread crash"
+                android:text="RuntimeException in thread"
                 android:textColor="@color/text"
                 android:textSize="20dp" />
 
@@ -54,7 +54,7 @@
                 android:background="?android:selectableItemBackground"
                 android:gravity="center_vertical"
                 android:paddingHorizontal="24dp"
-                android:text="Test ANR"
+                android:text="Thread.sleep ANR"
                 android:textColor="@color/text"
                 android:textSize="20dp" />
 

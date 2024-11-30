@@ -86,20 +86,6 @@ Java_com_kyant_fishnet_demo_CrashingTestFragment_nativeCrash(JNIEnv *env, jobjec
     (*env)->ReleaseStringUTFChars(env, type, type_str);
 }
 
-JNIEXPORT jstring JNICALL
-Java_com_kyant_fishnet_demo_CrashingTestFragment_jniAbort(JNIEnv *env, jobject obj) {
-    if (false) {
-        char invalid_utf8[] = {(char) 0xC3, (char) 0x28, (char) 0x00}; // 0xC3 followed by 0x28 is not valid UTF-8
-        return (*env)->NewStringUTF(env, invalid_utf8);
-    } else { // Scudo ERROR
-        jbyteArray array = (*env)->NewByteArray(env, 10);
-        jbyte *elements = (*env)->GetByteArrayElements(env, array, nullptr);
-        elements[20] = 42; // Access out of bounds; will likely crash
-        (*env)->ReleaseByteArrayElements(env, array, elements, 0);
-        return (*env)->NewStringUTF(env, (const char *) elements);
-    }
-}
-
 JNIEXPORT void JNICALL
 Java_com_kyant_fishnet_demo_CrashingTestFragment_nativeFdsanCrash(JNIEnv *env, jobject obj) {
     fdsanCrash();
