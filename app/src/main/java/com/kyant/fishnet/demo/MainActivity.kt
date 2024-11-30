@@ -22,7 +22,7 @@ class MainActivity : Activity() {
             }
             newTab().apply {
                 text = "Logs"
-                setTabListener(TabListener(LogFragment()))
+                setTabListener(TabListener(LogsFragment()))
                 addTab(this)
             }
             newTab().apply {

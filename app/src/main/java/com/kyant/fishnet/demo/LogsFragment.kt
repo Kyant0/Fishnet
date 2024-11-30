@@ -17,9 +17,9 @@ import android.widget.TextView
 import java.io.File
 import kotlin.math.roundToInt
 
-class LogFragment : Fragment() {
+class LogsFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater?.inflate(R.layout.fragment_log, container, false)
+        return inflater?.inflate(R.layout.fragment_logs, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
