@@ -22,9 +22,7 @@ object JavaExceptionHandler {
     @JvmStatic
     private fun dumpJavaThreads(): String {
         val stackTraces = Thread.getAllStackTraces().map { (t, s) ->
-            val stackTrace = s.withIndex().joinToString("\n    ") { (i, e) ->
-                "#${i.toString().padStart(2, '0')} $e"
-            }
+            val stackTrace = s.joinToString("\n    ") { "at $it" }
             "  🧵Thread: ${t.toLogString()}\n    $stackTrace"
         }
         return stackTraces.joinToString("\n\n")
@@ -33,18 +31,15 @@ object JavaExceptionHandler {
     private fun processThrowable(context: Context, e: Throwable) {
         e.printStackTrace()
 
-        val crashingThreadStackTrace = "     💥 $e\n    " +
-                e.stackTrace.withIndex().joinToString("\n    ") { (i, e) ->
-                    "#${i.toString().padStart(2, '0')} $e"
-                }
-        val stackTraces = Thread.getAllStackTraces().map { (t, s) ->
-            val stackTrace = s.withIndex().joinToString("\n    ") { (i, e) ->
-                "#${i.toString().padStart(2, '0')} $e"
-            }
+        val crashingThread = Thread.currentThread()
+        val crashingThreadStackTrace = "    💥 $e\n    " +
+                e.stackTrace.joinToString("\n    ") { "at $it" }
+        val stackTraces = Thread.getAllStackTraces().filterNot { it.key.id == crashingThread.id }.map { (t, s) ->
+            val stackTrace = s.joinToString("\n    ") { "at $it" }
             "  🧵Thread: ${t.toLogString()}\n    $stackTrace"
         }.joinToString("\n\n")
         Fishnet.dumpJavaCrash(
-            "  🧵Crashing thread: ${Thread.currentThread().toLogString()}\n" +
+            "  🧵Crashing thread: ${crashingThread.toLogString()}\n" +
                     crashingThreadStackTrace + "\n\n" +
                     stackTraces
         )
@@ -56,6 +51,7 @@ object JavaExceptionHandler {
     }
 
     private fun Thread.toLogString(): String {
-        return "$name (id: $id, priority: $priority, state: $state)"
+        return "\"$name\" ${if (isDaemon) "daemon " else ""}prio=$priority id=$id\n" +
+                "   java.lang.Thread.State=$state"
     }
 }
