@@ -77,14 +77,6 @@ class LogFragment : Fragment() {
         }
     }
 
-    private fun getLog(): String? {
-        return try {
-            activity.filesDir.listFiles()?.lastOrNull()?.readText()
-        } catch (_: Exception) {
-            null
-        }
-    }
-
     private class LogAdapter(context: Context, resource: Int) : ArrayAdapter<String>(context, resource) {
         override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
             return super.getDropDownView(position, convertView, parent).apply {
