@@ -33,9 +33,7 @@ class App : Application() {
     override fun attachBaseContext(base: Context?) {
         super.attachBaseContext(base)
 
-        if (!Fishnet.init(this, filesDir.absolutePath)) {
-            throw RuntimeException("Failed to initialize Fishnet")
-        }
+        Fishnet.init(this, filesDir.absolutePath)
 
         JavaExceptionHandler.init(this, null)
     }

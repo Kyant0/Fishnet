@@ -7,7 +7,7 @@
 
 extern "C" {
 
-JNIEXPORT jboolean JNICALL
+JNIEXPORT void JNICALL
 Java_com_kyant_fishnet_Fishnet_nativeInit(JNIEnv *env, jobject, jstring path,
                                           jstring packageName, jstring versionName, jlong versionCode,
                                           jstring cert) {
@@ -28,8 +28,6 @@ Java_com_kyant_fishnet_Fishnet_nativeInit(JNIEnv *env, jobject, jstring path,
     env->ReleaseStringUTFChars(packageName, package_name);
     env->ReleaseStringUTFChars(versionName, version_name);
     env->ReleaseStringUTFChars(cert, cert_str);
-
-    return true;
 }
 
 JNIEXPORT void JNICALL
