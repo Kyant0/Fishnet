@@ -37,6 +37,17 @@
                 android:textSize="20dp" />
 
             <TextView
+                android:id="@+id/btn_test_java_thread_crash"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:background="?android:selectableItemBackground"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="24dp"
+                android:text="Test Java thread crash"
+                android:textColor="@color/text"
+                android:textSize="20dp" />
+
+            <TextView
                 android:id="@+id/btn_test_anr"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
@@ -66,35 +77,68 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/btn_test_native_crash"
+                android:id="@+id/btn_test_native_nullptr"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:background="?android:selectableItemBackground"
                 android:gravity="center_vertical"
                 android:paddingHorizontal="24dp"
-                android:text="Test Native crash"
+                android:text="Null pointer dereference"
                 android:textColor="@color/text"
                 android:textSize="20dp" />
 
             <TextView
-                android:id="@+id/btn_test_jni_abort"
+                android:id="@+id/btn_test_native_jni_error"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:background="?android:selectableItemBackground"
                 android:gravity="center_vertical"
                 android:paddingHorizontal="24dp"
-                android:text="Test JNI abort"
+                android:text="JNI error"
                 android:textColor="@color/text"
                 android:textSize="20dp" />
 
             <TextView
-                android:id="@+id/btn_test_fdsan_crash"
+                android:id="@+id/btn_test_native_too_many_open_files"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:background="?android:selectableItemBackground"
                 android:gravity="center_vertical"
                 android:paddingHorizontal="24dp"
-                android:text="Test fdsan crash"
+                android:text="Too many open files (ANR)"
+                android:textColor="@color/text"
+                android:textSize="20dp" />
+
+            <TextView
+                android:id="@+id/btn_test_native_buffer_overflow"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:background="?android:selectableItemBackground"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="24dp"
+                android:text="Buffer overflow (FORTIFY)"
+                android:textColor="@color/text"
+                android:textSize="20dp" />
+
+            <TextView
+                android:id="@+id/btn_test_native_scudo_error"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:background="?android:selectableItemBackground"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="24dp"
+                android:text="* Scudo error"
+                android:textColor="@color/text"
+                android:textSize="20dp" />
+
+            <TextView
+                android:id="@+id/btn_test_native_fdsan"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:background="?android:selectableItemBackground"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="24dp"
+                android:text="fdsan"
                 android:textColor="@color/text"
                 android:textSize="20dp" />
 

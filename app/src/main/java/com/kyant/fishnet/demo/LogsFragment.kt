@@ -57,7 +57,11 @@ class LogsFragment : Fragment() {
                     progressBar.visibility = View.VISIBLE
                     logTextView.visibility = View.INVISIBLE
                     Handler(Looper.getMainLooper()).post {
-                        logTextView.text = logs[position].readText()
+                        logTextView.text = try {
+                            logs[position].readText()
+                        } catch (e: Exception) {
+                            "Failed to read log file: ${e.message}"
+                        }
                         progressBar.visibility = View.GONE
                         scrollView.post {
                             scrollView.scrollTo(0, 0)

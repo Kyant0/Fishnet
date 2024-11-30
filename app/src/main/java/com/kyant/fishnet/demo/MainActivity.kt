@@ -7,6 +7,8 @@ import android.app.Activity
 import android.app.Fragment
 import android.app.FragmentTransaction
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 
 class MainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,6 +32,26 @@ class MainActivity : Activity() {
                 setTabListener(TabListener(DisAsmFragment()))
                 addTab(this)
             }
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.item_clear_logs -> {
+                try {
+                    filesDir.deleteRecursively()
+                    filesDir.mkdirs()
+                } catch (_: Exception) {
+                }
+                true
+            }
+
+            else -> super.onOptionsItemSelected(item)
         }
     }
 

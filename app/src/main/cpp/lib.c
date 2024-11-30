@@ -52,37 +52,37 @@ void fdsanCrash() {
     }
 }
 
+struct CrashingThreadData {
+    const char *type;
+};
+
 __attribute__((optnone))
-void *crash_thread_function(void *arg) {
-    const char *type_str = (const char *) arg;
-
-    if (strcmp(type_str, "SIGSEGV") == 0) {
-        char *ptr = (char *) 0;
-        *ptr = 0;
-    } else if (strcmp(type_str, "ANR") == 0) {
-        for (int i = 0; i < 100000; ++i) {
-            dup(STDOUT_FILENO);
-        }
-    } else if (strcmp(type_str, "buffer overflow") == 0) {
-        char buffer[8]; // Small buffer of 8 bytes
-
-        // Copy more data than the buffer can hold (intentional overflow)
-        const char *input = "Overflow!"; // This is 9 bytes, including the null terminator
-        strcpy(buffer, input); // Compiler won't catch this as an overflow at compile time
-
-        printf("Buffer contains: %s\n", buffer);
-    }
-
-    return nullptr;
-}
-
 JNIEXPORT void JNICALL
 Java_com_kyant_fishnet_demo_CrashingTestFragment_nativeCrash(JNIEnv *env, jobject obj, jstring type) {
     const char *type_str = (*env)->GetStringUTFChars(env, type, nullptr);
-    pthread_t crash_thread;
 
-    pthread_create(&crash_thread, nullptr, crash_thread_function, (void *) type_str);
-    pthread_join(crash_thread, nullptr);
+    if (strcmp(type_str, "nullptr") == 0) {
+        char *ptr = (char *) 0;
+        *ptr = 0;
+    } else if (strcmp(type_str, "too_many_open_files") == 0) {
+        for (int i = 0; i < 100000; ++i) {
+            dup(STDOUT_FILENO);
+        }
+    } else if (strcmp(type_str, "buffer_overflow") == 0) {
+        char buffer[8];
+        const char *input = "Overflow!";
+        strcpy(buffer, input);
+    } else if (strcmp(type_str, "scudo_error") == 0) { // Scudo ERROR
+        jbyteArray array = (*env)->NewByteArray(env, 10);
+        jbyte *elements = (*env)->GetByteArrayElements(env, array, nullptr);
+        elements[20] = 42; // Access out of bounds; will likely crash
+        (*env)->ReleaseByteArrayElements(env, array, elements, 0);
+        (*env)->NewStringUTF(env, (const char *) elements);
+    } else if (strcmp(type_str, "jni") == 0) {
+        char invalid_utf8[] = {(char) 0xC3, (char) 0x28, (char) 0x00}; // 0xC3 followed by 0x28 is not valid UTF-8
+        (*env)->NewStringUTF(env, invalid_utf8);
+    }
+
     (*env)->ReleaseStringUTFChars(env, type, type_str);
 }
 
