@@ -1,7 +1,18 @@
 <resources>
 
-    <style name="Theme.Fishnet" parent="android:Theme.Material.Light">
+    <style name="Theme.Fishnet.DayNight" parent="android:Theme.Material.Light">
+        <item name="android:colorPrimary">@android:color/white</item>
+    </style>
+
+    <style name="Theme.Fishnet.Base" parent="Theme.Fishnet.DayNight" />
+
+    <style name="Theme.Fishnet" parent="Theme.Fishnet.Base">
         <item name="android:colorAccent">@color/primary</item>
         <item name="android:windowBackground">@color/background</item>
+        <item name="android:actionBarTabBarStyle">@style/Widget.Fishnet.ActionBar.TabBar</item>
+    </style>
+
+    <style name="Widget.Fishnet.ActionBar.TabBar" parent="android:Widget.Material.ActionBar.TabBar">
+        <item name="android:showDividers">none</item>
     </style>
 </resources>
