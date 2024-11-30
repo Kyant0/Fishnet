@@ -1,5 +1,5 @@
-#ifndef FISHNET_FD_H
-#define FISHNET_FD_H
+#ifndef FISHNET_FDS_H
+#define FISHNET_FDS_H
 
 #include <sys/types.h>
 
@@ -7,4 +7,4 @@
 
 void dump_open_fds(LogRecord &record, pid_t pid);
 
-#endif //FISHNET_FD_H
+#endif //FISHNET_FDS_H

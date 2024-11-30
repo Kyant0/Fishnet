@@ -315,7 +315,7 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
         registers.cpp
         backtrace.cpp
         memory.cpp
-        fd.cpp
+        fds.cpp
         root.cpp
         anr.cpp
         java_dump.cpp
