@@ -1,5 +1,6 @@
 #include "log.h"
 
+#include <algorithm>
 #include <unistd.h>
 
 #include "clock.h"
@@ -47,7 +48,9 @@ void write_log(const LogRecord &record) {
     if (log_path.empty()) {
         return;
     }
-    std::string path = log_path + '/' + log_type_to_string(record.type) + '_' + record.timestamp + ".log";
+    std::string timestamp = record.timestamp;
+    std::replace(timestamp.begin(), timestamp.end(), ' ', '_');
+    std::string path = log_path + '/' + log_type_to_string(record.type) + '_' + timestamp + ".log";
     FILE *file = fopen(path.c_str(), "w");
     if (file == nullptr) {
         return;
