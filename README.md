@@ -29,6 +29,8 @@ dependencies {
 2. In your `Application` class, add the following code,
 
 ```kotlin
+import com.kyant.fishnet.Fishnet
+
 class App : Application() {
     override fun attachBaseContext(base: Context?) {
         super.attachBaseContext(base)
@@ -40,6 +42,10 @@ class App : Application() {
 
 3. Run application and make a testing crash,
    the log file will be generated in the path you specified.
+
+## Demo
+
+See `app` module.
 
 ## Example logs
 
