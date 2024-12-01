@@ -36,13 +36,11 @@ consteval static inline unwindstack::ArchEnum current_arch() {
 }
 
 consteval static inline int pointer_width() {
-    switch (CURRENT_ARCH) {
-        case unwindstack::ArchEnum::ARCH_ARM:
-        case unwindstack::ArchEnum::ARCH_X86:
-            return 4;
-        default:
-            return 8;
-    }
+#if defined(__arm__) || defined(__i386__)
+    return 4;
+#else
+    return 8;
+#endif
 }
 
 consteval static inline const char *abi_string() {
