@@ -60,7 +60,7 @@ Java_com_kyant_disasm_DisAsm_disasm(JNIEnv *env, jobject, jbyteArray bytes, jlon
 }
 
 JNIEXPORT jint JNICALL
-JNI_OnLoad(JavaVM *vm, void *reserved) {
+JNI_OnLoad(JavaVM *vm, void *) {
     JNIEnv *env;
     if ((*vm)->GetEnv(vm, (void **) &env, JNI_VERSION_1_6) != JNI_OK) {
         return JNI_ERR;
