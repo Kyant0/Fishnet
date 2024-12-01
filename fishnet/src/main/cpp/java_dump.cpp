@@ -59,7 +59,7 @@ void fishnet_dump_with_java(const char *java_stack_traces, bool dump_main_thread
     LOG_FISHNET("");
     LOG_FISHNET("APK info:");
     LOG_FISHNET("    Package: '%s'", log_info.package_name);
-    LOG_FISHNET("    Version: '%s' (%" PRIx64 ")", log_info.version_name, log_info.version_code);
+    LOG_FISHNET("    Version: '%s' (%" PRId64 ")", log_info.version_name, log_info.version_code);
     LOG_FISHNET("    Cert: '%s'", log_info.cert);
     LOG_FISHNET("");
     LOG_FISHNET("Device info:");
