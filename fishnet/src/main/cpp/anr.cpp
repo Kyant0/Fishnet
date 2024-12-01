@@ -95,10 +95,9 @@ void *dump_java_threads_thread(void *arg) {
         return nullptr;
     }
 
-    const jmethodID dump_method = env->GetStaticMethodID(exception_handler_class, "dumpJavaThreads",
-                                                         "()Ljava/lang/String;");
-    const jstring thread_dump = (jstring) env->CallStaticObjectMethod(exception_handler_class,
-                                                                      dump_method);
+    jmethodID dump_method = env->GetStaticMethodID(exception_handler_class, "dumpJavaThreads",
+                                                   "()Ljava/lang/String;");
+    auto thread_dump = (jstring) env->CallStaticObjectMethod(exception_handler_class, dump_method);
 
     const char *thread_dump_chars = env->GetStringUTFChars(thread_dump, nullptr);
     fishnet_dump_with_java(thread_dump_chars, false);
