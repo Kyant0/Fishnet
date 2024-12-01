@@ -8,9 +8,9 @@
 extern "C" {
 
 JNIEXPORT void JNICALL
-Java_com_kyant_fishnet_Fishnet_nativeInit(JNIEnv *env, jobject, jstring path,
-                                          jstring packageName, jstring versionName, jlong versionCode,
-                                          jstring cert) {
+Java_com_kyant_fishnet_NativeSignalHandler_nativeInit(JNIEnv *env, jobject, jstring path,
+                                                      jstring packageName, jstring versionName, jlong versionCode,
+                                                      jstring cert) {
     const char *log_path = env->GetStringUTFChars(path, nullptr);
     set_log_path(log_path);
     env->ReleaseStringUTFChars(path, log_path);
@@ -31,7 +31,7 @@ Java_com_kyant_fishnet_Fishnet_nativeInit(JNIEnv *env, jobject, jstring path,
 }
 
 JNIEXPORT void JNICALL
-Java_com_kyant_fishnet_Fishnet_nativeDumpJavaCrash(JNIEnv *env, jobject, jstring java_stack_traces) {
+Java_com_kyant_fishnet_NativeSignalHandler_nativeDumpJavaCrash(JNIEnv *env, jobject, jstring java_stack_traces) {
     const char *stack_traces = env->GetStringUTFChars(java_stack_traces, nullptr);
     fishnet_dump_with_java(stack_traces, true);
     env->ReleaseStringUTFChars(java_stack_traces, stack_traces);

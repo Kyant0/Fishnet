@@ -14,7 +14,7 @@ internal object JavaExceptionHandler {
                     val stackTrace = s.joinToString("\n    ") { "at $it" }
                     "  🧵Thread: ${t.toLogString()}\n    $stackTrace"
                 }.joinToString("\n\n")
-                Fishnet.dumpJavaCrash(
+                NativeSignalHandler.dumpJavaCrash(
                     "  🧵Crashing thread: ${t.toLogString()}\n" +
                             crashingThreadStackTrace + "\n\n" +
                             stackTraces
