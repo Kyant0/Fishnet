@@ -3,9 +3,6 @@ plugins {
     alias(libs.plugins.kotlinAndroid)
 }
 
-group = "com.kyant"
-version = libs.versions.lib.version.get()
-
 android {
     namespace = "com.kyant.fishnet"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
