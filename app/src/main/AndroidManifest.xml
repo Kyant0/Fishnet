@@ -22,10 +22,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity
-            android:name=".JavaCrashReporterActivity"
-            android:label="Java crash reporter" />
     </application>
 
 </manifest>

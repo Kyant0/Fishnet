@@ -24,6 +24,8 @@ class LogsFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val context = view.context
+
         val progressBar = view.findViewById<View>(R.id.progress_bar)
         val spinner = view.findViewById<Spinner>(R.id.spinner_logs)
         val scrollView = view.findViewById<View>(R.id.scroll_view)
@@ -31,7 +33,10 @@ class LogsFragment : Fragment() {
         val logTextView = view.findViewById<TextView>(R.id.tv_log)
 
         val logs: List<File> = try {
-            activity.filesDir.listFiles()?.filter { it.extension == "log" }?.reversed().orEmpty()
+            File(context.filesDir, "logs").listFiles()
+                ?.filter { it.extension == "log" }
+                ?.reversed()
+                .orEmpty()
         } catch (_: Exception) {
             emptyList()
         }
@@ -50,7 +55,7 @@ class LogsFragment : Fragment() {
                 }
                 spinner.dropDownWidth = spinner.width
             }
-            spinner.adapter = LogAdapter(activity, android.R.layout.simple_spinner_dropdown_item).apply {
+            spinner.adapter = LogAdapter(context, android.R.layout.simple_spinner_dropdown_item).apply {
                 addAll(logs.map { it.name })
             }
             spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {

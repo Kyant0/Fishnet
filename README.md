@@ -32,15 +32,13 @@ dependencies {
 class App : Application() {
     override fun attachBaseContext(base: Context?) {
         super.attachBaseContext(base)
-
-        Fishnet.init(this, filesDir.absolutePath)
-
-        JavaExceptionHandler.init(this, null)
+        val logPath = File(filesDir, "logs").apply { mkdirs() }.absolutePath
+        Fishnet.init(this, logPath)
     }
 }
 ```
 
-3. All done, build your project and make a simple crash to test,
+3. Run application and make a testing crash,
    the log file will be generated in the path you specified.
 
 ## Example logs

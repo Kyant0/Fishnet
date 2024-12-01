@@ -33,6 +33,8 @@ object Fishnet {
             packageInfo.signatures?.joinToString { it.toChars().take(8).joinToString("") } ?: "???"
         }
         nativeInit(path, packageName, versionName, versionCode, cert)
+
+        JavaExceptionHandler.init()
     }
 
     fun dumpJavaCrash(javaStackTraces: String) {

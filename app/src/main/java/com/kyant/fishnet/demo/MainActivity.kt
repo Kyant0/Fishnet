@@ -9,6 +9,7 @@ import android.app.FragmentTransaction
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import java.io.File
 
 class MainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,8 +45,10 @@ class MainActivity : Activity() {
         return when (item.itemId) {
             R.id.item_clear_logs -> {
                 try {
-                    filesDir.deleteRecursively()
-                    filesDir.mkdirs()
+                    File(filesDir, "logs").apply {
+                        deleteRecursively()
+                        mkdirs()
+                    }
                 } catch (_: Exception) {
                 }
                 true

@@ -2,9 +2,8 @@ package com.kyant.fishnet.demo
 
 import android.app.Application
 import android.content.Context
-import android.content.Intent
 import com.kyant.fishnet.Fishnet
-import com.kyant.fishnet.JavaExceptionHandler
+import java.io.File
 
 class FishnetApp : Application() {
     override fun onCreate() {
@@ -14,14 +13,7 @@ class FishnetApp : Application() {
 
     override fun attachBaseContext(base: Context?) {
         super.attachBaseContext(base)
-
-        Fishnet.init(this, filesDir.absolutePath)
-
-        JavaExceptionHandler.init(
-            this,
-            Intent(this, JavaCrashReporterActivity::class.java).apply {
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-            }
-        )
+        val logPath = File(filesDir, "logs").apply { mkdirs() }.absolutePath
+        Fishnet.init(this, logPath)
     }
 }
