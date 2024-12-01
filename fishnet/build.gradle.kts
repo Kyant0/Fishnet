@@ -1,7 +1,11 @@
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinAndroid)
+    `maven-publish`
 }
+
+group = "com.kyant"
+version = libs.versions.lib.version.get()
 
 android {
     namespace = "com.kyant.fishnet"
@@ -38,5 +42,21 @@ android {
     }
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_21.toString()
+    }
+    lint {
+        checkReleaseBuilds = false
+    }
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            register("mavenRelease", MavenPublication::class) {
+                groupId = "com.kyant"
+                artifactId = "fishnet"
+                version = libs.versions.lib.version.get()
+                from(components["release"])
+            }
+        }
     }
 }

@@ -16,7 +16,7 @@ android {
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = libs.versions.android.versionCode.get().toInt()
-        versionName = libs.versions.lib.versionName.get()
+        versionName = libs.versions.lib.version.get()
 
         ndk {
             //noinspection ChromeOsAbiSupport
