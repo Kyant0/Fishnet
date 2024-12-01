@@ -4,9 +4,9 @@ package com.kyant.fishnet.demo
 
 import android.app.Fragment
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
+import android.text.PrecomputedText
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +15,7 @@ import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.TextView
 import java.io.File
+import kotlin.concurrent.thread
 import kotlin.math.roundToInt
 
 class LogsFragment : Fragment() {
@@ -56,14 +57,20 @@ class LogsFragment : Fragment() {
                 override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                     progressBar.visibility = View.VISIBLE
                     logTextView.visibility = View.INVISIBLE
-                    Handler(Looper.getMainLooper()).post {
-                        logTextView.text = try {
+                    thread {
+                        val log = try {
                             logs[position].readText()
                         } catch (e: Exception) {
                             "Failed to read log file: ${e.message}"
                         }
-                        progressBar.visibility = View.GONE
-                        scrollView.post {
+                        val precomputedText = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                            PrecomputedText.create(log, logTextView.textMetricsParams)
+                        } else {
+                            log
+                        }
+                        logTextView.post {
+                            progressBar.visibility = View.GONE
+                            logTextView.text = precomputedText
                             scrollView.scrollTo(0, 0)
                             horizontalScrollView.scrollTo(0, 0)
                             logTextView.visibility = View.VISIBLE
