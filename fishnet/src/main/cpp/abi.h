@@ -1,8 +1,6 @@
 #ifndef FISHNET_ABI_H
 #define FISHNET_ABI_H
 
-#include <cstdint>
-
 #include "unwindstack/Arch.h"
 
 #if defined(__arm__)
