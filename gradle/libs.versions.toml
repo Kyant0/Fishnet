@@ -5,7 +5,7 @@ android-targetSdk = "35"
 android-buildToolsVersion = "35.0.0"
 android-ndkVersion = "28.0.12674087"
 android-versionCode = "1"
-lib-version = "1.0.0-alpha03"
+lib-version = "1.0.0-alpha04"
 
 agp = "8.9.0-alpha03" # https://androidstudio.googleblog.com
 kotlin = "2.1.0" # https://github.com/JetBrains/kotlin
