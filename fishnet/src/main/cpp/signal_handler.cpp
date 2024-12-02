@@ -143,7 +143,6 @@ static void *fishnet_dispatch_thread(void *arg) {
 
 static bool is_entered = false;
 
-__attribute__((optnone))
 static void fishnet_signal_handler(int signal_number, siginfo_t *info, void *context) {
     if (is_entered) {
         return;
