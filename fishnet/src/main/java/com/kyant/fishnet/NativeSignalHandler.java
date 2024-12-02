@@ -7,13 +7,11 @@ import android.content.pm.Signature;
 import android.content.pm.SigningInfo;
 import android.os.Build;
 
-import androidx.annotation.NonNull;
-
 final class NativeSignalHandler {
     private NativeSignalHandler() {
     }
 
-    static void init(@NonNull Context context, @NonNull String path) {
+    static void init(Context context, String path) {
         String packageName = context.getPackageName();
 
         PackageInfo packageInfo;
@@ -72,19 +70,19 @@ final class NativeSignalHandler {
         nativeInit(path, packageName, versionName, versionCode, cert);
     }
 
-    static void dumpJavaCrash(@NonNull String javaStackTraces) {
+    static void dumpJavaCrash(String javaStackTraces) {
         nativeDumpJavaCrash(javaStackTraces);
     }
 
     private static native void nativeInit(
-            @NonNull String path,
-            @NonNull String packageName,
-            @NonNull String versionName,
+            String path,
+            String packageName,
+            String versionName,
             long versionCode,
-            @NonNull String cert
+            String cert
     );
 
-    private static native void nativeDumpJavaCrash(@NonNull String javaStackTraces);
+    private static native void nativeDumpJavaCrash(String javaStackTraces);
 
     static {
         System.loadLibrary("com.kyant.fishnet");

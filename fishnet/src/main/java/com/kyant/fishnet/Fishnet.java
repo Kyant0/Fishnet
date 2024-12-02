@@ -2,7 +2,7 @@ package com.kyant.fishnet;
 
 import android.content.Context;
 
-import androidx.annotation.NonNull;
+import java.util.Objects;
 
 /**
  * Fishnet is an Android library that dumps Java and native crashes.
@@ -19,7 +19,10 @@ public final class Fishnet {
      * @param context Application context
      * @param path    Absolute path to store crash logs
      */
-    public static void init(@NonNull Context context, @NonNull String path) {
+    public static void init(Context context, String path) {
+        Objects.requireNonNull(context, "context must not be null");
+        Objects.requireNonNull(path, "path must not be null");
+
         NativeSignalHandler.init(context, path);
         JavaExceptionHandler.init();
     }

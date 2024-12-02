@@ -1,7 +1,5 @@
 package com.kyant.fishnet;
 
-import androidx.annotation.NonNull;
-
 import java.util.Map;
 
 final class JavaExceptionHandler {
@@ -32,8 +30,7 @@ final class JavaExceptionHandler {
         Thread.setDefaultUncaughtExceptionHandler(handler);
     }
 
-    @NonNull
-    private static String getStackTraceString(@NonNull StackTraceElement[] stackTrace) {
+    private static String getStackTraceString(StackTraceElement[] stackTrace) {
         StringBuilder sb = new StringBuilder(128);
         for (StackTraceElement element : stackTrace) {
             sb.append("at ").append(element).append("\n    ");
@@ -41,8 +38,7 @@ final class JavaExceptionHandler {
         return sb.toString();
     }
 
-    @NonNull
-    private static String getAllStackTracesExcept(@NonNull Thread excludedThread) {
+    private static String getAllStackTracesExcept(Thread excludedThread) {
         StringBuilder sb = new StringBuilder(128);
         for (Map.Entry<Thread, StackTraceElement[]> entry : Thread.getAllStackTraces().entrySet()) {
             Thread t = entry.getKey();
@@ -53,13 +49,16 @@ final class JavaExceptionHandler {
                 sb.append('\n');
             }
         }
+        int len = sb.length();
+        if (len > 0) {
+            sb.deleteCharAt(len - 1);
+        }
         return sb.toString();
     }
 
     /**
      * @noinspection unused
      */
-    @NonNull
     private static String dumpJavaThreads() {
         StringBuilder sb = new StringBuilder(1024);
         for (Map.Entry<Thread, StackTraceElement[]> entry : Thread.getAllStackTraces().entrySet()) {
@@ -69,11 +68,14 @@ final class JavaExceptionHandler {
             sb.append(getStackTraceString(stackTrace));
             sb.append('\n');
         }
+        int len = sb.length();
+        if (len > 0) {
+            sb.deleteCharAt(len - 1);
+        }
         return sb.toString();
     }
 
-    @NonNull
-    private static String toLogString(@NonNull Thread t) {
+    private static String toLogString(Thread t) {
         return "\"" + t.getName() + "\" " + (t.isDaemon() ? "daemon " : "") +
                 "prio=" + t.getPriority() + " id=" + t.getId() + "\n" +
                 "   java.lang.Thread.State=" + t.getState();
