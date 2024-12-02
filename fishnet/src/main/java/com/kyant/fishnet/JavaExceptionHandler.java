@@ -13,13 +13,20 @@ final class JavaExceptionHandler {
         if (handler == null) {
             defaultHandler = Thread.getDefaultUncaughtExceptionHandler();
             handler = (t, e) -> {
-                String crashingThreadStackTrace = "    💥 " + e + "\n    " +
-                        getStackTraceString(e.getStackTrace());
-                String stackTraces = getAllStackTracesExcept(t);
+                StringBuilder crashingThreadStackTrace = new StringBuilder(1024);
+                crashingThreadStackTrace.append("    💥 ").append(e).append("\n    ")
+                        .append(getStackTraceString(e.getStackTrace()));
+                Throwable cause = e.getCause();
+                while (cause != null) {
+                    crashingThreadStackTrace
+                            .append("\n  Caused by: ").append(cause).append("\n    ")
+                            .append(getStackTraceString(cause.getStackTrace()));
+                    cause = cause.getCause();
+                }
                 NativeSignalHandler.dumpJavaCrash(
                         "  🧵Crashing thread: " + toLogString(t) + '\n' +
                                 crashingThreadStackTrace + '\n' +
-                                stackTraces
+                                getAllStackTracesExcept(t)
                 );
 
                 if (defaultHandler != null) {
