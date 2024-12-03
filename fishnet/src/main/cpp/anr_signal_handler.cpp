@@ -1,4 +1,4 @@
-#include "anr.h"
+#include "anr_signal_handler.h"
 
 #include <cerrno>
 #include <dirent.h>
@@ -9,7 +9,7 @@
 #include <unistd.h>
 
 #include "log.h"
-#include "java_dump.h"
+#include "dump.h"
 
 static JavaVM *g_vm = nullptr;
 static jclass exception_handler_class = nullptr;
@@ -50,7 +50,7 @@ void deinit_anr_signal_handler() {
     g_vm = nullptr;
 }
 
-int get_signal_catcher_tid(pid_t myPid) {
+static int get_signal_catcher_tid(pid_t myPid) {
     char task[19];
     snprintf(task, sizeof(task), "/proc/%d/task", myPid);
     DIR *processDir = opendir(task);
@@ -82,7 +82,9 @@ int get_signal_catcher_tid(pid_t myPid) {
     return tid;
 }
 
-void *dump_java_threads_thread(void *arg) {
+static void *fishnet_anr_dispatch_thread(void *arg) {
+    const auto *info = (const DebuggerThreadInfo *) arg;
+
     JNIEnv *env;
     jint status = g_vm->GetEnv((void **) &env, JNI_VERSION_1_6);
 
@@ -100,7 +102,7 @@ void *dump_java_threads_thread(void *arg) {
     auto thread_dump = (jstring) env->CallStaticObjectMethod(exception_handler_class, dump_method);
 
     const char *thread_dump_chars = env->GetStringUTFChars(thread_dump, nullptr);
-    fishnet_dump_with_java(thread_dump_chars, false);
+    fishnet_dump_anr(thread_dump_chars, info);
     env->ReleaseStringUTFChars(thread_dump, thread_dump_chars);
 
     g_vm->DetachCurrentThread();
@@ -116,8 +118,14 @@ void anr_signal_handler(int signal_number, siginfo_t *info, void *context) {
     LOGE("Received ANR signal from_pid_1: %d, from_pid_2: %d, pid: %d", from_pid_1, from_pid_2, pid);
 
     if (from_pid_1 != pid && from_pid_2 != pid) {
+        DebuggerThreadInfo thread_info = {
+                .crashing_tid = gettid(),
+                .siginfo = info,
+                .ucontext = context,
+        };
+
         pthread_t thread_id;
-        if (pthread_create(&thread_id, nullptr, dump_java_threads_thread, nullptr) != 0) {
+        if (pthread_create(&thread_id, nullptr, fishnet_anr_dispatch_thread, &thread_info) != 0) {
             goto resend;
         }
         pthread_join(thread_id, nullptr);

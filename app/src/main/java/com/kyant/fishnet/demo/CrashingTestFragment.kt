@@ -68,6 +68,9 @@ class CrashingTestFragment : Fragment() {
         view.findViewById<View>(R.id.btn_test_native_jni_error).setOnClickListener {
             nativeCrash("jni")
         }
+        view.findViewById<View>(R.id.btn_test_native_deadlock).setOnClickListener {
+            nativeCrash("deadlock")
+        }
         view.findViewById<View>(R.id.btn_test_native_too_many_open_files).setOnClickListener {
             nativeCrash("too_many_open_files")
         }

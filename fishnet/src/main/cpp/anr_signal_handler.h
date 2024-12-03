@@ -1,5 +1,5 @@
-#ifndef FISHNET_ANR_H
-#define FISHNET_ANR_H
+#ifndef FISHNET_ANR_SIGNAL_HANDLER_H
+#define FISHNET_ANR_SIGNAL_HANDLER_H
 
 #include <csignal>
 #include <jni.h>
@@ -10,4 +10,4 @@ void deinit_anr_signal_handler();
 
 void anr_signal_handler(int signal_number, siginfo_t *info, void *context);
 
-#endif //FISHNET_ANR_H
+#endif //FISHNET_ANR_SIGNAL_HANDLER_H

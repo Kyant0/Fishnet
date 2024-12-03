@@ -138,6 +138,17 @@
             android:textSize="20dp" />
 
         <TextView
+            android:id="@+id/btn_test_native_deadlock"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:background="?android:selectableItemBackground"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="24dp"
+            android:text="Deadlock (ANR)"
+            android:textColor="@color/text"
+            android:textSize="20dp" />
+
+        <TextView
             android:id="@+id/btn_test_native_too_many_open_files"
             android:layout_width="match_parent"
             android:layout_height="56dp"

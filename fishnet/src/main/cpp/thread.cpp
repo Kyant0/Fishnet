@@ -176,7 +176,7 @@ void print_main_thread(LogRecord &record, pid_t pid, pid_t tid, uid_t uid, const
         LOG_FISHNET("      in this process. The stack trace below is the first system call or context");
         LOG_FISHNET("      switch that was executed after the memory corruption happened.");
     }
-    print_backtrace_with_bytes(record, arch, frames);
+    print_backtrace(record, arch, frames);
 
     if (has_fault_addr) {
         print_tag_dump(record, fault_addr, arch, unwinder->GetProcessMemory());

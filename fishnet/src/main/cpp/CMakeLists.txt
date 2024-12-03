@@ -316,8 +316,9 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
         memory.cpp
         fds.cpp
         root.cpp
-        anr.cpp
-        java_dump.cpp
+        anr_signal_handler.cpp
+        dump.cpp
+        log_header.cpp
         signal_handler.cpp)
 
 target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE

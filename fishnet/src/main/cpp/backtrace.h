@@ -8,7 +8,4 @@
 void print_backtrace(LogRecord &record, unwindstack::ArchEnum arch,
                      const std::vector<unwindstack::FrameData> &frames);
 
-void print_backtrace_with_bytes(LogRecord &record, unwindstack::ArchEnum arch,
-                                const std::vector<unwindstack::FrameData> &frames);
-
 #endif //FISHNET_BACKTRACE_H

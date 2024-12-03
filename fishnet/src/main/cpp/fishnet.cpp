@@ -2,8 +2,8 @@
 
 #include "log.h"
 #include "signal_handler.h"
-#include "java_dump.h"
-#include "anr.h"
+#include "dump.h"
+#include "anr_signal_handler.h"
 
 extern "C" {
 
@@ -33,7 +33,7 @@ Java_com_kyant_fishnet_NativeSignalHandler_nativeInit(JNIEnv *env, jclass, jstri
 JNIEXPORT void JNICALL
 Java_com_kyant_fishnet_NativeSignalHandler_nativeDumpJavaCrash(JNIEnv *env, jclass, jstring java_stack_traces) {
     const char *stack_traces = env->GetStringUTFChars(java_stack_traces, nullptr);
-    fishnet_dump_with_java(stack_traces, true);
+    fishnet_dump_java(stack_traces);
     env->ReleaseStringUTFChars(java_stack_traces, stack_traces);
 }
 

@@ -23,14 +23,21 @@ const ApkInfo &get_apk_info() {
     return apk_info;
 }
 
-LogRecord start_recording(LogType type) {
-    return {
-            .type = type,
-            .timestamp = get_timestamp(),
-    };
+const char *log_type_to_string(LogType type) {
+    switch (type) {
+        case None:
+            return "None";
+        case Native:
+            return "Native";
+        case Java:
+            return "Java";
+        case ANR:
+            return "ANR";
+    }
+    return "Unknown";
 }
 
-static std::string log_type_to_string(LogType type) {
+static std::string log_type_to_string_lowercase(LogType type) {
     switch (type) {
         case None:
             return "none";
@@ -44,6 +51,13 @@ static std::string log_type_to_string(LogType type) {
     return "unknown";
 }
 
+LogRecord start_recording(LogType type) {
+    return {
+            .type = type,
+            .timestamp = get_timestamp(),
+    };
+}
+
 void write_log(const LogRecord &record) {
     if (log_path.empty()) {
         return;
@@ -51,7 +65,7 @@ void write_log(const LogRecord &record) {
     std::string timestamp = record.timestamp;
     std::replace(timestamp.begin(), timestamp.end(), ' ', '_');
     std::replace(timestamp.begin(), timestamp.end(), ':', '-');
-    std::string path = log_path + '/' + log_type_to_string(record.type) + '_' + timestamp + ".log";
+    std::string path = log_path + '/' + log_type_to_string_lowercase(record.type) + '_' + timestamp + ".log";
     FILE *file = fopen(path.c_str(), "w");
     if (file == nullptr) {
         LOGE("Failed to open %s, %s", path.c_str(), strerror(errno));

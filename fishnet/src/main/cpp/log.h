@@ -42,6 +42,8 @@ void set_apk_info(const ApkInfo &info);
 
 const ApkInfo &get_apk_info();
 
+const char *log_type_to_string(LogType type);
+
 LogRecord start_recording(LogType type);
 
 void write_log(const LogRecord &record);
