@@ -140,7 +140,7 @@ void print_main_thread(LogRecord &record, pid_t pid, pid_t tid, uid_t uid, const
                        const std::vector<unwindstack::FrameData> &frames,
                        bool dump_memory, bool dump_memory_maps) {
     const bool has_fault_addr = signal_has_si_addr(info);
-    const auto fault_addr = (uintptr_t) info->si_addr;
+    const auto fault_addr = (const uint64_t) info->si_addr;
     print_main_thread_header(record, pid, tid, uid);
 
     std::string sender_desc;
