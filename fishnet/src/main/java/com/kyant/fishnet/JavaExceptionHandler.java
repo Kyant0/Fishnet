@@ -1,51 +1,75 @@
 package com.kyant.fishnet;
 
+import android.util.Log;
+
 import java.util.Map;
 
 final class JavaExceptionHandler {
     private JavaExceptionHandler() {
     }
 
+    private static final String TAG = "Fishnet";
+    private static final Object lock = new Object();
+
     private static Thread.UncaughtExceptionHandler defaultHandler = null;
     private static Thread.UncaughtExceptionHandler handler = null;
 
     public static void init() {
-        if (handler == null) {
-            defaultHandler = Thread.getDefaultUncaughtExceptionHandler();
-            handler = (t, e) -> {
-                StringBuilder sb = new StringBuilder(1024);
-                sb.append("  💥 ").append(e);
-                StackTraceElement[] crashingThreadStackTrace = e.getStackTrace();
-                if (crashingThreadStackTrace.length > 0) {
-                    sb.append("\n    ").append(getStackTraceString(e.getStackTrace()));
-                }
-                Throwable cause = e.getCause();
-                if (cause != null) {
-                    sb.append('\n');
-                    while (cause != null) {
-                        sb.append("  💥 Caused by: ").append(cause);
-                        StackTraceElement[] causeStackTrace = cause.getStackTrace();
-                        if (causeStackTrace.length > 0) {
-                            sb.append("\n    ").append(getStackTraceString(causeStackTrace));
-                        } else {
-                            sb.append('\n');
-                        }
-                        cause = cause.getCause();
-                    }
-                }
-                NativeSignalHandler.dumpJavaCrash(
-                        "  🧵Crashing thread: " + toLogString(t) + '\n' + sb + '\n' +
-                                getAllStackTracesExcept(t)
-                );
+        synchronized (lock) {
+            if (handler == null) {
+                defaultHandler = Thread.getDefaultUncaughtExceptionHandler();
+                handler = new FishnetUncaughtExceptionHandler();
+            }
+            Thread.setDefaultUncaughtExceptionHandler(handler);
+        }
+    }
 
+    private static final class FishnetUncaughtExceptionHandler implements Thread.UncaughtExceptionHandler {
+        @Override
+        public void uncaughtException(Thread t, Throwable e) {
+            if (defaultHandler != null) {
+                Thread.setDefaultUncaughtExceptionHandler(defaultHandler);
+            }
+
+            try {
+                dumpCrash(t, e);
+            } catch (Exception exception) {
+                Log.e(TAG, "Error while dumping Java crash", exception);
+            } finally {
                 if (defaultHandler != null) {
                     defaultHandler.uncaughtException(t, e);
-                    defaultHandler = null;
                 }
+                defaultHandler = null;
                 handler = null;
-            };
+            }
         }
-        Thread.setDefaultUncaughtExceptionHandler(handler);
+    }
+
+    private static void dumpCrash(Thread t, Throwable e) {
+        StringBuilder sb = new StringBuilder(1024);
+        sb.append("  💥 ").append(e);
+        StackTraceElement[] crashingThreadStackTrace = e.getStackTrace();
+        if (crashingThreadStackTrace.length > 0) {
+            sb.append("\n    ").append(getStackTraceString(e.getStackTrace()));
+        }
+        Throwable cause = e.getCause();
+        if (cause != null) {
+            sb.append('\n');
+            while (cause != null) {
+                sb.append("  💥 Caused by: ").append(cause);
+                StackTraceElement[] causeStackTrace = cause.getStackTrace();
+                if (causeStackTrace.length > 0) {
+                    sb.append("\n    ").append(getStackTraceString(causeStackTrace));
+                } else {
+                    sb.append('\n');
+                }
+                cause = cause.getCause();
+            }
+        }
+        NativeSignalHandler.dumpJavaCrash(
+                "  🧵Crashing thread: " + toLogString(t) + '\n' + sb + '\n' +
+                        getAllStackTracesExcept(t)
+        );
     }
 
     private static String getStackTraceString(StackTraceElement[] stackTrace) {
