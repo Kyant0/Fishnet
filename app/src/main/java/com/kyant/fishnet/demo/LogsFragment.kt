@@ -14,7 +14,6 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.TextView
-import java.io.File
 import kotlin.concurrent.thread
 import kotlin.math.roundToInt
 
@@ -32,15 +31,7 @@ class LogsFragment : Fragment() {
         val horizontalScrollView = view.findViewById<View>(R.id.horizontal_scroll_view)
         val logTextView = view.findViewById<TextView>(R.id.tv_log)
 
-        val logs: List<File> = try {
-            File(context.filesDir, "logs").listFiles()
-                ?.filter { it.extension == "log" }
-                ?.reversed()
-                .orEmpty()
-        } catch (_: Exception) {
-            emptyList()
-        }
-
+        val logs = LoggingConfig.getLogs()
         if (logs.isNotEmpty()) {
             spinner.dropDownVerticalOffset = (42 * resources.displayMetrics.density).roundToInt()
             spinner.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
