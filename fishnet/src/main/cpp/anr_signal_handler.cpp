@@ -11,6 +11,9 @@
 #include "log.h"
 #include "dump.h"
 
+static sigset_t old_set;
+static struct sigaction old_action;
+
 static JavaVM *g_vm = nullptr;
 static jclass exception_handler_class = nullptr;
 
@@ -18,13 +21,13 @@ void init_anr_signal_handler(JavaVM *vm, JNIEnv *env) {
     sigset_t sig_sets;
     sigemptyset(&sig_sets);
     sigaddset(&sig_sets, SIGQUIT);
-    pthread_sigmask(SIG_UNBLOCK, &sig_sets, nullptr);
+    pthread_sigmask(SIG_UNBLOCK, &sig_sets, &old_set);
 
-    struct sigaction sigAction{};
-    sigfillset(&sigAction.sa_mask);
-    sigAction.sa_flags = SA_RESTART | SA_ONSTACK | SA_SIGINFO;
-    sigAction.sa_sigaction = anr_signal_handler;
-    sigaction(SIGQUIT, &sigAction, nullptr);
+    struct sigaction action{};
+    sigfillset(&action.sa_mask);
+    action.sa_flags = SA_RESTART | SA_ONSTACK | SA_SIGINFO;
+    action.sa_sigaction = anr_signal_handler;
+    sigaction(SIGQUIT, &action, &old_action);
 
     g_vm = vm;
 
@@ -34,10 +37,8 @@ void init_anr_signal_handler(JavaVM *vm, JNIEnv *env) {
 }
 
 void deinit_anr_signal_handler() {
-    sigset_t sig_sets;
-    sigemptyset(&sig_sets);
-    sigaddset(&sig_sets, SIGQUIT);
-    pthread_sigmask(SIG_BLOCK, &sig_sets, nullptr);
+    pthread_sigmask(SIG_SETMASK, &old_set, nullptr);
+    sigaction(SIGQUIT, &old_action, nullptr);
 
     JNIEnv *env;
     if (g_vm->GetEnv((void **) &env, JNI_VERSION_1_6) != JNI_OK) {

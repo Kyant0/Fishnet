@@ -49,13 +49,14 @@ static void fishnet_signal_handler(int signal_number, siginfo_t *info, void *con
     munmap(thread_stack, 10 * getpagesize());
 
     resend:
-    if (old_actions[signal_number].sa_flags & SA_SIGINFO) {
-        if (old_actions[signal_number].sa_sigaction) {
-            old_actions[signal_number].sa_sigaction(signal_number, info, context);
+    const struct sigaction old_action = old_actions[signal_number];
+    if (old_action.sa_flags & SA_SIGINFO) {
+        if (old_action.sa_sigaction) {
+            old_action.sa_sigaction(signal_number, info, context);
         }
     } else {
-        if (old_actions[signal_number].sa_handler) {
-            old_actions[signal_number].sa_handler(signal_number);
+        if (old_action.sa_handler) {
+            old_action.sa_handler(signal_number);
         }
     }
 }
