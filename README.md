@@ -57,7 +57,6 @@ cd Fishnet
 git submodule init
 git submodule update
 
-git apply --directory disasm/src/main/cpp/external/capstone disasm_external.patch
 git apply fishnet_external.patch
 ```
 
@@ -65,7 +64,6 @@ git apply fishnet_external.patch
 
 | Repository           | Link                                                                                                                              | Update time                |
 |----------------------|-----------------------------------------------------------------------------------------------------------------------------------|----------------------------|
-| capstone             | [capstone-engine/capstone](https://github.com/capstone-engine/capstone/commit/e46838ed974948b4446c7c478508409e0000aeaa)           | -                          |
 | art                  | [art](https://android.googlesource.com/platform/art/+/54cd7bf45839805d7f0f2708a6c9a65c70ca154a)                                   | 2024 Nov 25 21:04:05       |
 |                      | [libartbase](https://android.googlesource.com/platform/art/+log/refs/heads/main/libartbase)                                       | 2024 Nov 22 16:37:17       |
 |                      | [libartpalette](https://android.googlesource.com/platform/art/+log/refs/heads/main/libartpalette)                                 | 2024 Aug 29 12:15:41       |

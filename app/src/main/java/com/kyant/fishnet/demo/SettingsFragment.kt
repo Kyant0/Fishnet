@@ -16,9 +16,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Switch
 
-class CrashingTestFragment : Fragment() {
+class SettingsFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater?.inflate(R.layout.fragment_testing_crash, container, false)
+        return inflater?.inflate(R.layout.fragment_settings, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -52,55 +52,18 @@ class CrashingTestFragment : Fragment() {
             checkPermissions()
         }
 
-        view.findViewById<View>(R.id.btn_test_java_crash).setOnClickListener {
-            javaCrash()
-        }
-        view.findViewById<View>(R.id.btn_test_java_thread_crash).setOnClickListener {
-            javaThreadCrash()
-        }
-        view.findViewById<View>(R.id.btn_test_anr).setOnClickListener {
-            Thread.sleep(20_000)
-        }
-
-        view.findViewById<View>(R.id.btn_test_native_nullptr).setOnClickListener {
-            nativeCrash("nullptr")
-        }
-        view.findViewById<View>(R.id.btn_test_native_jni_error).setOnClickListener {
-            nativeCrash("jni")
-        }
-        view.findViewById<View>(R.id.btn_test_native_deadlock).setOnClickListener {
-            nativeCrash("deadlock")
-        }
-        view.findViewById<View>(R.id.btn_test_native_too_many_open_files).setOnClickListener {
-            nativeCrash("too_many_open_files")
-        }
-        view.findViewById<View>(R.id.btn_test_native_buffer_overflow).setOnClickListener {
-            nativeCrash("buffer_overflow")
-        }
-        view.findViewById<View>(R.id.btn_test_native_scudo_error).setOnClickListener {
-            nativeCrash("scudo_error")
-        }
-        view.findViewById<View>(R.id.btn_test_native_fdsan).setOnClickListener {
-            nativeFdsanCrash()
-        }
-    }
-
-    private fun javaCrash() {
-        throw RuntimeException("Java crash")
-    }
-
-    private fun javaThreadCrash() {
-        val thread = object : Thread() {
-            override fun run() {
-                throw RuntimeException("Java thread crash")
+        view.findViewById<View>(R.id.btn_delete_all_logs).setOnClickListener {
+            LoggingConfig.SavingLocation.entries.forEach {
+                try {
+                    LoggingConfig.getSavingPath(context, it).apply {
+                        deleteRecursively()
+                        mkdirs()
+                    }
+                } catch (_: Exception) {
+                }
             }
         }
-        thread.start()
     }
-
-    private external fun nativeCrash(type: String)
-
-    private external fun nativeFdsanCrash()
 
     private fun checkPermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {

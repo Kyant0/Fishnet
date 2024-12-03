@@ -22,12 +22,8 @@ object LoggingConfig {
         changeSavingLocation(context, savingLocation)
     }
 
-    fun changeSavingLocation(context: Context, savingLocation: SavingLocation) {
-        savingLocationFile = File(context.filesDir, "savingLocation").apply {
-            createNewFile()
-            writeBytes(byteArrayOf(savingLocation.ordinal.toByte()))
-        }
-        logPath = when (savingLocation) {
+    fun getSavingPath(context: Context, savingLocation: SavingLocation): File {
+        return when (savingLocation) {
             SavingLocation.Internal -> File(context.filesDir, "logs")
             SavingLocation.External -> File(context.getExternalFilesDir(null), "logs")
             SavingLocation.Downloads -> File(
@@ -35,7 +31,14 @@ object LoggingConfig {
                 "Fishnet"
             )
         }
-        logPath.mkdirs()
+    }
+
+    fun changeSavingLocation(context: Context, savingLocation: SavingLocation) {
+        savingLocationFile = File(context.filesDir, "savingLocation").apply {
+            createNewFile()
+            writeBytes(byteArrayOf(savingLocation.ordinal.toByte()))
+        }
+        logPath = getSavingPath(context, savingLocation).apply { mkdirs() }
         Fishnet.init(context, logPath.absolutePath)
         this.savingLocation = savingLocation
     }

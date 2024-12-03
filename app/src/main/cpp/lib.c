@@ -15,7 +15,7 @@ void fdsanCrash();
 
 __attribute__((optnone))
 JNIEXPORT void JNICALL
-Java_com_kyant_fishnet_demo_CrashingTestFragment_nativeCrash(JNIEnv *env, jobject obj, jstring type) {
+Java_com_kyant_fishnet_demo_TestingCrashFragment_nativeCrash(JNIEnv *env, jobject obj, jstring type) {
     const char *type_str = (*env)->GetStringUTFChars(env, type, nullptr);
 
     if (strcmp(type_str, "nullptr") == 0) {
@@ -46,7 +46,7 @@ Java_com_kyant_fishnet_demo_CrashingTestFragment_nativeCrash(JNIEnv *env, jobjec
 }
 
 JNIEXPORT void JNICALL
-Java_com_kyant_fishnet_demo_CrashingTestFragment_nativeFdsanCrash(JNIEnv *env, jobject obj) {
+Java_com_kyant_fishnet_demo_TestingCrashFragment_nativeFdsanCrash(JNIEnv *env, jobject obj) {
     fdsanCrash();
 }
 

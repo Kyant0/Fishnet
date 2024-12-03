@@ -7,9 +7,6 @@ import android.app.Activity
 import android.app.Fragment
 import android.app.FragmentTransaction
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
-import java.io.File
 
 class MainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,7 +17,7 @@ class MainActivity : Activity() {
             navigationMode = ActionBar.NAVIGATION_MODE_TABS
             newTab().apply {
                 text = "Test"
-                setTabListener(TabListener(CrashingTestFragment()))
+                setTabListener(TabListener(TestingCrashFragment()))
                 addTab(this)
             }
             newTab().apply {
@@ -29,32 +26,10 @@ class MainActivity : Activity() {
                 addTab(this)
             }
             newTab().apply {
-                text = "DisAsm"
-                setTabListener(TabListener(DisAsmFragment()))
+                text = "Settings"
+                setTabListener(TabListener(SettingsFragment()))
                 addTab(this)
             }
-        }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.main, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.item_clear_logs -> {
-                try {
-                    File(filesDir, "logs").apply {
-                        deleteRecursively()
-                        mkdirs()
-                    }
-                } catch (_: Exception) {
-                }
-                true
-            }
-
-            else -> super.onOptionsItemSelected(item)
         }
     }
 

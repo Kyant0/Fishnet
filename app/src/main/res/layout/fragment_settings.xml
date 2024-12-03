@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginVertical="16dp"
+            android:paddingTop="8dp"
+            android:text="Save logs to"
+            android:textColor="@color/primary"
+            android:textFontWeight="500"
+            android:textSize="15sp" />
+
+        <Switch
+            android:id="@+id/switch_internal_storage"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:foreground="?android:selectableItemBackground"
+            android:paddingStart="24dp"
+            android:paddingEnd="16dp"
+            android:switchPadding="16dp"
+            android:text="[internal storage]/logs"
+            android:textSize="20dp" />
+
+        <Switch
+            android:id="@+id/switch_external_storage"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:foreground="?android:selectableItemBackground"
+            android:paddingStart="24dp"
+            android:paddingEnd="16dp"
+            android:switchPadding="16dp"
+            android:text="[external storage]/logs"
+            android:textSize="20dp" />
+
+        <Switch
+            android:id="@+id/switch_downloads"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:foreground="?android:selectableItemBackground"
+            android:paddingStart="24dp"
+            android:paddingEnd="16dp"
+            android:switchPadding="16dp"
+            android:text="/Download/Fishnet"
+            android:textSize="20dp" />
+
+        <com.kyant.fishnet.demo.ui.MaterialButton
+            android:id="@+id/btn_delete_all_logs"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginVertical="8dp"
+            android:text="Delete all logs" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginVertical="16dp"
+            android:alpha="0.2"
+            android:background="@color/text" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginVertical="8dp"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="8dp"
+                android:fontFamily="@font/jetbrains_mono"
+                android:text="Author: Kyant"
+                android:textColor="@color/primary"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:typeface="monospace" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="8dp"
+                android:fontFamily="@font/jetbrains_mono"
+                android:text="License: Apache-2.0"
+                android:textColor="@color/primary"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:typeface="monospace" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="8dp"
+                android:fontFamily="@font/jetbrains_mono"
+                android:text="GitHub: Kyant0/Fishnet"
+                android:textColor="@color/primary"
+                android:textIsSelectable="true"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:typeface="monospace" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>

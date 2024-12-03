@@ -1,7 +1,3 @@
-[submodule "disasm/src/main/cpp/external/capstone"]
-	path = disasm/src/main/cpp/external/capstone
-	url = https://github.com/capstone-engine/capstone.git
-	shallow = true
 [submodule "fishnet/src/main/cpp/external/art"]
 	path = fishnet/src/main/cpp/external/art
 	url = https://android.googlesource.com/platform/art

@@ -22,4 +22,3 @@ dependencyResolutionManagement {
 rootProject.name = "Fishnet"
 include(":app")
 include(":fishnet")
-include(":disasm")
