@@ -267,7 +267,6 @@ void print_tasks(LogRecord &record, pid_t pid) {
 
     DIR *dir = opendir(task_dir);
     if (!dir) {
-        perror("Failed to open task directory");
         return;
     }
 

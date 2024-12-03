@@ -50,11 +50,14 @@ void write_log(const LogRecord &record) {
     }
     std::string timestamp = record.timestamp;
     std::replace(timestamp.begin(), timestamp.end(), ' ', '_');
+    std::replace(timestamp.begin(), timestamp.end(), ':', '-');
     std::string path = log_path + '/' + log_type_to_string(record.type) + '_' + timestamp + ".log";
     FILE *file = fopen(path.c_str(), "w");
     if (file == nullptr) {
+        LOGE("Failed to open %s, %s", path.c_str(), strerror(errno));
         return;
     }
+    LOGE("Write log to %s", path.c_str());
     fwrite(record.content.c_str(), 1, record.content.size(), file);
     fclose(file);
 }
