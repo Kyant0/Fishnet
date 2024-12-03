@@ -42,6 +42,17 @@
             android:textSize="20dp" />
 
         <TextView
+            android:id="@+id/btn_test_java_deep_exception"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:background="?android:selectableItemBackground"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="24dp"
+            android:text="Deep exception"
+            android:textColor="@color/text"
+            android:textSize="20dp" />
+
+        <TextView
             android:id="@+id/btn_test_anr"
             android:layout_width="match_parent"
             android:layout_height="56dp"

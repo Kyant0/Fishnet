@@ -154,6 +154,8 @@ void fishnet_dump_anr(const char *java_stack_traces, const DebuggerThreadInfo *i
     dump_logcat(pid);
 
     print_log_header(record, LogType::ANR, pid);
+
+    print_main_thread_header(record, pid, tid, uid);
     LOG_FISHNET("");
 
     if (java_stack_traces != nullptr) {

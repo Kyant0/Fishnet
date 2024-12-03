@@ -3,6 +3,7 @@
 package com.kyant.fishnet.demo
 
 import android.app.Fragment
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -19,6 +20,9 @@ class TestingCrashFragment : Fragment() {
         }
         view.findViewById<View>(R.id.btn_test_java_thread_crash).setOnClickListener {
             javaThreadCrash()
+        }
+        view.findViewById<View>(R.id.btn_test_java_deep_exception).setOnClickListener {
+            javaDeepException()
         }
         view.findViewById<View>(R.id.btn_test_anr).setOnClickListener {
             Thread.sleep(20_000)
@@ -58,6 +62,11 @@ class TestingCrashFragment : Fragment() {
             }
         }
         thread.start()
+    }
+
+    private fun javaDeepException() {
+        val context = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) context else activity
+        LayoutInflater.from(context).inflate(R.layout.bad_layout, null)
     }
 
     private external fun nativeCrash(type: String)
