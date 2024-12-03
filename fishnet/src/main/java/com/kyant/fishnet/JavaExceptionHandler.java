@@ -34,14 +34,15 @@ final class JavaExceptionHandler {
                     }
                 }
                 NativeSignalHandler.dumpJavaCrash(
-                        "  🧵Crashing thread: " + toLogString(t) + '\n' +
-                                sb + '\n' +
+                        "  🧵Crashing thread: " + toLogString(t) + '\n' + sb + '\n' +
                                 getAllStackTracesExcept(t)
                 );
 
                 if (defaultHandler != null) {
                     defaultHandler.uncaughtException(t, e);
+                    defaultHandler = null;
                 }
+                handler = null;
             };
         }
         Thread.setDefaultUncaughtExceptionHandler(handler);
