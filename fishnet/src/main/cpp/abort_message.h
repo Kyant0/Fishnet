@@ -7,7 +7,7 @@
 
 void set_aborter();
 
-void try_read_abort_message_from_logcat();
+void try_read_abort_message_from_logcat(pid_t pid);
 
 void get_scudo_message_if_needed(const unwindstack::ArchEnum &arch, const std::unique_ptr<unwindstack::Regs> &regs,
                                  const std::vector<unwindstack::FrameData> &frames);

@@ -51,7 +51,7 @@ void fishnet_dump_native(const DebuggerThreadInfo *info) {
     get_scudo_message_if_needed(arch, regs, data.frames);
 
     dump_logcat(pid);
-    try_read_abort_message_from_logcat();
+    try_read_abort_message_from_logcat(pid);
 
     print_log_header(record, LogType::Native, pid);
 

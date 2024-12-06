@@ -8,6 +8,8 @@ void dump_logcat(pid_t pid) {
     char command[28];
     snprintf(command, sizeof(command), "logcat -t 100 --pid=%d", pid);
     FILE *fp = popen(command, "r");
+    if (fp == nullptr) return;
+
     char line[1024];
     if (fp) {
         fgets(line, sizeof(line), fp); // skip the first line

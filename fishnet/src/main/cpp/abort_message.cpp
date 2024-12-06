@@ -10,10 +10,13 @@ void set_aborter() {
     });
 }
 
-void try_read_abort_message_from_logcat() {
-    if (abort_message != nullptr) return;
+void try_read_abort_message_from_logcat(pid_t pid) {
+    // TODO: check
+    // if (abort_message != nullptr) return;
 
-    FILE *fp = popen("logcat -d -s libc", "r");
+    char command[32];
+    snprintf(command, sizeof(command), "logcat -d -s libc --pid=%d", pid);
+    FILE *fp = popen(command, "r");
     if (fp == nullptr) return;
 
     char buffer[1024];
@@ -25,7 +28,7 @@ void try_read_abort_message_from_logcat() {
         if (len > 0 && buffer[len - 1] == '\n') {
             buffer[len - 1] = '\0';
         }
-        // 11-18 20:46:27.497 31300 31300 F libc    : FORTIFY: memcpy: prevented 10-byte write into 8-byte buffer
+        // 11-18 20:46:27.497 31300 31300 F libc    : FORTIFY: strcpy: prevented 10-byte write into 8-byte buffer
         const char *pos = strstr(buffer, divider);
         if (pos) {
             abort_message = strdup(pos + 2);
