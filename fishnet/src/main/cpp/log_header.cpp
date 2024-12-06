@@ -40,6 +40,7 @@ void print_log_header(LogRecord &record, const LogType &type, pid_t pid) {
     LOG_FISHNET("    Security patch: '%s'", get_property("ro.build.version.security_patch", "unknown").c_str());
     LOG_FISHNET("    Build date: '%s'", get_property("ro.system.build.date", "unknown").c_str());
     LOG_FISHNET("    Kernel version: '%s'", kernel_version.c_str());
+    LOG_FISHNET("    SDK: %s", get_property("ro.build.version.sdk", "'unknown'").c_str());
     LOG_FISHNET("    ABI: '%s'", abi_string());
     LOG_FISHNET("    Locale: '%s'", get_property("ro.product.locale", "unknown").c_str());
     LOG_FISHNET("    Debuggable: %s", get_bool_property("ro.debuggable", false) ? "yes" : "no");
