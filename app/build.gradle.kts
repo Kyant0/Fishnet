@@ -19,7 +19,6 @@ android {
         versionName = libs.versions.lib.version.get()
 
         ndk {
-            //noinspection ChromeOsAbiSupport
             abiFilters += arrayOf("arm64-v8a", "armeabi-v7a", "x86", "x86_64")
         }
     }
@@ -61,7 +60,7 @@ android {
             "-Xno-param-assertions",
             "-Xno-call-assertions",
             "-Xno-receiver-assertions",
-            "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
+            "-Xjvm-default=all-compatibility",
         )
     }
     packaging {
