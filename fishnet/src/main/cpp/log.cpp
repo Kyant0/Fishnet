@@ -1,6 +1,7 @@
 #include "log.h"
 
 #include <algorithm>
+#include <errno.h>
 #include <unistd.h>
 
 #include "clock.h"
