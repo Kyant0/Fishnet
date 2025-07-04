@@ -1,18 +1,10 @@
 [versions]
-android-minSdk = "21"
-android-compileSdk = "36"
-android-targetSdk = "36"
-android-buildToolsVersion = "36.0.0"
-android-ndkVersion = "29.0.13113456"
-android-versionCode = "3"
-lib-version = "1.0.2"
-
-agp = "8.9.0"
-kotlin = "2.1.10"
+agp = "8.11.0"
+kotlin = "2.2.0"
 
 [libraries]
 
 [plugins]
-androidApplication = { id = "com.android.application", version.ref = "agp" }
-androidLibrary = { id = "com.android.library", version.ref = "agp" }
-kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }

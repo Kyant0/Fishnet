@@ -1,22 +1,24 @@
 import com.android.build.gradle.internal.tasks.AppMetadataTask
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
 plugins {
-    alias(libs.plugins.androidApplication)
-    alias(libs.plugins.kotlinAndroid)
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
 }
 
 android {
     namespace = "com.kyant.fishnet.demo"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
-    buildToolsVersion = libs.versions.android.buildToolsVersion.get()
-    ndkVersion = libs.versions.android.ndkVersion.get()
+    compileSdk = 36
+    buildToolsVersion = "36.0.0"
+    ndkVersion = "29.0.13599879"
 
     defaultConfig {
         applicationId = namespace
-        minSdk = libs.versions.android.minSdk.get().toInt()
-        targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = libs.versions.android.versionCode.get().toInt()
-        versionName = libs.versions.lib.version.get()
+        minSdk = 21
+        targetSdk = 36
+        versionCode = 4
+        versionName = "1.0.3"
 
         ndk {
             abiFilters += arrayOf("arm64-v8a", "armeabi-v7a", "x86", "x86_64")
@@ -44,7 +46,7 @@ android {
     externalNativeBuild {
         cmake {
             path("src/main/cpp/CMakeLists.txt")
-            version = "3.31.6"
+            version = "4.0.2"
         }
     }
     compileOptions {
@@ -52,16 +54,11 @@ android {
         targetCompatibility = JavaVersion.VERSION_21
     }
     kotlin {
-        jvmToolchain(21)
-    }
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_21.toString()
-        freeCompilerArgs += arrayOf(
-            "-Xno-param-assertions",
-            "-Xno-call-assertions",
-            "-Xno-receiver-assertions",
-            "-Xjvm-default=all-compatibility",
-        )
+        compilerOptions {
+            apiVersion = KotlinVersion.KOTLIN_2_3
+            languageVersion = KotlinVersion.KOTLIN_2_3
+            jvmTarget = JvmTarget.JVM_21
+        }
     }
     packaging {
         resources {

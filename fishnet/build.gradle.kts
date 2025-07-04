@@ -1,15 +1,16 @@
 plugins {
-    alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.android.library)
 }
 
 android {
     namespace = "com.kyant.fishnet"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
-    buildToolsVersion = libs.versions.android.buildToolsVersion.get()
-    ndkVersion = libs.versions.android.ndkVersion.get()
+    compileSdk = 36
+    buildToolsVersion = "36.0.0"
+    ndkVersion = "29.0.13599879"
 
     defaultConfig {
-        minSdk = libs.versions.android.minSdk.get().toInt()
+        minSdk = 21
+
         ndk {
             abiFilters += arrayOf("arm64-v8a", "armeabi-v7a", "x86_64", "x86")
         }
@@ -25,7 +26,7 @@ android {
     externalNativeBuild {
         cmake {
             path("src/main/cpp/CMakeLists.txt")
-            version = "3.31.6"
+            version = "4.0.2"
         }
     }
     compileOptions {
