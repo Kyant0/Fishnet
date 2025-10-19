@@ -1,6 +1,4 @@
 import com.android.build.gradle.internal.tasks.AppMetadataTask
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
 plugins {
     alias(libs.plugins.android.application)
@@ -17,8 +15,8 @@ android {
         applicationId = namespace
         minSdk = 21
         targetSdk = 36
-        versionCode = 4
-        versionName = "1.0.3"
+        versionCode = 1
+        versionName = "1.0.0"
 
         ndk {
             abiFilters += arrayOf("arm64-v8a", "armeabi-v7a", "x86", "x86_64")
