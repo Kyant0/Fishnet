@@ -5,8 +5,8 @@ plugins {
 android {
     namespace = "com.kyant.fishnet"
     compileSdk = 36
-    buildToolsVersion = "36.0.0"
-    ndkVersion = "29.0.13599879"
+    buildToolsVersion = "36.1.0"
+    ndkVersion = "29.0.14206865"
 
     defaultConfig {
         minSdk = 21
@@ -26,7 +26,7 @@ android {
     externalNativeBuild {
         cmake {
             path("src/main/cpp/CMakeLists.txt")
-            version = "4.0.2"
+            version = "4.1.2"
         }
     }
     compileOptions {

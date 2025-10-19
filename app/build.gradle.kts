@@ -10,8 +10,8 @@ plugins {
 android {
     namespace = "com.kyant.fishnet.demo"
     compileSdk = 36
-    buildToolsVersion = "36.0.0"
-    ndkVersion = "29.0.13599879"
+    buildToolsVersion = "36.1.0"
+    ndkVersion = "29.0.14206865"
 
     defaultConfig {
         applicationId = namespace
@@ -46,19 +46,11 @@ android {
     externalNativeBuild {
         cmake {
             path("src/main/cpp/CMakeLists.txt")
-            version = "4.0.2"
+            version = "4.1.2"
         }
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
     }
     kotlin {
-        compilerOptions {
-            apiVersion = KotlinVersion.KOTLIN_2_3
-            languageVersion = KotlinVersion.KOTLIN_2_3
-            jvmTarget = JvmTarget.JVM_21
-        }
+        jvmToolchain(21)
     }
     packaging {
         resources {
