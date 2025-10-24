@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.library)
+    id("com.vanniktech.maven.publish")
 }
 
 android {
@@ -35,5 +36,38 @@ android {
     }
     lint {
         checkReleaseBuilds = false
+    }
+}
+
+mavenPublishing {
+    publishToMavenCentral()
+    signAllPublications()
+
+    coordinates("io.github.kyant0", "fishnet", "1.0.5")
+
+    pom {
+        name.set("Fishnet")
+        description.set("Dump Java, native and ANR crashes")
+        inceptionYear.set("2025")
+        url.set("https://github.com/Kyant0/Fishnet")
+        licenses {
+            license {
+                name.set("The Apache License, Version 2.0")
+                url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                distribution.set("repo")
+            }
+        }
+        developers {
+            developer {
+                id.set("Kyant0")
+                name.set("Kyant")
+                url.set("https://github.com/Kyant0")
+            }
+        }
+        scm {
+            url.set("https://github.com/Kyant0/Fishnet")
+            connection.set("scm:git:git://github.com/Kyant0/Fishnet.git")
+            developerConnection.set("scm:git:ssh://git@github.com/Kyant0/Fishnet.git")
+        }
     }
 }
