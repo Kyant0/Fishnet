@@ -35,8 +35,8 @@ In the `Application` class, add the following code,
 import com.kyant.fishnet.Fishnet
 
 class App : Application() {
-    override fun attachBaseContext(base: Context?) {
-        super.attachBaseContext(base)
+    override fun onCreate() {
+        super.onCreate()
         val logPath = File(filesDir, "logs").apply { mkdirs() }.absolutePath
         Fishnet.init(this, logPath)
     }
