@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 4.1.2)
 
-project(com.kyant.fishnet)
+project(fishnet)
 
 enable_language(C CXX ASM)
 
@@ -12,6 +12,9 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fvisibility=hidden -flto -fdata-sec
 set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -flto -Wl,--exclude-libs,ALL -Wl,--gc-sections -Wl,-s -Wl,--build-id=none")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-exceptions -fno-rtti")
+
+set(CMAKE_C_VISIBILITY_PRESET hidden)
+set(CMAKE_VISIBILITY_INLINES_HIDDEN YES)
 
 
 set(LIBC_SRC "external/_libc")
@@ -121,7 +124,7 @@ target_include_directories(androidbase PUBLIC
         "${ANDROIDBASE_SRC}/include")
 
 target_compile_options(androidbase PRIVATE
-        -D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__ -Werror=unguarded-availability)
+        -Wno-c99-designator -D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__ -Werror=unguarded-availability)
 
 
 add_library(procinfo STATIC
@@ -289,6 +292,7 @@ target_include_directories(unwindstack BEFORE
         PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/external/_compat")
 
 target_compile_options(unwindstack PRIVATE
+        -Wno-c99-designator
         -Wno-deprecated-volatile -Wno-reorder-init-list
         -Wexit-time-destructors -fno-c++-static-destructors
         -DDEXFILE_SUPPORT

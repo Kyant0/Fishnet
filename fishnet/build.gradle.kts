@@ -5,7 +5,9 @@ plugins {
 
 android {
     namespace = "com.kyant.fishnet"
-    compileSdk = 36
+    compileSdk {
+        version = release(36)
+    }
     buildToolsVersion = "36.1.0"
     ndkVersion = "29.0.14206865"
 

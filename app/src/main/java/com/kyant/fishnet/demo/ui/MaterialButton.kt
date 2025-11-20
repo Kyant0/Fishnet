@@ -31,6 +31,7 @@ class MaterialButton @JvmOverloads constructor(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             setTextColor(resources.getColor(value.resourceId, context.theme))
         } else {
+            @Suppress("DEPRECATION")
             setTextColor(resources.getColor(value.resourceId))
         }
         textSize = 15f

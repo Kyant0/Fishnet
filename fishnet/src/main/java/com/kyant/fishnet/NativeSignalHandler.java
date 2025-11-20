@@ -85,6 +85,6 @@ final class NativeSignalHandler {
     private static native void nativeDumpJavaCrash(String javaStackTraces);
 
     static {
-        System.loadLibrary("com.kyant.fishnet");
+        System.loadLibrary("fishnet");
     }
 }

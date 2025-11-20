@@ -1,5 +1,3 @@
-import com.android.build.gradle.internal.tasks.AppMetadataTask
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -7,12 +5,14 @@ plugins {
 
 android {
     namespace = "com.kyant.fishnet.demo"
-    compileSdk = 36
+    compileSdk {
+        version = release(36)
+    }
     buildToolsVersion = "36.1.0"
     ndkVersion = "29.0.14206865"
 
     defaultConfig {
-        applicationId = namespace
+        applicationId = "com.kyant.fishnet.demo"
         minSdk = 21
         targetSdk = 36
         versionCode = 1
@@ -47,9 +47,6 @@ android {
             version = "4.1.2"
         }
     }
-    kotlin {
-        jvmToolchain(21)
-    }
     packaging {
         resources {
             excludes += arrayOf(
@@ -76,11 +73,8 @@ android {
         checkReleaseBuilds = false
     }
 }
-
-tasks.withType<AppMetadataTask> {
-    doLast {
-        outputFile.asFile.get().writeBytes(byteArrayOf())
-    }
+kotlin {
+    jvmToolchain(21)
 }
 
 dependencies {
