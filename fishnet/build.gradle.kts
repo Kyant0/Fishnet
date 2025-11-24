@@ -12,7 +12,7 @@ android {
     ndkVersion = "29.0.14206865"
 
     defaultConfig {
-        minSdk = 21
+        minSdk = 23
 
         ndk {
             abiFilters += arrayOf("arm64-v8a", "armeabi-v7a", "x86_64", "x86")
@@ -45,7 +45,7 @@ mavenPublishing {
     publishToMavenCentral()
     signAllPublications()
 
-    coordinates("io.github.kyant0", "fishnet", "1.0.6")
+    coordinates("io.github.kyant0", "fishnet", "1.1.0")
 
     pom {
         name.set("Fishnet")

@@ -4,10 +4,8 @@ project(fishnet_demo)
 
 set(CMAKE_C_STANDARD 23)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -flto -fdata-sections -ffunction-sections -fomit-frame-pointer")
-set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -flto -Wl,--exclude-libs,ALL -Wl,--gc-sections -Wl,-s -Wl,--build-id=none")
-
-set(CMAKE_C_VISIBILITY_PRESET hidden)
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -flto -fvisibility=hidden -fdata-sections -ffunction-sections -fomit-frame-pointer")
+set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -flto -Wl,--exclude-libs,ALL -Wl,--gc-sections -Wl,-s -Wl,--pack-dyn-relocs=relr -Wl,--build-id=none")
 set(CMAKE_VISIBILITY_INLINES_HIDDEN YES)
 
 add_library(${CMAKE_PROJECT_NAME} SHARED
